@@ -9,13 +9,15 @@ public interface User {
 
     boolean checkIfMessageExists(String recipient);// check if <username><recipient>.txt exits in directory or not
 
-    void makeMessageFiles(String recipient); // Make both files: <username><recipient>.txt <recipient><username>.txt
-
+    String[] getAvailableUsers();/*Return an array of username that this user can message. Buyers can only message
+    sellers, sellers can only message buyers, and exclude from the list any users that block this user*/
     void appendMessage(String recipient); // add to both files
 
     void editMessage(String recipient); // somehow figure out which one to edit, edit both files
 
     void deleteMessage(String recipient); // delete from <username><recipient>.txt somehow figure out which one to delete
 
-    void isRecipientSeller(String recipient); // check if recipient is seller
+    boolean blockUser (String recipient); // check if recipient is seller
+
+
 }
