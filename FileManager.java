@@ -12,7 +12,7 @@ public class FileManager {
      * @return the file directory found associated with the given username.
      * @exception UserNotFoundException when there is no directory that corresponds with the given username.
      */
-    public String getDirectoryFromUsername(String username) throws UserNotFoundException {
+    public static String getDirectoryFromUsername(String username) throws UserNotFoundException {
         if (Files.exists(Paths.get("data/buyers/"+username))) {
             return "data/buyers/"+username;
         } else if (Files.exists(Paths.get("data/sellers/"+username))) {
@@ -27,7 +27,7 @@ public class FileManager {
      * @param isSeller Determines whether the User is a Seller or a Customer.
      * @return true if the directory was created. Returns false if the directory exists, or some other error occurs.
      */
-    public boolean generateDirectoryFromUsername(String username, boolean isSeller) {
+    public static boolean generateDirectoryFromUsername(String username, boolean isSeller) {
         try {
             if (isSeller) {
                 Files.createDirectory(Paths.get("data/sellers/"+username));
