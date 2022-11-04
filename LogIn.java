@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class LogIn {
     //writes user's username to a file
     public static boolean writeFile(String user) {
-        try (PrintWriter pw = new PrintWriter(new FileOutputStream(user))){
+        try (PrintWriter pw = new PrintWriter(new FileOutputStream("users/" + user))){
             pw.println(user);
             return (true);
         } catch (Exception e) {
@@ -15,7 +15,7 @@ public class LogIn {
 
     //writes user's password to a file, returns true for successes and false for failures
     public static boolean writeFile(String user, String toAppend) {
-        try (PrintWriter pw = new PrintWriter(new FileOutputStream(user, true))){
+        try (PrintWriter pw = new PrintWriter(new FileOutputStream("users/" + user, true))){
             pw.println(toAppend);
             return (true);
         } catch (Exception e) {
@@ -25,7 +25,7 @@ public class LogIn {
 
     //encrypts the password of the user file when an account is created
     public static void encryptFile (String user) {
-        try (BufferedReader br = new BufferedReader(new FileReader(user))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("users/" + user))) {
             String password = "";
             int index = 0;
             String line = br.readLine();
@@ -67,13 +67,13 @@ public class LogIn {
 
     //creates the file for a user only if it doesn't already exist
     public static void createUser(String user, Scanner scan) {
-        File f = new File(user);
+        File f = new File("users/" + user);
         try {
             if (!f.createNewFile()) {
                 while (!f.createNewFile()) {
                     System.out.println("User already exists! Please enter another username.");
                     user = scan.nextLine();
-                    f = new File(user);
+                    f = new File("users/" + user);
                 }
             }
         } catch (Exception e) {
@@ -129,7 +129,7 @@ public class LogIn {
 
     //reads the password of the file for comparison
     public static String readPassword (String user) {
-        try (BufferedReader br = new BufferedReader(new FileReader(user))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("users/" + user))) {
             String password = "";
             int index = 0;
             String line = br.readLine();
@@ -176,7 +176,7 @@ public class LogIn {
             while (!done) {
                 System.out.println("Please enter your username.");
                 user = scan.nextLine();
-                File F = new File(user);
+                File F = new File("users/" + user);
                 try {
                     if (F.createNewFile()) {
                         F.delete();
@@ -212,7 +212,7 @@ public class LogIn {
                     try {
                         String passwordInput = scan.nextLine();
                         if (encrypt(passwordInput).equals(readPassword(user))) {
-                            System.out.println("Success! Logged in!");
+                            System.out.printf("Welcome, %s!%n", user);
                             done = true;
                         } else {
                             boolean continuePassword = false;
@@ -262,7 +262,7 @@ public class LogIn {
     public static void main(String[] args) {
         String user = userInteraction();
         ArrayList<String> fileContents = new ArrayList();
-        try (BufferedReader bfr = new BufferedReader(new FileReader(user))) {
+        try (BufferedReader bfr = new BufferedReader(new FileReader("users/" + user))) {
             int index = 0;
             String line = bfr.readLine();
             while (line != null) {
@@ -272,11 +272,17 @@ public class LogIn {
                 }
                 line = bfr.readLine();
             }
-            System.out.println("User information:");
         } catch (Exception e) {
             System.out.println("An unknown error occurred!");
         }
+        System.out.println("\nUser information:");
         //TODO Users will be created/accessed by the following information:
-        System.out.println(fileContents);
+        System.out.printf("Username: %s%n" +
+                          "isSeller: %s%n",
+                          fileContents.get(0),
+                          fileContents.get(1));
+        if (fileContents.size() == 3) {
+            System.out.println("Store Name: " + fileContents.get(2));
+        }
     }
 }
