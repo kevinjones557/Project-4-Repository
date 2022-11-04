@@ -9,7 +9,7 @@ public interface User {
     String[] getAvailableUsers(); /*Return an array of username that this user can message. Buyers can only message
     sellers, sellers can only message buyers, and exclude from the list any users that block this user*/
 
-    boolean checkIfRecipientExistsAndAvailable(String recipient); // DESTIN: look through directories and check for name
+    boolean checkIfRecipientExists(String recipient, String[] availableUsers); // DESTIN: look through directories and check for name
 
     boolean checkIfMessageExists(String recipient);// check if <username><recipient>.txt exits in directory or not
 
@@ -23,10 +23,7 @@ public interface User {
 
     void isRecipientSeller(String recipient); // check if recipient is seller
 
-    void updateWordFrequency(String oldMessage, String newMessage, String recipient); /* Check for changes in word frequency, addition of
-    new words and their frequency, and update the metric file of the store(seller). Call this one in delete/append/editMessage
-    methods. Use "" for oldMessage for append method and "" for newMessage for delete method*/
-
+    void blockUser(String username); //
 
 
 }
