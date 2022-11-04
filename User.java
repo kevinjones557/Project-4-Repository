@@ -5,7 +5,11 @@ public interface User {
     void message(); /* username is of person who is logged in
      while true, prompt if user wants to send message, username/store name of recipient
                             ask for message that you want to send*/
-    boolean checkIfRecipientExists(String recipient); // DESTIN: look through directories and check for name
+
+    String[] getAvailableUsers(); /*Return an array of username that this user can message. Buyers can only message
+    sellers, sellers can only message buyers, and exclude from the list any users that block this user*/
+
+    boolean checkIfRecipientExistsAndAvailable(String recipient); // DESTIN: look through directories and check for name
 
     boolean checkIfMessageExists(String recipient);// check if <username><recipient>.txt exits in directory or not
 
@@ -22,6 +26,7 @@ public interface User {
     void updateWordFrequency(String oldMessage, String newMessage, String recipient); /* Check for changes in word frequency, addition of
     new words and their frequency, and update the metric file of the store(seller). Call this one in delete/append/editMessage
     methods. Use "" for oldMessage for append method and "" for newMessage for delete method*/
+
 
 
 }
