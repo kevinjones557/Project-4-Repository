@@ -1,10 +1,8 @@
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class LogIn {
-
     //writes user's username to a file
     public static boolean writeFile(String user) {
         try (PrintWriter pw = new PrintWriter(new FileOutputStream(user))){
