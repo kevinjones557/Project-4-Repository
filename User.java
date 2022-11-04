@@ -18,4 +18,10 @@ public interface User {
     void deleteMessage(String recipient); // delete from <username><recipient>.txt somehow figure out which one to delete
 
     void isRecipientSeller(String recipient); // check if recipient is seller
+
+    void updateWordFrequency(String oldMessage, String newMessage, String recipient); /* Check for changes in word frequency, addition of
+    new words and their frequency, and update the metric file of the store(seller). Call this one in delete/append/editMessage
+    methods. Use "" for oldMessage for append method and "" for newMessage for delete method*/
+
+
 }
