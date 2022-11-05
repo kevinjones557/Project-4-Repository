@@ -7,7 +7,7 @@ public interface User {
                             ask for message that you want to send*/
     boolean checkIfRecipientExists(String recipient); // DESTIN: look through directories and check for name
 
-    boolean checkIfMessageExists(String recipient);// check if <username><recipient>.txt exits in directory or not
+    void checkIfMessageExists(String recipient);// check if <username><recipient>.txt exits in directory or not
 
     String[] getAvailableUsers();/*Return an array of username that this user can message. Buyers can only message
     sellers, sellers can only message buyers, and exclude from the list any users that block this user*/
@@ -21,3 +21,12 @@ public interface User {
 
 
 }
+
+/*
+1. Kevin 05:09:23: Hi
+2. John : How ar you
+3. John: whats up
+Kevin: not much
+Kevin: how are you
+
+ */
