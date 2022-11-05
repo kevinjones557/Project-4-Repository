@@ -221,13 +221,199 @@ public class MarketUser implements User{
         }
     }
 
-    public void appendMessage(String recipient) { // add to both files
+    /**
+     * Adds message to both sender and receiver file
+     *
+     * @param recipient
+     *
+     * @Author John Brooks
+     */
+
+    public void appendMessage(String recipient) {
+
+        String fileRecipient = "";
+        String fileSender = "";
+        String message;
+        String printFile;
+
+        //retrieval for exact file path from Destin
+        File senderF = new File(fileSender);
+        File recipientF = new File(fileRecipient);
+        if (senderF.exists() && recipientF.exists()) {
+            try {
+                //display prior to adding
+                BufferedReader display = new BufferedReader(new FileReader(senderF));
+                printFile = display.readLine();
+                while (printFile != null) {
+                    System.out.println(printFile);
+                    printFile = display.readLine();
+                }
+                FileOutputStream fosSend = new FileOutputStream(senderF, true);
+                PrintWriter messageSenderWriter = new PrintWriter(fosSend);
+                FileOutputStream fosReceive = new FileOutputStream(senderF, true);
+                PrintWriter messageReceiveWriter = new PrintWriter(fosReceive);
+                Scanner scan = new Scanner(System.in);
+                System.out.println(username + ":");
+                message = scan.nextLine();
+                //write it on the end of each persons file
+                messageSenderWriter.println(username + ": " + message);
+                messageReceiveWriter.println(recipient + ": " + message);
+                display.close();
+                messageSenderWriter.close();
+                messageReceiveWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    } // add to both files
+
+    /**
+     * Searches file for index that matches one given by the user and changes that line and
+     * writes it back to the file
+     *
+     * @param recipient
+     *
+     * @Author John Brooks
+     */
+    public void editMessage(String recipient) {
+
+        String fileRecipient = "";
+        String fileSender = "";
+        String message;
+        String printFile;
+        int count = 1;
+        int ind = -1;
+        int flag;
+
+        //retrieval for exact file path from Destin
+        File senderF = new File(fileSender);
+        File recipientF = new File(fileRecipient);
+        if (senderF.exists() && recipientF.exists()) {
+            try {
+                //initial display
+                BufferedReader display = new BufferedReader(new FileReader(senderF));
+                printFile = display.readLine();
+                while (printFile != null) {
+                    System.out.println(count + ": " + printFile);
+                    count++;
+                    printFile = display.readLine();
+                }
+                BufferedReader buffSender = new BufferedReader(new FileReader(senderF));
+                FileOutputStream fosSend = new FileOutputStream(senderF, false);
+                PrintWriter messageSenderWriter = new PrintWriter(fosSend);
+                FileOutputStream fosReceive = new FileOutputStream(senderF, false);
+                PrintWriter messageReceiveWriter = new PrintWriter(fosReceive);
+                Scanner scan = new Scanner(System.in);
+                //acquiring index
+                System.out.println("Which index would you like to change?");
+                do {
+                    flag = 0;
+                    try {
+                        ind = Integer.parseInt(scan.nextLine());
+                    } catch (NumberFormatException n) {
+                        flag++;
+                    }
+                    if (flag == 1 || ind < 1 && ind > count)
+                        System.out.println("Your index must be a number and must be available. Try again:");
+                } while (flag == 1 || ind < 1 && ind > count);
+                System.out.println("What would you like the new version to say?");
+                String edit = scan.nextLine();
+                ArrayList<String> readSenderFile = new ArrayList<>();
+                String line = buffSender.readLine();
+                //run through array, add lines, and check throughout if line matches criteria and then change it
+                int count2 = 0;
+                while (line != null) {
+                    if (ind == count2) {
+                        line = edit;
+                    }
+                    readSenderFile.add(username + ": " + line);
+                    line = buffSender.readLine();
+                    count2++;
+                }
+                //write back to files
+                for (int i = 0; i < readSenderFile.size(); i++) {
+                    messageSenderWriter.write(readSenderFile.get(i));
+                    messageReceiveWriter.write(readSenderFile.get(i));
+                }
+                display.close();
+                buffSender.close();
+                messageSenderWriter.close();
+                messageReceiveWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
-    public void editMessage(String recipient) { // somehow figure out which one to edit, edit both files
-    }
+    /**
+        * Searches file for index that matches one given by the user to not add it to an arraylist and
+        * therefore not write it to the file
+         *
+        * @param recipient
+         *
+        * @Author John Brooks
+         */
 
-    public void deleteMessage(String recipient) { // delete from <username><recipient>.txt somehow figure out which one to delete
+    public void deleteMessage(String recipient) {
+        String fileRecipient = "";
+        String fileSender = "";
+        String message;
+        String printFile;
+        int count = 1;
+        int flag;
+        int indexOfDelete = -1;
+
+        //retrieval for exact file path from Destin
+        File senderF = new File(fileSender);
+        File recipientF = new File(fileRecipient);
+        if (senderF.exists() && recipientF.exists()) {
+            try {
+                //display
+                BufferedReader display = new BufferedReader(new FileReader(senderF));
+                printFile = display.readLine();
+                while (printFile != null) {
+                    System.out.println(count + ": " + printFile);
+                    count++;
+                    printFile = display.readLine();
+                }
+                BufferedReader buffSender = new BufferedReader(new FileReader(senderF));
+                FileOutputStream fosSend = new FileOutputStream(senderF, false);
+                PrintWriter messageSenderWriter = new PrintWriter(fosSend);
+                Scanner scan = new Scanner(System.in);
+                //get index of delete
+                do {
+                    flag = 0;
+                    try {
+                        indexOfDelete = Integer.parseInt(scan.nextLine());
+                    } catch (NumberFormatException n) {
+                        flag++;
+                    }
+                    if (flag == 1 || indexOfDelete < 1 && indexOfDelete > count)
+                        System.out.println("Your index must be a number and must be available. Try again:");
+                } while (flag == 1 || indexOfDelete < 1 && indexOfDelete > count);
+
+                ArrayList<String> readSenderFile = new ArrayList<>();
+                String line = buffSender.readLine();
+                //run through array, add lines, and check throughout if line matches criteria then dont add it
+                int count2 = 1;
+                while (line != null) {
+                    if (!(count2 == indexOfDelete)) {
+                        readSenderFile.add(line);
+                    }
+                    line = buffSender.readLine();
+                    count2++;
+                }
+                for (int i = 0; i < readSenderFile.size(); i++) {
+                    messageSenderWriter.write(readSenderFile.get(i));
+                }
+                display.close();
+                buffSender.close();
+                messageSenderWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
    /**
