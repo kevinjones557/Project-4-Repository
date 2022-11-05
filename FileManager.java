@@ -61,6 +61,7 @@ public class FileManager {
                 filePath = Files.createDirectory(Paths.get("data/buyers/" + username));
             }
             Files.createFile(Paths.get(filePath+"/metrics.txt"));
+            Files.createFile(Paths.get(filePath+"/hasBlocked.txt"));
             return true;
         } catch (IOException e) {
             return false;
