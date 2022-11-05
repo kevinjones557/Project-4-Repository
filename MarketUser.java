@@ -249,7 +249,7 @@ public class MarketUser implements User{
          }
          bfr.close();
          //Write the name of the victim to hasBlocked file
-         PrintWriter pw = new PrintWriter(new FileWriter(blockedFile));
+         PrintWriter pw = new PrintWriter(new FileWriter(blockedFile, true));
          pw.write(username);
          pw.println();
          pw.flush();
@@ -283,6 +283,23 @@ public class MarketUser implements User{
      * @param username: name of person to unblock
      */
     public void unblockUser(String username) {
-        //TODO: implement unblockUser method
+        ArrayList<String> lines = new ArrayList<>();
+        String blockedFilePath = (this.isSeller)? "Sellers": "Buyers" + this.username + "hasBlocked";
+        File blockedFile = new File(blockedFilePath);
+        BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
+        String line;
+        while((line = bfr.readLine())!= null) {
+            if(!line.equals(username)) {
+                lines.add(line);
+            }
+        }
+        bfr.close();
+        PrintWriter pw = new PrintWriter(new FileWriter(blockedFile, true));
+        for(String l : lines) {
+            pw.write(l);
+            pw.println();
+        }
+        pw.flush();
+        pw.close();
     }
 }
