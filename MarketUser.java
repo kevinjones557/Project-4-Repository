@@ -1,7 +1,5 @@
-import java.io.File;
-import java.sql.SQLOutput;
-import java.util.InputMismatchException;
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
 
 public class MarketUser implements User{
     private String username;
@@ -143,7 +141,7 @@ public class MarketUser implements User{
      * @return an array of available people for messaging
      * @throws IOException
      */
-    public String[] getAvailableUser() throws IOException {
+    public String[] getAvailableUsers() throws IOException {
         ArrayList<String> available = new ArrayList<>();
         String buyerOrSeller = (this.isSeller)? "Buyers": "Sellers";
         //Goes in the right directory
