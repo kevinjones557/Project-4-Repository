@@ -7,7 +7,7 @@ public class MarketUser implements User{
     private boolean isSeller;
 
     public static void main(String[] args) {
-        MarketUser mu = new MarketUser("testuser",true);
+        MarketUser mu = new MarketUser("john",false);
         mu.message();
     }
 
@@ -64,6 +64,7 @@ public class MarketUser implements User{
                             scan.nextLine();
                             break; // at this point we again know that the variable 'recipient' contains a valid username
                         } catch (IOException e) {
+                            e.printStackTrace();
                             System.out.println("Sorry, there was an error reading the users, please try again!");
                         }
                     } else {
@@ -109,6 +110,7 @@ public class MarketUser implements User{
                             scan.nextLine();
                             break; // at this point we again know that the variable 'recipient' contains a valid username
                         } catch (IOException e) {
+                            e.printStackTrace();
                             System.out.println("Sorry, there was an error reading the users, please try again!");
                         }
                     } else {
