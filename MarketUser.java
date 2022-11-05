@@ -104,10 +104,42 @@ public class MarketUser implements User{
         boolean messageAlreadyExists = checkIfMessageExists(recipient);
 
     }
-    public String[] getAvailableUsers() {
-        return null;
-    }/*Return an array of username that this user can message. Buyers can only message
-    sellers, sellers can only message buyers, and exclude from the list any users that block this user*/
+    /**
+     * Get a list of users that this user can message
+     * @return an array of available people for messaging
+     * @throws IOException
+     */
+    public String[] getAvailableUser() throws IOException {
+        ArrayList<String> available = new ArrayList<>();
+        String buyerOrSeller = (this.isSeller)? "Buyers": "Sellers";
+        //Goes in the right directory
+        File recipientType = new File((this.isSeller)? "Buyers": "Sellers");
+        String[] usernames = recipientType.list();
+        //Loop through user directories
+        for(String userDir : usernames) {
+            File thatUserBlockedFile = new File(buyerOrSeller+"\\" + userDir + "\\" + "hasBlocked");
+            BufferedReader bfr = new BufferedReader(new FileReader(thatUserBlockedFile));
+            String line;
+            boolean blocked = false;
+            //Check the hasBlocked file, if this.username isn't there add the user to available
+            while((line = bfr.readLine())!= null) {
+                if(line.equals(this.username)) {
+                    blocked = true;
+                    break;
+                }
+            }
+            bfr.close();
+            if(!blocked) {
+                available.add(userDir);
+            }
+        }
+        //Just turn ArrayList into array classic 180 stuff
+        String[] availables = new String[available.size()];
+        for(int i = 0; i < availables.length; i++) {
+            availables[i] = available.get(i);
+        }
+        return availables;
+    }
 
 
     public boolean checkIfRecipientExists(String recipient) { // DESTIN: look through directories and check for name
@@ -130,7 +162,59 @@ public class MarketUser implements User{
     public void deleteMessage(String recipient) { // delete from <username><recipient>.txt somehow figure out which one to delete
     }
 
-    public boolean blockUser(String recipient) { // check if recipient is seller
-        return true;
+   /**
+     * Block a user if not already blocked
+     * @param username: name of person to block
+     * @return true if already blocked, false if notBlocked
+     * @throws IOException
+     */
+    public boolean blockUser(String username) throws IOException {
+         String blockedFilePath = (this.isSeller)? "Sellers": "Buyers" + this.username + "hasBlocked";
+         File blockedFile = new File(blockedFilePath);
+         BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
+         String line;
+         while((line = bfr.readLine())!= null) {
+             if(line.equals(username)) {
+                 //The user is already blocked
+                 return true;
+             }
+         }
+         bfr.close();
+         //Write the name of the victim to hasBlocked file
+         PrintWriter pw = new PrintWriter(new FileWriter(blockedFile));
+         pw.write(username);
+         pw.println();
+         pw.flush();
+         pw.close();
+         return false;
+    }
+    
+    /**
+     * Return a list of blocked users for this user
+     * @return array of blocked usernames
+     * @throws IOException
+     */
+    public String[] blockedList() throws IOException{
+        ArrayList<String> victims = new ArrayList<>();
+        String blockedFilePath = (this.isSeller)? "Sellers": "Buyers" + this.username + "hasBlocked";
+        File blockedFile = new File(blockedFilePath);
+        BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
+        String line;
+        while((line = bfr.readLine())!= null) {
+            victims.add(line);
+        }
+        String[] blockedList = new String[victims.size()];
+        for(int i = 0; i < victims.size();i++) {
+            blockedList[i] = victims.get(i);
+        }
+        return blockedList;
+    }
+    
+    /**
+     * unblocked a user from the blockedList() return array
+     * @param username: name of person to unblock
+     */
+    public void unblockUser(String username) {
+        //TODO: implement unblockUser method
     }
 }
