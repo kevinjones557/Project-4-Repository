@@ -48,12 +48,16 @@ public class LogIn {
             br.close();
             char[] toBeEncrypted = password.toCharArray();
             for (int i = 0; i < toBeEncrypted.length; i++) {
-                toBeEncrypted[i] += 5;
+                if (i % 2 == 0) {
+                    toBeEncrypted[i] += 5;
+                } else {
+                    toBeEncrypted[i] -= 5;
+                }
             }
             writeFile(user);
             String finalPassword = "";
-            for (int i = 0; i < toBeEncrypted.length; i++) {
-                finalPassword += toBeEncrypted[i];
+            for (char c : toBeEncrypted) {
+                finalPassword += c;
             }
             writeFile(user, finalPassword);
         } catch (Exception e) {
@@ -69,10 +73,14 @@ public class LogIn {
         String finalInput = "";
         char[] inputArray = input.toCharArray();
         for (int i = 0; i < inputArray.length; i++) {
-            inputArray[i] += 5;
+            if (i % 2 == 0) {
+                inputArray[i] += 5;
+            } else {
+                inputArray[i] -= 5;
+            }
         }
-        for (int i = 0; i < inputArray.length; i++) {
-            finalInput += inputArray[i];
+        for (char c : inputArray) {
+            finalInput += c;
         }
         return (finalInput);
     }
@@ -225,6 +233,7 @@ public class LogIn {
                 }
             }
             if (userFound) {
+                boolean loggedIn = false;
                 System.out.println("Please enter your password");
                 done = false;
                 while (!done) {
@@ -233,6 +242,7 @@ public class LogIn {
                         if (encrypt(passwordInput).equals(readPassword(user))) {
                             System.out.printf("Welcome, %s!%n", user);
                             done = true;
+                            loggedIn = true;
                         } else {
                             boolean continuePassword = false;
                             while (!continuePassword) {
@@ -258,7 +268,9 @@ public class LogIn {
                         System.out.println("An unknown error occurred!");
                     }
                 }
-                return (user);
+                if (loggedIn) {
+                    return (user);
+                }
             }
         } else {
             done = false;
@@ -282,28 +294,32 @@ public class LogIn {
      */
     public static void main(String[] args) {
         String user = userInteraction();
-        ArrayList<String> fileContents = new ArrayList();
-        try (BufferedReader bfr = new BufferedReader(new FileReader("users/" + user))) {
-            int index = 0;
-            String line = bfr.readLine();
-            while (line != null) {
-                index++;
-                if (index != 2) {
-                    fileContents.add(line);
+        if (user != null) {
+            ArrayList<String> fileContents = new ArrayList();
+            try (BufferedReader bfr = new BufferedReader(new FileReader("users/" + user))) {
+                int index = 0;
+                String line = bfr.readLine();
+                while (line != null) {
+                    index++;
+                    if (index != 2) {
+                        fileContents.add(line);
+                    }
+                    line = bfr.readLine();
                 }
-                line = bfr.readLine();
+            } catch (Exception e) {
+                System.out.println("An unknown error occurred!");
             }
-        } catch (Exception e) {
-            System.out.println("An unknown error occurred!");
-        }
-        System.out.println("\nUser information:");
-        //TODO Users will be created/accessed by the following information:
-        System.out.printf("Username: %s%n" +
-                          "isSeller: %s%n",
-                          fileContents.get(0),
-                          fileContents.get(1));
-        if (fileContents.size() == 3) {
-            System.out.println("Store Name: " + fileContents.get(2));
+            System.out.println("\nUser information:");
+            //TODO Users will be created/accessed by the following information:
+            System.out.printf("Username: %s%n" +
+                            "isSeller: %s%n",
+                    fileContents.get(0),
+                    fileContents.get(1));
+            if (fileContents.size() == 3) {
+                System.out.println("Store Name: " + fileContents.get(2));
+            }
+        } else {
+            System.out.println("Goodbye!");
         }
     }
 }
