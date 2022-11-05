@@ -466,7 +466,7 @@ public class MarketUser implements User{
      * unblocked a user from the blockedList() return array
      * @param username: name of person to unblock
      */
-    public void unblockUser(String username) {
+    public void unblockUser(String username) throws IOException{
         ArrayList<String> lines = new ArrayList<>();
         String blockedFilePath = (this.isSeller)? "Sellers": "Buyers" + this.username + "hasBlocked";
         File blockedFile = new File(blockedFilePath);
