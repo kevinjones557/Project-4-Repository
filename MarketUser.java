@@ -265,7 +265,7 @@ public class MarketUser implements User{
                 Scanner scan = new Scanner(System.in);
                 System.out.println(username + ":");
                 message = scan.nextLine();
-                //write it on the end of each persons file
+                //write it on the end of each person's file
                 messageSenderWriter.println(username + ": " + message);
                 messageReceiveWriter.println(recipient + ": " + message);
                 display.close();
