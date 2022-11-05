@@ -1,4 +1,5 @@
 import java.io.*;
+import java.sql.SQLOutput;
 import java.util.*;
 
 public class MarketUser implements User{
@@ -53,14 +54,18 @@ public class MarketUser implements User{
                             System.out.println("Sorry! This user does not exist!");
                         }
                     } else if (selection == 2) { // if the user wants to see a list of people to contact
-                        String[] allAvailableUsers = getAvailableUsers();
-                        for (int i = 0; i < allAvailableUsers.length; i++) {
-                            System.out.println((i + 1) + ". " + allAvailableUsers[i]);
+                        try {
+                            String[] allAvailableUsers = getAvailableUsers();
+                            for (int i = 0; i < allAvailableUsers.length; i++) {
+                                System.out.println((i + 1) + ". " + allAvailableUsers[i]);
+                            }
+                            System.out.println("Select the store you wish to contact by entering the number by their name");
+                            recipient = allAvailableUsers[scan.nextInt() - 1];
+                            scan.nextLine();
+                            break; // at this point we again know that the variable 'recipient' contains a valid username
+                        } catch (IOException e) {
+                            System.out.println("Sorry, there was an error reading the users, please try again!");
                         }
-                        System.out.println("Select the buyer you wish to contact by entering the number by their name");
-                        recipient = allAvailableUsers[scan.nextInt() - 1];
-                        scan.nextLine();
-                        break; // at this point we again know that the variable 'recipient' contains a valid username
                     } else {
                         proceed = ""; // set proceed to not 'yes' so that we return out of function
                         break;
@@ -93,14 +98,19 @@ public class MarketUser implements User{
                             System.out.println("Sorry! This store does not exist!");
                         }
                     } else if (selection ==2 ) { // if the user wants to see a list of people to contact
-                        String[] allAvailableUsers = getAvailableUsers();
-                        for (int i = 0; i < allAvailableUsers.length; i++) {
-                            System.out.println((i + 1) + ". " + allAvailableUsers[i]);
+
+                        try {
+                            String[] allAvailableUsers = getAvailableUsers();
+                            for (int i = 0; i < allAvailableUsers.length; i++) {
+                                System.out.println((i + 1) + ". " + allAvailableUsers[i]);
+                            }
+                            System.out.println("Select the store you wish to contact by entering the number by their name");
+                            recipient = allAvailableUsers[scan.nextInt() - 1];
+                            scan.nextLine();
+                            break; // at this point we again know that the variable 'recipient' contains a valid username
+                        } catch (IOException e) {
+                            System.out.println("Sorry, there was an error reading the users, please try again!");
                         }
-                        System.out.println("Select the store you wish to contact by entering the number by their name");
-                        recipient = allAvailableUsers[scan.nextInt() - 1];
-                        scan.nextLine();
-                        break; // at this point we again know that the variable 'recipient' contains a valid username
                     } else {
                         proceed = ""; // set proceed to not 'yes' so that we return out of function
                         break;
@@ -143,13 +153,13 @@ public class MarketUser implements User{
      */
     public String[] getAvailableUsers() throws IOException {
         ArrayList<String> available = new ArrayList<>();
-        String buyerOrSeller = (this.isSeller)? "Buyers": "Sellers";
+        String buyerOrSeller = "data/" + ((this.isSeller)? "buyers/": "sellers/");
         //Goes in the right directory
-        File recipientType = new File((this.isSeller)? "Buyers": "Sellers");
+        File recipientType = new File("data/" + ((this.isSeller)? "buyers/": "sellers/"));
         String[] usernames = recipientType.list();
         //Loop through user directories
         for(String userDir : usernames) {
-            File thatUserBlockedFile = new File(buyerOrSeller+"\\" + userDir + "\\" + "hasBlocked");
+            File thatUserBlockedFile = new File(buyerOrSeller+"/" + userDir + "/" + "hasBlocked");
             BufferedReader bfr = new BufferedReader(new FileReader(thatUserBlockedFile));
             String line;
             boolean blocked = false;
@@ -421,7 +431,7 @@ public class MarketUser implements User{
      * @throws IOException
      */
     public boolean blockUser(String username) throws IOException {
-         String blockedFilePath = (this.isSeller)? "Sellers": "Buyers" + this.username + "hasBlocked";
+         String blockedFilePath = "data/" + ((this.isSeller)? "sellers/": "buyers/") + this.username + "/hasBlocked";
          File blockedFile = new File(blockedFilePath);
          BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
          String line;
@@ -448,7 +458,7 @@ public class MarketUser implements User{
      */
     public String[] blockedList() throws IOException{
         ArrayList<String> victims = new ArrayList<>();
-        String blockedFilePath = (this.isSeller)? "Sellers": "Buyers" + this.username + "hasBlocked";
+        String blockedFilePath = "data/" + ((this.isSeller)? "sellers/": "buyers/") + this.username + "/hasBlocked";
         File blockedFile = new File(blockedFilePath);
         BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
         String line;
@@ -468,7 +478,7 @@ public class MarketUser implements User{
      */
     public void unblockUser(String username) throws IOException{
         ArrayList<String> lines = new ArrayList<>();
-        String blockedFilePath = (this.isSeller)? "Sellers": "Buyers" + this.username + "hasBlocked";
+        String blockedFilePath = "data/" + ((this.isSeller)? "sellers/": "buyers/") + this.username + "/hasBlocked";
         File blockedFile = new File(blockedFilePath);
         BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
         String line;
