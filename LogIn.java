@@ -19,7 +19,7 @@ public class LogIn {
     /** Appends an additional line to a given user's file
      * @param user the user whose file is being appended
      * @param toAppend the parameter that is being appended to the file
-     * @return boolean of if the gile was successfully written or not
+     * @return boolean of if the file was successfully written or not
      */
     public static boolean writeFile(String user, String toAppend) {
         try (PrintWriter pw = new PrintWriter(new FileOutputStream("users/" + user, true))){
