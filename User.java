@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 public interface User {
     // private String username (handed to class in constructor)
     // private boolean isSeller (passed to constructor)
@@ -9,7 +11,7 @@ public interface User {
 
     void checkIfMessageExists(String recipient);// check if <username><recipient>.txt exits in directory or not
 
-    String[] getAvailableUsers();/*Return an array of username that this user can message. Buyers can only message
+    String[] getAvailableUsers() throws IOException;/*Return an array of username that this user can message. Buyers can only message
     sellers, sellers can only message buyers, and exclude from the list any users that block this user*/
     void appendMessage(String recipient); // add to both files
 
@@ -17,7 +19,7 @@ public interface User {
 
     void deleteMessage(String recipient); // delete from <username><recipient>.txt somehow figure out which one to delete
 
-    boolean blockUser (String recipient); // check if recipient is seller
+    boolean blockUser (String recipient) throws IOException; // check if recipient is seller
 
 
 }
