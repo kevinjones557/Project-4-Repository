@@ -1,3 +1,5 @@
+import java.io.File;
+import java.sql.SQLOutput;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -6,7 +8,7 @@ public class MarketUser implements User{
     private boolean isSeller;
 
     public static void main(String[] args) {
-        MarketUser mu = new MarketUser("hello",true);
+        MarketUser mu = new MarketUser("testuser",true);
         mu.message();
     }
 
@@ -33,20 +35,24 @@ public class MarketUser implements User{
             if (proceed.equalsIgnoreCase("yes")) { // if the user has selected to message someone...
                 do { // keep prompting for a recipient until they either select a valid recipient, or cancel
                     System.out.println("Enter '1' to search for a buyer, enter '2' to see a list of buyers," +
-                            "or enter any number to cancel");
+                            " or enter any number to cancel:");
+                    selection = null;
                     do {
                         try {
                             selection = scan.nextInt();
+                            scan.nextLine();
                         } catch (InputMismatchException e) {
                             System.out.println("Please enter a valid number:");
+                            scan.nextLine();
                         }
                     } while (selection == null);
-                    scan.nextLine();
                     if (selection == 1) { // if the user wants to search for a buyer, enter this statement
                         System.out.println("Enter the username of a buyer:");
                         recipient = scan.nextLine();
                         if (checkIfRecipientExists(recipient)) {
                             break; // at this point we know that the variable 'recipient' contains a valid username
+                        } else {
+                            System.out.println("Sorry! This user does not exist!");
                         }
                     } else if (selection == 2) { // if the user wants to see a list of people to contact
                         String[] allAvailableUsers = getAvailableUsers();
@@ -68,17 +74,25 @@ public class MarketUser implements User{
             proceed = scan.nextLine();
             if (proceed.equalsIgnoreCase("yes")) { // if the user has selected to message someone...
                 do { // keep prompting for a recipient until they either select a valid recipient, or cancel
-                    System.out.println("Enter '1' to search for a store, enter '2' to see a list of stores," +
-                            "or enter '3' to cancel");
-                    selection = scan.nextInt();
-                    scan.nextLine();
+                    System.out.println("Enter '1' to search for a store, enter '2' to see a list of stores, " +
+                            " or enter any number to cancel:");
+                    selection = null;
+                    do {
+                        try {
+                            selection = scan.nextInt();
+                            scan.nextLine();
+                        } catch (InputMismatchException e) {
+                            System.out.println("Please enter a valid number:");
+                            scan.nextLine();
+                        }
+                    } while (selection == null);
                     if (selection == 1) { // if the user wants to search for a store, enter this statement
                         System.out.println("Enter the name of a store:");
                         recipient = scan.nextLine();
                         if (checkIfRecipientExists(recipient)) {
                             break; // at this point we know that the variable 'recipient' contains a valid username
                         } else {
-                            System.out.println("Sorry! This user does not exist!");
+                            System.out.println("Sorry! This store does not exist!");
                         }
                     } else if (selection ==2 ) { // if the user wants to see a list of people to contact
                         String[] allAvailableUsers = getAvailableUsers();
@@ -101,24 +115,79 @@ public class MarketUser implements User{
         if (!proceed.equalsIgnoreCase("yes")) {
             return;
         } // after this statement we know that String recipient contains a valid value
-        boolean messageAlreadyExists = checkIfMessageExists(recipient);
-
+        checkIfMessageExists(recipient); // this will check if message has already been created and create if not
+        System.out.printf("Connected with %s!\n", recipient);
+        selection = null;
+        System.out.println("Enter '1' to send a message, '2' edit a message, '3' to delete a message" +
+                " or enter any number to cancel:");
+        do {
+            try {
+                selection = scan.nextInt();
+                scan.nextLine();
+            } catch (InputMismatchException e) {
+                System.out.println("Please enter a valid number:");
+                scan.nextLine();
+            }
+        } while (selection == null);
+        if (selection == 1) {
+            appendMessage(recipient);
+        } else if (selection == 2) {
+            editMessage(recipient);
+        } else if (selection == 3) {
+            deleteMessage(recipient);
+        }
+        System.out.println("Thank you for using the messaging system!");
     }
+
     public String[] getAvailableUsers() {
         return null;
     }/*Return an array of username that this user can message. Buyers can only message
     sellers, sellers can only message buyers, and exclude from the list any users that block this user*/
 
-
+    /** Method to see if given recipient actually exists by checking if directory with recipient name exists
+     * @param recipient The username associated with the user directory you wish to find
+     */
     public boolean checkIfRecipientExists(String recipient) { // DESTIN: look through directories and check for name
-        return true;
+        String path = "";
+        if (isSeller) {
+            path = "data/buyers/";
+        } else {
+            path = "data/sellers/";
+        }
+        try {
+            File f = new File(path + recipient);
+            return f.exists();
+        } catch (Exception e) {
+            System.out.println("Error loading file, please try again");
+            return false;
+        }
     }
 
-    public boolean checkIfMessageExists(String recipient) {// check if <username><recipient>.txt exits in directory or not
-        return true;
-    }
-
-    public void makeMessageFiles(String recipient) { // Make both files: <username><recipient>.txt <recipient><username>.txt
+    /** Method to see if conversation has started
+     * Check if <username><recipient>.txt exists because if it exists then <recipient><username>.txt also exists
+     * if nto create both files
+     * @param recipient The username associated with the person the user wishes to measure
+     */
+    public void checkIfMessageExists(String recipient) {// check if <username><recipient>.txt exits in directory or not
+        String path1 = "";
+        String path2 = "";
+        if (isSeller) {
+            path1 = "data/sellers/" + username + "/";
+            path2 = "data/buyers/" + recipient + "/";
+        } else {
+            path1 = "data/buyers/" + username + "/";
+            path2 = "data/sellers/" + recipient + "/";
+        }
+        try {
+            File fUser = new File(path1 + username + recipient + ".txt");
+            boolean didCreate = fUser.createNewFile();
+            if (didCreate) {
+                File fRecipient = new File(path2 + recipient + username + ".txt");
+                fRecipient.createNewFile();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void appendMessage(String recipient) { // add to both files
