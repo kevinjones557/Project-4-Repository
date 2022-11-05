@@ -246,9 +246,15 @@ public class MarketUser implements User{
         String message;
         String printFile;
 
-        //retrieval for exact file path from Destin
-        File senderF = new File(fileSender);
-        File recipientF = new File(fileRecipient);
+        if (isSeller) {
+            fileSender = "data/sellers/" + username + "/";
+            fileRecipient = "data/buyers/" + recipient + "/";
+        } else {
+            fileSender = "data/buyers/" + username + "/";
+            fileRecipient = "data/sellers/" + recipient + "/";
+        }
+        File senderF = new File(fileSender + username + recipient + ".txt");
+        File recipientF = new File(fileRecipient + recipient + username + ".txt");
         if (senderF.exists() && recipientF.exists()) {
             try {
                 //display prior to adding
@@ -295,9 +301,16 @@ public class MarketUser implements User{
         int ind = -1;
         int flag;
 
-        //retrieval for exact file path from Destin
-        File senderF = new File(fileSender);
-        File recipientF = new File(fileRecipient);
+        if (isSeller) {
+            fileSender = "data/sellers/" + username + "/";
+            fileRecipient = "data/buyers/" + recipient + "/";
+        } else {
+            fileSender = "data/buyers/" + username + "/";
+            fileRecipient = "data/sellers/" + recipient + "/";
+        }
+        File senderF = new File(fileSender + username + recipient + ".txt");
+        File recipientF = new File(fileRecipient + recipient + username + ".txt");
+
         if (senderF.exists() && recipientF.exists()) {
             try {
                 //initial display
@@ -373,10 +386,17 @@ public class MarketUser implements User{
         int count = 1;
         int flag;
         int indexOfDelete = -1;
+        
+        if (isSeller) {
+            fileSender = "data/sellers/" + username + "/";
+            fileRecipient = "data/buyers/" + recipient + "/";
+        } else {
+            fileSender = "data/buyers/" + username + "/";
+            fileRecipient = "data/sellers/" + recipient + "/";
+        }
+        File senderF = new File(fileSender + username + recipient + ".txt");
+        File recipientF = new File(fileRecipient + recipient + username + ".txt");
 
-        //retrieval for exact file path from Destin
-        File senderF = new File(fileSender);
-        File recipientF = new File(fileRecipient);
         if (senderF.exists() && recipientF.exists()) {
             try {
                 //display
