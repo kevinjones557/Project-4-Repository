@@ -1,16 +1,17 @@
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /** Handles various file management methods for the program
  * @author Destin Groves
  */
 public class FileManager {
-
     /** Used to find a file directory for a given User. Useful when writing or reading files.
      * @param username The username associated with the user directory you wish to find
      * @return the file directory found associated with the given username.
-     * @exception UserNotFoundException when there is no directory that corresponds with the given username.
+     * Throws a UserNotFoundException when it cannot find the user.
+     * (Yes, this should be an @exception. IntelliJ doesn't understand that now, for some reason)
      */
     public static String getDirectoryFromUsername(String username) throws UserNotFoundException {
         if (Files.exists(Paths.get("data/buyers/"+username))) {
@@ -53,11 +54,13 @@ public class FileManager {
      */
     public static boolean generateDirectoryFromUsername(String username, boolean isSeller) {
         try {
+            Path filePath;
             if (isSeller) {
-                Files.createDirectory(Paths.get("data/sellers/"+username));
+                filePath = Files.createDirectory(Paths.get("data/sellers/" + username));
             } else {
-                Files.createDirectory(Paths.get("data/buyers/"+username));
+                filePath = Files.createDirectory(Paths.get("data/buyers/" + username));
             }
+            Files.createFile(Paths.get(filePath+"/metrics.txt"));
             return true;
         } catch (IOException e) {
             return false;
