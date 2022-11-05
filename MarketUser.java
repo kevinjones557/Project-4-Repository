@@ -138,11 +138,42 @@ public class MarketUser implements User{
         }
         System.out.println("Thank you for using the messaging system!");
     }
-
-    public String[] getAvailableUsers() {
-        return null;
-    }/*Return an array of username that this user can message. Buyers can only message
-    sellers, sellers can only message buyers, and exclude from the list any users that block this user*/
+    /**
+     * Get a list of users that this user can message
+     * @return an array of available people for messaging
+     * @throws IOException
+     */
+    public String[] getAvailableUser() throws IOException {
+        ArrayList<String> available = new ArrayList<>();
+        String buyerOrSeller = (this.isSeller)? "Buyers": "Sellers";
+        //Goes in the right directory
+        File recipientType = new File((this.isSeller)? "Buyers": "Sellers");
+        String[] usernames = recipientType.list();
+        //Loop through user directories
+        for(String userDir : usernames) {
+            File thatUserBlockedFile = new File(buyerOrSeller+"\\" + userDir + "\\" + "hasBlocked");
+            BufferedReader bfr = new BufferedReader(new FileReader(thatUserBlockedFile));
+            String line;
+            boolean blocked = false;
+            //Check the hasBlocked file, if this.username isn't there add the user to available
+            while((line = bfr.readLine())!= null) {
+                if(line.equals(this.username)) {
+                    blocked = true;
+                    break;
+                }
+            }
+            bfr.close();
+            if(!blocked) {
+                available.add(userDir);
+            }
+        }
+        //Just turn ArrayList into array classic 180 stuff
+        String[] availables = new String[available.size()];
+        for(int i = 0; i < availables.length; i++) {
+            availables[i] = available.get(i);
+        }
+        return availables;
+    }
 
     /** Method to see if given recipient actually exists by checking if directory with recipient name exists
      * @param recipient The username associated with the user directory you wish to find
@@ -190,16 +221,271 @@ public class MarketUser implements User{
         }
     }
 
-    public void appendMessage(String recipient) { // add to both files
+    /**
+     * Adds message to both sender and receiver file
+     *
+     * @param recipient
+     *
+     * @Author John Brooks
+     */
+
+    public void appendMessage(String recipient) {
+
+        String fileRecipient = "";
+        String fileSender = "";
+        String message;
+        String printFile;
+
+        //retrieval for exact file path from Destin
+        File senderF = new File(fileSender);
+        File recipientF = new File(fileRecipient);
+        if (senderF.exists() && recipientF.exists()) {
+            try {
+                //display prior to adding
+                BufferedReader display = new BufferedReader(new FileReader(senderF));
+                printFile = display.readLine();
+                while (printFile != null) {
+                    System.out.println(printFile);
+                    printFile = display.readLine();
+                }
+                FileOutputStream fosSend = new FileOutputStream(senderF, true);
+                PrintWriter messageSenderWriter = new PrintWriter(fosSend);
+                FileOutputStream fosReceive = new FileOutputStream(senderF, true);
+                PrintWriter messageReceiveWriter = new PrintWriter(fosReceive);
+                Scanner scan = new Scanner(System.in);
+                System.out.println(username + ":");
+                message = scan.nextLine();
+                //write it on the end of each persons file
+                messageSenderWriter.println(username + ": " + message);
+                messageReceiveWriter.println(recipient + ": " + message);
+                display.close();
+                messageSenderWriter.close();
+                messageReceiveWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    } // add to both files
+
+    /**
+     * Searches file for index that matches one given by the user and changes that line and
+     * writes it back to the file
+     *
+     * @param recipient
+     *
+     * @Author John Brooks
+     */
+    public void editMessage(String recipient) {
+
+        String fileRecipient = "";
+        String fileSender = "";
+        String message;
+        String printFile;
+        int count = 1;
+        int ind = -1;
+        int flag;
+
+        //retrieval for exact file path from Destin
+        File senderF = new File(fileSender);
+        File recipientF = new File(fileRecipient);
+        if (senderF.exists() && recipientF.exists()) {
+            try {
+                //initial display
+                BufferedReader display = new BufferedReader(new FileReader(senderF));
+                printFile = display.readLine();
+                while (printFile != null) {
+                    System.out.println(count + ": " + printFile);
+                    count++;
+                    printFile = display.readLine();
+                }
+                BufferedReader buffSender = new BufferedReader(new FileReader(senderF));
+                FileOutputStream fosSend = new FileOutputStream(senderF, false);
+                PrintWriter messageSenderWriter = new PrintWriter(fosSend);
+                FileOutputStream fosReceive = new FileOutputStream(senderF, false);
+                PrintWriter messageReceiveWriter = new PrintWriter(fosReceive);
+                Scanner scan = new Scanner(System.in);
+                //acquiring index
+                System.out.println("Which index would you like to change?");
+                do {
+                    flag = 0;
+                    try {
+                        ind = Integer.parseInt(scan.nextLine());
+                    } catch (NumberFormatException n) {
+                        flag++;
+                    }
+                    if (flag == 1 || ind < 1 && ind > count)
+                        System.out.println("Your index must be a number and must be available. Try again:");
+                } while (flag == 1 || ind < 1 && ind > count);
+                System.out.println("What would you like the new version to say?");
+                String edit = scan.nextLine();
+                ArrayList<String> readSenderFile = new ArrayList<>();
+                String line = buffSender.readLine();
+                //run through array, add lines, and check throughout if line matches criteria and then change it
+                int count2 = 0;
+                while (line != null) {
+                    if (ind == count2) {
+                        line = edit;
+                    }
+                    readSenderFile.add(username + ": " + line);
+                    line = buffSender.readLine();
+                    count2++;
+                }
+                //write back to files
+                for (int i = 0; i < readSenderFile.size(); i++) {
+                    messageSenderWriter.write(readSenderFile.get(i));
+                    messageReceiveWriter.write(readSenderFile.get(i));
+                }
+                display.close();
+                buffSender.close();
+                messageSenderWriter.close();
+                messageReceiveWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
-    public void editMessage(String recipient) { // somehow figure out which one to edit, edit both files
+    /**
+        * Searches file for index that matches one given by the user to not add it to an arraylist and
+        * therefore not write it to the file
+         *
+        * @param recipient
+         *
+        * @Author John Brooks
+         */
+
+    public void deleteMessage(String recipient) {
+        String fileRecipient = "";
+        String fileSender = "";
+        String message;
+        String printFile;
+        int count = 1;
+        int flag;
+        int indexOfDelete = -1;
+
+        //retrieval for exact file path from Destin
+        File senderF = new File(fileSender);
+        File recipientF = new File(fileRecipient);
+        if (senderF.exists() && recipientF.exists()) {
+            try {
+                //display
+                BufferedReader display = new BufferedReader(new FileReader(senderF));
+                printFile = display.readLine();
+                while (printFile != null) {
+                    System.out.println(count + ": " + printFile);
+                    count++;
+                    printFile = display.readLine();
+                }
+                BufferedReader buffSender = new BufferedReader(new FileReader(senderF));
+                FileOutputStream fosSend = new FileOutputStream(senderF, false);
+                PrintWriter messageSenderWriter = new PrintWriter(fosSend);
+                Scanner scan = new Scanner(System.in);
+                //get index of delete
+                do {
+                    flag = 0;
+                    try {
+                        indexOfDelete = Integer.parseInt(scan.nextLine());
+                    } catch (NumberFormatException n) {
+                        flag++;
+                    }
+                    if (flag == 1 || indexOfDelete < 1 && indexOfDelete > count)
+                        System.out.println("Your index must be a number and must be available. Try again:");
+                } while (flag == 1 || indexOfDelete < 1 && indexOfDelete > count);
+
+                ArrayList<String> readSenderFile = new ArrayList<>();
+                String line = buffSender.readLine();
+                //run through array, add lines, and check throughout if line matches criteria then dont add it
+                int count2 = 1;
+                while (line != null) {
+                    if (!(count2 == indexOfDelete)) {
+                        readSenderFile.add(line);
+                    }
+                    line = buffSender.readLine();
+                    count2++;
+                }
+                for (int i = 0; i < readSenderFile.size(); i++) {
+                    messageSenderWriter.write(readSenderFile.get(i));
+                }
+                display.close();
+                buffSender.close();
+                messageSenderWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    public void deleteMessage(String recipient) { // delete from <username><recipient>.txt somehow figure out which one to delete
+   /**
+     * Block a user if not already blocked
+     * @param username: name of person to block
+     * @return true if already blocked, false if notBlocked
+     * @throws IOException
+     */
+    public boolean blockUser(String username) throws IOException {
+         String blockedFilePath = (this.isSeller)? "Sellers": "Buyers" + this.username + "hasBlocked";
+         File blockedFile = new File(blockedFilePath);
+         BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
+         String line;
+         while((line = bfr.readLine())!= null) {
+             if(line.equals(username)) {
+                 //The user is already blocked
+                 return true;
+             }
+         }
+         bfr.close();
+         //Write the name of the victim to hasBlocked file
+         PrintWriter pw = new PrintWriter(new FileWriter(blockedFile, true));
+         pw.write(username);
+         pw.println();
+         pw.flush();
+         pw.close();
+         return false;
     }
-
-    public boolean blockUser(String recipient) { // check if recipient is seller
-        return true;
+    
+    /**
+     * Return a list of blocked users for this user
+     * @return array of blocked usernames
+     * @throws IOException
+     */
+    public String[] blockedList() throws IOException{
+        ArrayList<String> victims = new ArrayList<>();
+        String blockedFilePath = (this.isSeller)? "Sellers": "Buyers" + this.username + "hasBlocked";
+        File blockedFile = new File(blockedFilePath);
+        BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
+        String line;
+        while((line = bfr.readLine())!= null) {
+            victims.add(line);
+        }
+        String[] blockedList = new String[victims.size()];
+        for(int i = 0; i < victims.size();i++) {
+            blockedList[i] = victims.get(i);
+        }
+        return blockedList;
+    }
+    
+    /**
+     * unblocked a user from the blockedList() return array
+     * @param username: name of person to unblock
+     */
+    public void unblockUser(String username) {
+        ArrayList<String> lines = new ArrayList<>();
+        String blockedFilePath = (this.isSeller)? "Sellers": "Buyers" + this.username + "hasBlocked";
+        File blockedFile = new File(blockedFilePath);
+        BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
+        String line;
+        while((line = bfr.readLine())!= null) {
+            if(!line.equals(username)) {
+                lines.add(line);
+            }
+        }
+        bfr.close();
+        PrintWriter pw = new PrintWriter(new FileWriter(blockedFile, true));
+        for(String l : lines) {
+            pw.write(l);
+            pw.println();
+        }
+        pw.flush();
+        pw.close();
     }
 }

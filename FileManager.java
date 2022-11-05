@@ -22,6 +22,30 @@ public class FileManager {
         }
     }
 
+    /**
+     * Checks if a User with given username has an associated directory, and therefore exists
+     *
+     * @param username The username associated with the user directory you wish to find
+     * @return if the directory exists
+     */
+    public static boolean checkUserExists(String username) {
+        if (Files.exists(Paths.get("data/buyers/" + username))) return true;
+        if (Files.exists(Paths.get("data/sellers/" + username))) return true;
+        return false;
+    }
+    /**
+     * Checks if a User with given username has an associated directory, is a buyer or seller, and therefore exists
+     *
+     * @param username The username associated with the user directory you wish to find
+     * @param isSeller The directory to search for the user within
+     * @return if the directory exists
+     */
+    public static boolean checkUserExists(String username, boolean isSeller) {
+        if (Files.exists(Paths.get("data/buyers/" + username)) & !isSeller) return true;
+        if (Files.exists(Paths.get("data/sellers/" + username)) & isSeller) return true;
+        return false;
+    }
+
     /** Used to generate a directory for new Users.
      * @param username The username of the new User you wish to create a directory for.
      * @param isSeller Determines whether the User is a Seller or a Customer.
