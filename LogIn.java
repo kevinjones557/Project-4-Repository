@@ -8,7 +8,7 @@ public class LogIn {
      * @return boolean of if file was successfully written or not
      */
     public static boolean writeFile(String user) {
-        try (PrintWriter pw = new PrintWriter(new FileOutputStream("users/" + user))){
+        try (PrintWriter pw = new PrintWriter(new FileOutputStream("users/" + user + "/" + user))){
             pw.println(user);
             return (true);
         } catch (Exception e) {
@@ -22,7 +22,7 @@ public class LogIn {
      * @return boolean of if the file was successfully written or not
      */
     public static boolean writeFile(String user, String toAppend) {
-        try (PrintWriter pw = new PrintWriter(new FileOutputStream("users/" + user, true))){
+        try (PrintWriter pw = new PrintWriter(new FileOutputStream("users/" + user + "/" + user, true))){
             pw.println(toAppend);
             return (true);
         } catch (Exception e) {
@@ -34,7 +34,7 @@ public class LogIn {
      * @param user the user whose password is being encrypted
      */
     public static void encryptFile (String user) {
-        try (BufferedReader br = new BufferedReader(new FileReader("users/" + user))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("users/" + user + "/" + user))) {
             String password = "";
             int index = 0;
             String line = br.readLine();
@@ -90,64 +90,70 @@ public class LogIn {
      * @param scan scanner object to capture input
      */
     public static void createUser(String user, Scanner scan) {
-        File f = new File("users/" + user);
-        try {
-            if (!f.createNewFile()) {
-                while (!f.createNewFile()) {
-                    System.out.println("User already exists! Please enter another username.");
-                    user = scan.nextLine();
-                    f = new File("users/" + user);
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("An unknown error occurred!");
-        }
-        boolean fileStatus = writeFile(user);
-        boolean done = false;
-        if (fileStatus) {
+        File dir = new File("users/" + user);
+        if (!dir.exists()) {
+            dir.mkdirs();
+            File f = new File("users/" + user + "/" + user);
             try {
-                while (!done) {
-                    System.out.println("Please enter a password.");
-                    String password = scan.nextLine();
-                    fileStatus = writeFile(user, password);
-                    if (!fileStatus) {
-                        break;
+                if (!f.createNewFile()) {
+                    while (!f.createNewFile()) {
+                        System.out.println("User already exists! Please enter another username.");
+                        user = scan.nextLine();
+                        f = new File("users/" + user + "/" + user);
                     }
-                    encryptFile(user);
-                    done = true;
-                }
-                done = false;
-                System.out.println("Are you a seller? Please enter 'yes' or 'no.'");
-                while (!done) {
-                    String isSeller = scan.nextLine();
-                    while (!isSeller.equalsIgnoreCase("yes") &&
-                            !isSeller.equalsIgnoreCase("no")) {
-                        System.out.println("Please enter 'yes' or 'no'!");
-                        isSeller = scan.nextLine();
-                    }
-                    if (isSeller.equalsIgnoreCase("yes")) {
-                        isSeller = "true";
-                        System.out.println("Please enter your store name.");
-                        String storeName = scan.nextLine();
-                        fileStatus = writeFile(user, isSeller);
-                        fileStatus = writeFile(user, storeName);
-                    } else {
-                        isSeller = "false";
-                        fileStatus = writeFile(user, isSeller);
-                    }
-                    if (!fileStatus) {
-                        break;
-                    }
-                    done = true;
                 }
             } catch (Exception e) {
-                System.out.println("Please enter a valid String input!");
+                System.out.println("An unknown error occurred!");
             }
+            boolean fileStatus = writeFile(user);
+            boolean done = false;
+            if (fileStatus) {
+                try {
+                    while (!done) {
+                        System.out.println("Please enter a password.");
+                        String password = scan.nextLine();
+                        fileStatus = writeFile(user, password);
+                        if (!fileStatus) {
+                            break;
+                        }
+                        encryptFile(user);
+                        done = true;
+                    }
+                    done = false;
+                    System.out.println("Are you a seller? Please enter 'yes' or 'no.'");
+                    while (!done) {
+                        String isSeller = scan.nextLine();
+                        while (!isSeller.equalsIgnoreCase("yes") &&
+                                !isSeller.equalsIgnoreCase("no")) {
+                            System.out.println("Please enter 'yes' or 'no'!");
+                            isSeller = scan.nextLine();
+                        }
+                        if (isSeller.equalsIgnoreCase("yes")) {
+                            isSeller = "true";
+                            System.out.println("Please enter your store name.");
+                            String storeName = scan.nextLine();
+                            fileStatus = writeFile(user, isSeller);
+                            fileStatus = writeFile(user, storeName);
+                        } else {
+                            isSeller = "false";
+                            fileStatus = writeFile(user, isSeller);
+                        }
+                        if (!fileStatus) {
+                            break;
+                        }
+                        done = true;
+                    }
+                } catch (Exception e) {
+                    System.out.println("Please enter a valid String input!");
+                }
+            }
+            if (!fileStatus) {
+                System.out.println("An unknown error occurred!");
+            }
+            System.out.printf("Account created! Welcome, %s!%n", user);
+        } else {
+            dir.delete();
         }
-        if (!fileStatus) {
-            System.out.println("An unknown error occurred!");
-        }
-        System.out.printf("Account created! Welcome, %s!%n", user);
     }
 
     /** Reads the password of the file for comparison
@@ -155,7 +161,7 @@ public class LogIn {
      * @return String of the encrypted password
      */
     public static String readPassword (String user) {
-        try (BufferedReader br = new BufferedReader(new FileReader("users/" + user))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("users/" + user + "/" + user))) {
             String password = "";
             int index = 0;
             String line = br.readLine();
@@ -203,7 +209,7 @@ public class LogIn {
             while (!done) {
                 System.out.println("Please enter your username.");
                 user = scan.nextLine();
-                File F = new File("users/" + user);
+                File F = new File("users/" + user + "/" + user);
                 try {
                     if (F.createNewFile()) {
                         F.delete();
@@ -296,7 +302,7 @@ public class LogIn {
         String user = userInteraction();
         if (user != null) {
             ArrayList<String> fileContents = new ArrayList();
-            try (BufferedReader bfr = new BufferedReader(new FileReader("users/" + user))) {
+            try (BufferedReader bfr = new BufferedReader(new FileReader("users/" + user + "/" + user))) {
                 int index = 0;
                 String line = bfr.readLine();
                 while (line != null) {
