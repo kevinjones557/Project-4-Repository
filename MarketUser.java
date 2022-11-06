@@ -315,11 +315,12 @@ public class MarketUser implements User{
                 FileOutputStream fosReceive = new FileOutputStream(recipientF, true);
                 PrintWriter messageReceiveWriter = new PrintWriter(fosReceive);
                 Scanner scan = new Scanner(System.in);
-                System.out.print(username + ": ");
+                System.out.print(username + "- ");
                 message = scan.nextLine();
                 //write it on the end of each person's file
-                messageSenderWriter.println(username + ": " + message);
-                messageReceiveWriter.println(username + ": " + message);
+                String timeStamp = new SimpleDateFormat("MM:dd:HH:mm:ss").format(new java.util.Date());
+                messageSenderWriter.println(username + " " + timeStamp + "- " + message);
+                messageReceiveWriter.println(username + " " + timeStamp + "- " + message);
                 display.close();
                 messageSenderWriter.close();
                 messageReceiveWriter.close();
@@ -343,7 +344,7 @@ public class MarketUser implements User{
         String fileSender = "";
         String message;
         String printFile;
-        int count = 1;
+        int count = 0;
         int ind = -1;
         int flag;
 
@@ -363,52 +364,77 @@ public class MarketUser implements User{
                 BufferedReader display = new BufferedReader(new FileReader(senderF));
                 printFile = display.readLine();
                 while (printFile != null) {
-                    System.out.println(count + ": " + printFile);
                     count++;
+                    System.out.println(count + ": " + printFile);
                     printFile = display.readLine();
                 }
-                BufferedReader buffSender = new BufferedReader(new FileReader(senderF));
-                FileOutputStream fosSend = new FileOutputStream(senderF, false);
-                PrintWriter messageSenderWriter = new PrintWriter(fosSend);
-                FileOutputStream fosReceive = new FileOutputStream(recipientF, false);
-                PrintWriter messageReceiveWriter = new PrintWriter(fosReceive);
-                Scanner scan = new Scanner(System.in);
-                //acquiring index
-                System.out.println("Which index would you like to change?");
-                do {
-                    flag = 0;
-                    try {
-                        ind = Integer.parseInt(scan.nextLine());
-                    } catch (NumberFormatException n) {
-                        flag++;
+                if (count > 0) {
+                    BufferedReader buffSender = new BufferedReader(new FileReader(senderF));
+                    BufferedReader buffReceiver = new BufferedReader(new FileReader(recipientF));
+                    FileOutputStream fosSend = new FileOutputStream(senderF, false);
+                    PrintWriter messageSenderWriter = new PrintWriter(fosSend);
+                    FileOutputStream fosReceive = new FileOutputStream(recipientF, false);
+                    PrintWriter messageReceiveWriter = new PrintWriter(fosReceive);
+                    Scanner scan = new Scanner(System.in);
+                    //acquiring index
+                    System.out.println("Which index would you like to change?");
+                    do {
+                        flag = 0;
+                        try {
+                            ind = Integer.parseInt(scan.nextLine());
+                        } catch (NumberFormatException n) {
+                            flag++;
+                        }
+                        if (flag == 1 || (ind < 1 || ind > count))
+                            System.out.println("Your index must be a number and must be available. Try again:");
+                    } while (flag == 1 || (ind < 1 || ind > count));
+                    System.out.println("What would you like the new version to say?");
+                    String edit = scan.nextLine();
+                    ArrayList<String> readSenderFile = new ArrayList<>();
+                    ArrayList<String> readReceiverFile = new ArrayList<>();
+                    String messageToChange = "";
+                    String line1 = buffSender.readLine();
+                    while (line1 != null) {
+                        readSenderFile.add(line1);
+                        line1 = buffSender.readLine();
                     }
-                    if (flag == 1 || (ind < 1 || ind > count))
-                        System.out.println("Your index must be a number and must be available. Try again:");
-                } while (flag == 1 || (ind < 1 || ind > count));
-                System.out.println("What would you like the new version to say?");
-                String edit = scan.nextLine();
-                ArrayList<String> readSenderFile = new ArrayList<>();
-                ArrayList<String> readReceiverFile = new ArrayList<>();
-                String line = buffSender.readLine();
-                //run through array, add lines, and check throughout if line matches criteria and then change it
-                int count2 = 0;
-                while (line != null) {
-                    if (ind - 1 == count2) {
-                        line = edit;
+                    String line2 = buffReceiver.readLine();
+                    while (line2 != null) {
+                        readReceiverFile.add(line2);
+                        line2 = buffReceiver.readLine();
                     }
-                    readSenderFile.add(username + ": " + line);
-                    line = buffSender.readLine();
-                    count2++;
-                }
-                //write back to files
-                for (int i = 0; i < readSenderFile.size(); i++) {
-                    messageSenderWriter.write(readSenderFile.get(i));
-                    messageReceiveWriter.write(readSenderFile.get(i));
-                }
-                display.close();
-                buffSender.close();
-                messageSenderWriter.close();
-                messageReceiveWriter.close();
+                    // runs through senders file to find index and change to edit
+                    String extractNameAndTime;
+                    for (int i = 0; i < readSenderFile.size(); i++) {
+                        if (i == ind - 1) {
+                            extractNameAndTime = readSenderFile.get(i).substring(0, readSenderFile.get(i).indexOf("-") + 1);
+                            // this stores the message prior to editing so it can be found in the receivers file
+                            messageToChange = readSenderFile.get(i);
+                            edit = extractNameAndTime + " " + edit;
+                            readSenderFile.set(i, edit);
+                        }
+                    }
+                    // runs through the receivers file and finds the message to change, and changes it
+                    for (int i = 0; i < readReceiverFile.size(); i++) {
+                        if (readReceiverFile.get(i) == messageToChange) {
+                            readReceiverFile.set(i, edit);
+                        }
+                    }
+
+                    //write back to files
+                    for (int i = 0; i < readSenderFile.size(); i++) {
+                        messageSenderWriter.write(readSenderFile.get(i));
+                    }
+                    for (int i = 0; i < readReceiverFile.size(); i++) {
+                        messageReceiveWriter.write(readReceiverFile.get(i));
+                    }
+                    display.close();
+                    buffSender.close();
+                    buffReceiver.close();
+                    messageSenderWriter.close();
+                    messageReceiveWriter.close();
+                } else
+                    System.out.println("There is nothing in this file to edit.");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -430,7 +456,7 @@ public class MarketUser implements User{
         String fileSender = "";
         String message;
         String printFile;
-        int count = 1;
+        int count = 0;
         int flag;
         int indexOfDelete = -1;
         
@@ -450,43 +476,46 @@ public class MarketUser implements User{
                 BufferedReader display = new BufferedReader(new FileReader(senderF));
                 printFile = display.readLine();
                 while (printFile != null) {
-                    System.out.println(count + ": " + printFile);
                     count++;
+                    System.out.println(count + ": " + printFile);
                     printFile = display.readLine();
                 }
-                BufferedReader buffSender = new BufferedReader(new FileReader(senderF));
-                FileOutputStream fosSend = new FileOutputStream(senderF, false);
-                PrintWriter messageSenderWriter = new PrintWriter(fosSend);
-                Scanner scan = new Scanner(System.in);
-                //get index of delete
-                do {
-                    flag = 0;
-                    try {
-                        indexOfDelete = Integer.parseInt(scan.nextLine());
-                    } catch (NumberFormatException n) {
-                        flag++;
-                    }
-                    if (flag == 1 || (indexOfDelete < 1 || indexOfDelete > count))
-                        System.out.println("Your index must be a number and must be available. Try again:");
-                } while (flag == 1 || (indexOfDelete < 1 || indexOfDelete > count));
+                if (count > 0) {
+                    BufferedReader buffSender = new BufferedReader(new FileReader(senderF));
+                    FileOutputStream fosSend = new FileOutputStream(senderF, false);
+                    PrintWriter messageSenderWriter = new PrintWriter(fosSend);
+                    Scanner scan = new Scanner(System.in);
+                    //get index of delete
+                    do {
+                        flag = 0;
+                        try {
+                            indexOfDelete = Integer.parseInt(scan.nextLine());
+                        } catch (NumberFormatException n) {
+                            flag++;
+                        }
+                        if (flag == 1 || (indexOfDelete < 1 || indexOfDelete > count))
+                            System.out.println("Your index must be a number and must be available. Try again:");
+                    } while (flag == 1 || (indexOfDelete < 1 || indexOfDelete > count));
 
-                ArrayList<String> readSenderFile = new ArrayList<>();
-                String line = buffSender.readLine();
-                //run through array, add lines, and check throughout if line matches criteria then dont add it
-                int count2 = 1;
-                while (line != null) {
-                    if (!(count2 == indexOfDelete)) {
-                        readSenderFile.add(line);
+                    ArrayList<String> readSenderFile = new ArrayList<>();
+                    String line = buffSender.readLine();
+                    //run through array, add lines, and check throughout if line matches indexOfDelete then dont add it
+                    int count2 = 0;
+                    while (line != null) {
+                        count2++;
+                        if (count2 != indexOfDelete) {
+                            readSenderFile.add(line);
+                        }
+                        line = buffSender.readLine();
                     }
-                    line = buffSender.readLine();
-                    count2++;
-                }
-                for (int i = 0; i < readSenderFile.size(); i++) {
-                    messageSenderWriter.write(readSenderFile.get(i));
-                }
-                display.close();
-                buffSender.close();
-                messageSenderWriter.close();
+                    for (int i = 0; i < readSenderFile.size(); i++) {
+                        messageSenderWriter.write(readSenderFile.get(i));
+                    }
+                    display.close();
+                    buffSender.close();
+                    messageSenderWriter.close();
+                } else
+                    System.out.println("There is nothing in this file to delete.");
             } catch (IOException e) {
                 e.printStackTrace();
             }
