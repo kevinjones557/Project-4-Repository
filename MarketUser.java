@@ -29,12 +29,12 @@ public class MarketUser implements User{
         String proceed;
         Scanner scan = new Scanner(System.in);
         if (isSeller) { // if it is a seller, enter this statement
-            System.out.println("Do you wish to contact a potential buyer? (Yes/No)");
+            System.out.println("Do you wish to contact, block, or unblock a potential buyer? (Yes/No)");
             proceed = scan.nextLine();
             if (proceed.equalsIgnoreCase("yes")) { // if the user has selected to message someone...
                 do { // keep prompting for a recipient until they either select a valid recipient, or cancel
                     System.out.println("Enter '1' to search for a buyer, enter '2' to see a list of buyers," +
-                            " or enter any number to cancel:");
+                            "or enter any number to cancel:");
                     selection = null;
                     do {
                         try {
@@ -59,10 +59,26 @@ public class MarketUser implements User{
                             for (int i = 0; i < allAvailableUsers.length; i++) {
                                 System.out.println((i + 1) + ". " + allAvailableUsers[i]);
                             }
-                            System.out.println("Select the store you wish to contact by entering the number by their name");
-                            recipient = allAvailableUsers[scan.nextInt() - 1];
-                            scan.nextLine();
-                            break; // at this point we again know that the variable 'recipient' contains a valid username
+                            System.out.println(allAvailableUsers.length + 1 + ": Cancel");
+                            System.out.println("Make a selection:");
+                            selection = null;
+                            do {
+                                try {
+                                    selection = scan.nextInt();
+                                    scan.nextLine();
+                                    if ((selection < 1 || selection > allAvailableUsers.length + 1)) {
+                                        System.out.println("Please enter a valid number:");
+                                        selection = null;
+                                    }
+                                } catch (InputMismatchException e) {
+                                    System.out.println("Please enter a valid number:");
+                                    scan.nextLine();
+                                }
+                            } while (selection == null);
+                            if (selection != allAvailableUsers.length + 1) {
+                                recipient = allAvailableUsers[selection - 1];
+                                break; // at this point we again know that the variable 'recipient' contains a valid username
+                            }
                         } catch (IOException e) {
                             e.printStackTrace();
                             System.out.println("Sorry, there was an error reading the users, please try again!");
@@ -74,12 +90,12 @@ public class MarketUser implements User{
                 } while(true);
             }
         } else { // lots of repeated code here, but I think needed because of slightly different print statements
-            System.out.println("Do you wish to contact a store? (Yes/No)");
+            System.out.println("Do you wish to contact, block, or unblock a store? (Yes/No)");
             proceed = scan.nextLine();
             if (proceed.equalsIgnoreCase("yes")) { // if the user has selected to message someone...
                 do { // keep prompting for a recipient until they either select a valid recipient, or cancel
                     System.out.println("Enter '1' to search for a store, enter '2' to see a list of stores, " +
-                            " or enter any number to cancel:");
+                            "or enter any number to cancel:");
                     selection = null;
                     do {
                         try {
@@ -98,17 +114,33 @@ public class MarketUser implements User{
                         } else {
                             System.out.println("Sorry! This store does not exist!");
                         }
-                    } else if (selection ==2 ) { // if the user wants to see a list of people to contact
+                    } else if (selection == 2) { // if the user wants to see a list of people to contact
 
                         try {
                             String[] allAvailableUsers = getAvailableUsers();
                             for (int i = 0; i < allAvailableUsers.length; i++) {
                                 System.out.println((i + 1) + ". " + allAvailableUsers[i]);
                             }
-                            System.out.println("Select the store you wish to contact by entering the number by their name");
-                            recipient = allAvailableUsers[scan.nextInt() - 1];
-                            scan.nextLine();
-                            break; // at this point we again know that the variable 'recipient' contains a valid username
+                            System.out.println(allAvailableUsers.length + 1 + ": Cancel");
+                            System.out.println("Make a selection:");
+                            selection = null;
+                            do {
+                                try {
+                                    selection = scan.nextInt();
+                                    scan.nextLine();
+                                    if ((selection < 1 || selection > allAvailableUsers.length + 1)) {
+                                        System.out.println("Please enter a valid number:");
+                                        selection = null;
+                                    }
+                                } catch (InputMismatchException e) {
+                                    System.out.println("Please enter a valid number:");
+                                    scan.nextLine();
+                                }
+                            } while (selection == null);
+                            if (selection != allAvailableUsers.length + 1) {
+                                recipient = allAvailableUsers[selection - 1];
+                                break; // at this point we again know that the variable 'recipient' contains a valid username
+                            }
                         } catch (IOException e) {
                             e.printStackTrace();
                             System.out.println("Sorry, there was an error reading the users, please try again!");
@@ -120,34 +152,48 @@ public class MarketUser implements User{
                 } while(true);
             }
         }
+        System.out.println("here");
         /* at this point in program one of two things has happened: Either the String recipient contains a valid
         username, or the user said "No" to wanting to send message */
         if (!proceed.equalsIgnoreCase("yes")) {
             return;
         } // after this statement we know that String recipient contains a valid value
         checkIfMessageExists(recipient); // this will check if message has already been created and create if not
-        System.out.printf("Connected with %s!\n", recipient);
+        System.out.printf("Connected with %s!\nPlease select an option:\n", recipient);
         selection = null;
-        System.out.println("Enter '1' to send a message, '2' edit a message, '3' to delete a message" +
-                " or enter any number to cancel:");
+        System.out.println("1. Send a message\n" +
+                "2. Edit a message\n" +
+                "3. Delete a message\n" +
+                "4. Block this " + ((this.isSeller)? "buyer\n" : "store\n") +
+                "5. Unblock this " + ((this.isSeller)? "buyer\n" : "store\n") +
+                "6. Import a .txt file\n" +
+                "7. Export message as a .csv file\n" +
+                "8. Cancel");
+        selection = -1;
         do {
             try {
+                if (selection != -1) {
+                    System.out.println("Please enter a valid number:");
+                }
                 selection = scan.nextInt();
                 scan.nextLine();
             } catch (InputMismatchException e) {
                 System.out.println("Please enter a valid number:");
                 scan.nextLine();
             }
-        } while (selection == null);
-        if (selection == 1) {
-            appendMessage(recipient);
-        } else if (selection == 2) {
-            editMessage(recipient);
-        } else if (selection == 3) {
-            deleteMessage(recipient);
+        } while ((selection < 1 || selection > 8));
+        switch (selection) {
+            case 1 -> appendMessage(recipient);
+            case 2 -> editMessage(recipient);
+            case 3 -> deleteMessage(recipient);
+            case 4 -> blockUser(recipient);
+            case 5 -> unblockUser(recipient);
+            // TODO case 6 -> implement;
+            // TODO case 7 -> implement;
         }
         System.out.println("Thank you for using the messaging system!");
     }
+
     /**
      * Get a list of users that this user can message
      * @return an array of available people for messaging
@@ -266,14 +312,14 @@ public class MarketUser implements User{
                 }
                 FileOutputStream fosSend = new FileOutputStream(senderF, true);
                 PrintWriter messageSenderWriter = new PrintWriter(fosSend);
-                FileOutputStream fosReceive = new FileOutputStream(senderF, true);
+                FileOutputStream fosReceive = new FileOutputStream(recipientF, true);
                 PrintWriter messageReceiveWriter = new PrintWriter(fosReceive);
                 Scanner scan = new Scanner(System.in);
-                System.out.println(username + ":");
+                System.out.print(username + ": ");
                 message = scan.nextLine();
-                //write it on the end of each persons file
+                //write it on the end of each person's file
                 messageSenderWriter.println(username + ": " + message);
-                messageReceiveWriter.println(recipient + ": " + message);
+                messageReceiveWriter.println(username + ": " + message);
                 display.close();
                 messageSenderWriter.close();
                 messageReceiveWriter.close();
@@ -324,7 +370,7 @@ public class MarketUser implements User{
                 BufferedReader buffSender = new BufferedReader(new FileReader(senderF));
                 FileOutputStream fosSend = new FileOutputStream(senderF, false);
                 PrintWriter messageSenderWriter = new PrintWriter(fosSend);
-                FileOutputStream fosReceive = new FileOutputStream(senderF, false);
+                FileOutputStream fosReceive = new FileOutputStream(recipientF, false);
                 PrintWriter messageReceiveWriter = new PrintWriter(fosReceive);
                 Scanner scan = new Scanner(System.in);
                 //acquiring index
@@ -336,17 +382,18 @@ public class MarketUser implements User{
                     } catch (NumberFormatException n) {
                         flag++;
                     }
-                    if (flag == 1 || ind < 1 && ind > count)
+                    if (flag == 1 || (ind < 1 || ind > count))
                         System.out.println("Your index must be a number and must be available. Try again:");
-                } while (flag == 1 || ind < 1 && ind > count);
+                } while (flag == 1 || (ind < 1 || ind > count));
                 System.out.println("What would you like the new version to say?");
                 String edit = scan.nextLine();
                 ArrayList<String> readSenderFile = new ArrayList<>();
+                ArrayList<String> readReceiverFile = new ArrayList<>();
                 String line = buffSender.readLine();
                 //run through array, add lines, and check throughout if line matches criteria and then change it
                 int count2 = 0;
                 while (line != null) {
-                    if (ind == count2) {
+                    if (ind - 1 == count2) {
                         line = edit;
                     }
                     readSenderFile.add(username + ": " + line);
@@ -419,9 +466,9 @@ public class MarketUser implements User{
                     } catch (NumberFormatException n) {
                         flag++;
                     }
-                    if (flag == 1 || indexOfDelete < 1 && indexOfDelete > count)
+                    if (flag == 1 || (indexOfDelete < 1 || indexOfDelete > count))
                         System.out.println("Your index must be a number and must be available. Try again:");
-                } while (flag == 1 || indexOfDelete < 1 && indexOfDelete > count);
+                } while (flag == 1 || (indexOfDelete < 1 || indexOfDelete > count));
 
                 ArrayList<String> readSenderFile = new ArrayList<>();
                 String line = buffSender.readLine();
@@ -452,25 +499,30 @@ public class MarketUser implements User{
      * @return true if already blocked, false if notBlocked
      * @throws IOException
      */
-    public boolean blockUser(String username) throws IOException {
-         String blockedFilePath = "data/" + ((this.isSeller)? "sellers/": "buyers/") + this.username + "/hasBlocked";
-         File blockedFile = new File(blockedFilePath);
-         BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
-         String line;
-         while((line = bfr.readLine())!= null) {
-             if(line.equals(username)) {
-                 //The user is already blocked
-                 return true;
-             }
-         }
-         bfr.close();
-         //Write the name of the victim to hasBlocked file
-         PrintWriter pw = new PrintWriter(new FileWriter(blockedFile, true));
-         pw.write(username);
-         pw.println();
-         pw.flush();
-         pw.close();
-         return false;
+    public boolean blockUser(String username) {
+        try {
+            String blockedFilePath = "data/" + ((this.isSeller) ? "sellers/" : "buyers/") + this.username + "/hasBlocked";
+            File blockedFile = new File(blockedFilePath);
+            BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
+            String line;
+            while ((line = bfr.readLine()) != null) {
+                if (line.equals(username)) {
+                    //The user is already blocked
+                    return true;
+                }
+            }
+            bfr.close();
+            //Write the name of the victim to hasBlocked file
+            PrintWriter pw = new PrintWriter(new FileWriter(blockedFile, true));
+            pw.write(username);
+            pw.println();
+            pw.flush();
+            pw.close();
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
     
     /**
@@ -498,24 +550,28 @@ public class MarketUser implements User{
      * unblocked a user from the blockedList() return array
      * @param username: name of person to unblock
      */
-    public void unblockUser(String username) throws IOException{
-        ArrayList<String> lines = new ArrayList<>();
-        String blockedFilePath = "data/" + ((this.isSeller)? "sellers/": "buyers/") + this.username + "/hasBlocked";
-        File blockedFile = new File(blockedFilePath);
-        BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
-        String line;
-        while((line = bfr.readLine())!= null) {
-            if(!line.equals(username)) {
-                lines.add(line);
+    public void unblockUser(String username) {
+        try {
+            ArrayList<String> lines = new ArrayList<>();
+            String blockedFilePath = "data/" + ((this.isSeller) ? "sellers/" : "buyers/") + this.username + "/hasBlocked";
+            File blockedFile = new File(blockedFilePath);
+            BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
+            String line;
+            while ((line = bfr.readLine()) != null) {
+                if (!line.equals(username)) {
+                    lines.add(line);
+                }
             }
+            bfr.close();
+            PrintWriter pw = new PrintWriter(new FileWriter(blockedFile, true));
+            for (String l : lines) {
+                pw.write(l);
+                pw.println();
+            }
+            pw.flush();
+            pw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        bfr.close();
-        PrintWriter pw = new PrintWriter(new FileWriter(blockedFile, true));
-        for(String l : lines) {
-            pw.write(l);
-            pw.println();
-        }
-        pw.flush();
-        pw.close();
     }
 }
