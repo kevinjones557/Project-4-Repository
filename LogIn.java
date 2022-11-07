@@ -3,26 +3,31 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class LogIn {
-    /** Writes user's username to a file
+    /**
+     * Writes user's username to a file
+     *
      * @param user String of the user's username
      * @return boolean of if file was successfully written or not
      */
     public static boolean writeFile(String user) {
-        try (PrintWriter pw = new PrintWriter(new FileOutputStream("users/" + user))){
+        try (PrintWriter pw = new PrintWriter(new FileOutputStream("users/" + user + "/" + user))) {
             pw.println(user);
             return (true);
         } catch (Exception e) {
+            e.printStackTrace();
             return (false);
         }
     }
 
-    /** Appends an additional line to a given user's file
-     * @param user the user whose file is being appended
+    /**
+     * Appends an additional line to a given user's file
+     *
+     * @param user     the user whose file is being appended
      * @param toAppend the parameter that is being appended to the file
      * @return boolean of if the file was successfully written or not
      */
     public static boolean writeFile(String user, String toAppend) {
-        try (PrintWriter pw = new PrintWriter(new FileOutputStream("users/" + user, true))){
+        try (PrintWriter pw = new PrintWriter(new FileOutputStream("users/" + user + "/" + user, true))) {
             pw.println(toAppend);
             return (true);
         } catch (Exception e) {
@@ -30,11 +35,13 @@ public class LogIn {
         }
     }
 
-    /** Encrypts the password of the user file when an account is created
+    /**
+     * Encrypts the password of the user file when an account is created
+     *
      * @param user the user whose password is being encrypted
      */
-    public static void encryptFile (String user) {
-        try (BufferedReader br = new BufferedReader(new FileReader("users/" + user))) {
+    public static void encryptFile(String user) {
+        try (BufferedReader br = new BufferedReader(new FileReader("users/" + user + "/" + user))) {
             String password = "";
             int index = 0;
             String line = br.readLine();
@@ -65,11 +72,13 @@ public class LogIn {
         }
     }
 
-    /** Takes a password input by a user attempting to log in and uses the key to encrypt it for comparison
+    /**
+     * Takes a password input by a user attempting to log in and uses the key to encrypt it for comparison
+     *
      * @param input the password being encrypted
      * @return String of the encrypted password
      */
-    public static String encrypt (String input) {
+    public static String encrypt(String input) {
         String finalInput = "";
         char[] inputArray = input.toCharArray();
         for (int i = 0; i < inputArray.length; i++) {
@@ -85,22 +94,33 @@ public class LogIn {
         return (finalInput);
     }
 
-    /** Creates the file for a user only if it doesn't already exist
+    /**
+     * Creates the file and directory for a user only if the account doesn't already exist
+     *
      * @param user the user whose file is being created
      * @param scan scanner object to capture input
      */
     public static void createUser(String user, Scanner scan) {
-        File f = new File("users/" + user);
-        try {
-            if (!f.createNewFile()) {
-                while (!f.createNewFile()) {
-                    System.out.println("User already exists! Please enter another username.");
-                    user = scan.nextLine();
-                    f = new File("users/" + user);
+        File f;
+        File dir = new File("users/" + user);
+        if (!dir.exists()) {
+            dir.mkdirs();
+            f = new File("users/" + user + "/" + user);
+        } else {
+            try {
+                if (!dir.createNewFile()) {
+                    while (!dir.createNewFile()) {
+                        System.out.println("User already exists! Please enter another username.");
+                        user = scan.nextLine();
+                        dir = new File("users/" + user);
+                    }
                 }
+                dir.mkdirs();
+                f = new File("users/" + user + "/" + user);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("An unknown error occurred line 116!");
             }
-        } catch (Exception e) {
-            System.out.println("An unknown error occurred!");
         }
         boolean fileStatus = writeFile(user);
         boolean done = false;
@@ -150,12 +170,14 @@ public class LogIn {
         System.out.printf("Account created! Welcome, %s!%n", user);
     }
 
-    /** Reads the password of the file for comparison
+    /**
+     * Reads the password of the file for comparison
+     *
      * @param user the user whose password is being read
      * @return String of the encrypted password
      */
-    public static String readPassword (String user) {
-        try (BufferedReader br = new BufferedReader(new FileReader("users/" + user))) {
+    public static String readPassword(String user) {
+        try (BufferedReader br = new BufferedReader(new FileReader("users/" + user + "/" + user))) {
             String password = "";
             int index = 0;
             String line = br.readLine();
@@ -173,11 +195,13 @@ public class LogIn {
         return (null);
     }
 
-    /** Allows users to log in OR calls methods above and builds a file of the following format for a new user:
-     *         username
-     *         password (encrypted)
-     *         isSeller (true or false)
-     *         storeName (included ONLY is user isSeller)
+    /**
+     * Allows users to log in OR calls methods above and builds a file of the following format for a new user:
+     * username
+     * password (encrypted)
+     * isSeller (true or false)
+     * storeName (included ONLY is user isSeller)
+     *
      * @return String of the user's name
      */
     public static String userInteraction() {
@@ -203,7 +227,7 @@ public class LogIn {
             while (!done) {
                 System.out.println("Please enter your username.");
                 user = scan.nextLine();
-                File F = new File("users/" + user);
+                File F = new File("users/" + user + "/" + user);
                 try {
                     if (F.createNewFile()) {
                         F.delete();
@@ -286,17 +310,19 @@ public class LogIn {
                 }
             }
         }
-        return(null);
+        return (null);
     }
 
-    /** Runs all LogIn methods to either create a user or log one in; afterwards, creates String ArrayList of user information
+    /**
+     * Runs all LogIn methods to either create a user or log one in; afterwards, creates String ArrayList of user information
+     *
      * @param args
      */
     public static void main(String[] args) {
         String user = userInteraction();
         if (user != null) {
             ArrayList<String> fileContents = new ArrayList();
-            try (BufferedReader bfr = new BufferedReader(new FileReader("users/" + user))) {
+            try (BufferedReader bfr = new BufferedReader(new FileReader("users/" + user + "/" + user))) {
                 int index = 0;
                 String line = bfr.readLine();
                 while (line != null) {
