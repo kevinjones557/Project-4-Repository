@@ -325,7 +325,7 @@ public class MarketUser implements User{
                 System.out.print(username + "- ");
                 message = scan.nextLine();
                 //write it on the end of each person's file
-                String timeStamp = new SimpleDateFormat("MM:dd:HH:mm:ss").format(new java.util.Date());
+                String timeStamp = new SimpleDateFormat("MM/dd HH:mm:ss").format(new java.util.Date());
                 messageSenderWriter.println(username + " " + timeStamp + "- " + message);
                 messageReceiveWriter.println(username + " " + timeStamp + "- " + message);
                 display.close();
@@ -365,19 +365,29 @@ public class MarketUser implements User{
         File senderF = new File(fileSender + username + recipient + ".txt");
         File recipientF = new File(fileRecipient + recipient + username + ".txt");
 
+        ArrayList<String> readSenderFile = new ArrayList<>();
+        ArrayList<String> readReceiverFile = new ArrayList<>();
+
         if (senderF.exists() && recipientF.exists()) {
             try {
                 //initial display
                 BufferedReader display = new BufferedReader(new FileReader(senderF));
+                BufferedReader buffReceiver = new BufferedReader(new FileReader(recipientF));
                 printFile = display.readLine();
                 while (printFile != null) {
                     count++;
+                    readSenderFile.add(printFile);
                     System.out.println(count + ": " + printFile);
                     printFile = display.readLine();
                 }
+
+                String line2 = buffReceiver.readLine();
+                while (line2 != null) {
+                    readReceiverFile.add(line2);
+                    line2 = buffReceiver.readLine();
+                }
+
                 if (count > 0) {
-                    BufferedReader buffSender = new BufferedReader(new FileReader(senderF));
-                    BufferedReader buffReceiver = new BufferedReader(new FileReader(recipientF));
                     FileOutputStream fosSend = new FileOutputStream(senderF, false);
                     PrintWriter messageSenderWriter = new PrintWriter(fosSend);
                     FileOutputStream fosReceive = new FileOutputStream(recipientF, false);
@@ -397,19 +407,9 @@ public class MarketUser implements User{
                     } while (flag == 1 || (ind < 1 || ind > count));
                     System.out.println("What would you like the new version to say?");
                     String edit = scan.nextLine();
-                    ArrayList<String> readSenderFile = new ArrayList<>();
-                    ArrayList<String> readReceiverFile = new ArrayList<>();
+
                     String messageToChange = "";
-                    String line1 = buffSender.readLine();
-                    while (line1 != null) {
-                        readSenderFile.add(line1);
-                        line1 = buffSender.readLine();
-                    }
-                    String line2 = buffReceiver.readLine();
-                    while (line2 != null) {
-                        readReceiverFile.add(line2);
-                        line2 = buffReceiver.readLine();
-                    }
+
                     // runs through senders file to find index and change to edit
                     String extractNameAndTime;
                     for (int i = 0; i < readSenderFile.size(); i++) {
@@ -423,20 +423,19 @@ public class MarketUser implements User{
                     }
                     // runs through the receivers file and finds the message to change, and changes it
                     for (int i = 0; i < readReceiverFile.size(); i++) {
-                        if (readReceiverFile.get(i) == messageToChange) {
+                        if (readReceiverFile.get(i).equals(messageToChange)) {
                             readReceiverFile.set(i, edit);
                         }
                     }
 
                     //write back to files
                     for (int i = 0; i < readSenderFile.size(); i++) {
-                        messageSenderWriter.write(readSenderFile.get(i));
+                        messageSenderWriter.println(readSenderFile.get(i));
                     }
                     for (int i = 0; i < readReceiverFile.size(); i++) {
-                        messageReceiveWriter.write(readReceiverFile.get(i));
+                        messageReceiveWriter.println(readReceiverFile.get(i));
                     }
                     display.close();
-                    buffSender.close();
                     buffReceiver.close();
                     messageSenderWriter.close();
                     messageReceiveWriter.close();
@@ -461,7 +460,6 @@ public class MarketUser implements User{
     public void deleteMessage(String recipient) {
         String fileRecipient = "";
         String fileSender = "";
-        String message;
         String printFile;
         int count = 0;
         int flag;
@@ -476,6 +474,7 @@ public class MarketUser implements User{
         }
         File senderF = new File(fileSender + username + recipient + ".txt");
         File recipientF = new File(fileRecipient + recipient + username + ".txt");
+        ArrayList<String> readSenderFile = new ArrayList<>();
 
         if (senderF.exists() && recipientF.exists()) {
             try {
@@ -484,11 +483,11 @@ public class MarketUser implements User{
                 printFile = display.readLine();
                 while (printFile != null) {
                     count++;
+                    readSenderFile.add(printFile);
                     System.out.println(count + ": " + printFile);
                     printFile = display.readLine();
                 }
                 if (count > 0) {
-                    BufferedReader buffSender = new BufferedReader(new FileReader(senderF));
                     FileOutputStream fosSend = new FileOutputStream(senderF, false);
                     PrintWriter messageSenderWriter = new PrintWriter(fosSend);
                     Scanner scan = new Scanner(System.in);
@@ -503,23 +502,13 @@ public class MarketUser implements User{
                         if (flag == 1 || (indexOfDelete < 1 || indexOfDelete > count))
                             System.out.println("Your index must be a number and must be available. Try again:");
                     } while (flag == 1 || (indexOfDelete < 1 || indexOfDelete > count));
-
-                    ArrayList<String> readSenderFile = new ArrayList<>();
-                    String line = buffSender.readLine();
-                    //run through array, add lines, and check throughout if line matches indexOfDelete then dont add it
-                    int count2 = 0;
-                    while (line != null) {
-                        count2++;
-                        if (count2 != indexOfDelete) {
-                            readSenderFile.add(line);
-                        }
-                        line = buffSender.readLine();
-                    }
+                    // loop through, write to file if it is not the delete index
                     for (int i = 0; i < readSenderFile.size(); i++) {
-                        messageSenderWriter.write(readSenderFile.get(i));
+                        if (i + 1 != indexOfDelete) {
+                            messageSenderWriter.println(readSenderFile.get(i));
+                        }
                     }
                     display.close();
-                    buffSender.close();
                     messageSenderWriter.close();
                 } else
                     System.out.println("There is nothing in this file to delete.");
