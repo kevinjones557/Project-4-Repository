@@ -27,177 +27,181 @@ public class MarketUser implements User{
         Integer selection = null;
         String recipient = "";
         String proceed;
+        boolean keepGoing = true;
         Scanner scan = new Scanner(System.in);
-        if (isSeller) { // if it is a seller, enter this statement
-            System.out.println("Do you wish to contact, block, or unblock a potential buyer? (Yes/No)");
-            proceed = scan.nextLine();
-            if (proceed.equalsIgnoreCase("yes")) { // if the user has selected to message someone...
-                do { // keep prompting for a recipient until they either select a valid recipient, or cancel
-                    System.out.println("Enter '1' to search for a buyer, enter '2' to see a list of buyers," +
-                            "or enter any number to cancel:");
-                    selection = null;
-                    do {
-                        try {
-                            selection = scan.nextInt();
-                            scan.nextLine();
-                        } catch (InputMismatchException e) {
-                            System.out.println("Please enter a valid number:");
-                            scan.nextLine();
-                        }
-                    } while (selection == null);
-                    if (selection == 1) { // if the user wants to search for a buyer, enter this statement
-                        System.out.println("Enter the username of a buyer:");
-                        recipient = scan.nextLine();
-                        if (checkIfRecipientExists(recipient)) {
-                            break; // at this point we know that the variable 'recipient' contains a valid username
-                        } else {
-                            System.out.println("Sorry! This user does not exist!");
-                        }
-                    } else if (selection == 2) { // if the user wants to see a list of people to contact
-                        try {
-                            String[] allAvailableUsers = getAvailableUsers();
-                            for (int i = 0; i < allAvailableUsers.length; i++) {
-                                System.out.println((i + 1) + ". " + allAvailableUsers[i]);
-                            }
-                            System.out.println(allAvailableUsers.length + 1 + ": Cancel");
-                            System.out.println("Make a selection:");
-                            selection = null;
-                            do {
-                                try {
-                                    selection = scan.nextInt();
-                                    scan.nextLine();
-                                    if ((selection < 1 || selection > allAvailableUsers.length + 1)) {
-                                        System.out.println("Please enter a valid number:");
-                                        selection = null;
-                                    }
-                                } catch (InputMismatchException e) {
-                                    System.out.println("Please enter a valid number:");
-                                    scan.nextLine();
-                                }
-                            } while (selection == null);
-                            if (selection != allAvailableUsers.length + 1) {
-                                recipient = allAvailableUsers[selection - 1];
-                                break; // at this point we again know that the variable 'recipient' contains a valid username
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            System.out.println("Sorry, there was an error reading the users, please try again!");
-                        }
-                    } else {
-                        proceed = ""; // set proceed to not 'yes' so that we return out of function
-                        break;
-                    }
-                } while(true);
-            }
-        } else { // lots of repeated code here, but I think needed because of slightly different print statements
-            System.out.println("Do you wish to contact, block, or unblock a store? (Yes/No)");
-            proceed = scan.nextLine();
-            if (proceed.equalsIgnoreCase("yes")) { // if the user has selected to message someone...
-                do { // keep prompting for a recipient until they either select a valid recipient, or cancel
-                    System.out.println("Enter '1' to search for a store, enter '2' to see a list of stores, " +
-                            "or enter any number to cancel:");
-                    selection = null;
-                    do {
-                        try {
-                            selection = scan.nextInt();
-                            scan.nextLine();
-                        } catch (InputMismatchException e) {
-                            System.out.println("Please enter a valid number:");
-                            scan.nextLine();
-                        }
-                    } while (selection == null);
-                    if (selection == 1) { // if the user wants to search for a store, enter this statement
-                        System.out.println("Enter the name of a store:");
-                        recipient = scan.nextLine();
-                        if (checkIfRecipientExists(recipient)) {
-                            break; // at this point we know that the variable 'recipient' contains a valid username
-                        } else {
-                            System.out.println("Sorry! This store does not exist!");
-                        }
-                    } else if (selection == 2) { // if the user wants to see a list of people to contact
-
-                        try {
-                            String[] allAvailableUsers = getAvailableUsers();
-                            for (int i = 0; i < allAvailableUsers.length; i++) {
-                                System.out.println((i + 1) + ". " + allAvailableUsers[i]);
-                            }
-                            System.out.println(allAvailableUsers.length + 1 + ": Cancel");
-                            System.out.println("Make a selection:");
-                            selection = null;
-                            do {
-                                try {
-                                    selection = scan.nextInt();
-                                    scan.nextLine();
-                                    if ((selection < 1 || selection > allAvailableUsers.length + 1)) {
-                                        System.out.println("Please enter a valid number:");
-                                        selection = null;
-                                    }
-                                } catch (InputMismatchException e) {
-                                    System.out.println("Please enter a valid number:");
-                                    scan.nextLine();
-                                }
-                            } while (selection == null);
-                            if (selection != allAvailableUsers.length + 1) {
-                                recipient = allAvailableUsers[selection - 1];
-                                break; // at this point we again know that the variable 'recipient' contains a valid username
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            System.out.println("Sorry, there was an error reading the users, please try again!");
-                        }
-                    } else {
-                        proceed = ""; // set proceed to not 'yes' so that we return out of function
-                        break;
-                    }
-                } while(true);
-            }
-        }
-        System.out.println("here");
-        /* at this point in program one of two things has happened: Either the String recipient contains a valid
-        username, or the user said "No" to wanting to send message */
-        if (!proceed.equalsIgnoreCase("yes")) {
-            return;
-        } // after this statement we know that String recipient contains a valid value
-        checkIfMessageExists(recipient); // this will check if message has already been created and create if not
-        System.out.printf("Connected with %s!\nPlease select an option:\n", recipient);
-        selection = null;
-        System.out.println("1. Send a message\n" +
-                "2. Edit a message\n" +
-                "3. Delete a message\n" +
-                "4. Block this " + ((this.isSeller)? "buyer\n" : "store\n") +
-                "5. Unblock this " + ((this.isSeller)? "buyer\n" : "store\n") +
-                "6. Import a .txt file\n" +
-                "7. Export message as a .csv file\n" +
-                "8. Cancel");
-        selection = -1;
         do {
-            try {
-                if (selection != -1) {
-                    System.out.println("Please enter a valid number:");
+            if (isSeller) { // if it is a seller, enter this statement
+                System.out.println("Do you wish to contact, block, or unblock a potential buyer? (Yes/No)");
+                proceed = scan.nextLine();
+                if (proceed.equalsIgnoreCase("yes")) { // if the user has selected to message someone...
+                    do { // keep prompting for a recipient until they either select a valid recipient, or cancel
+                        System.out.println("Enter '1' to search for a buyer, enter '2' to see a list of buyers," +
+                                "or enter any number to cancel:");
+                        selection = null;
+                        do {
+                            try {
+                                selection = scan.nextInt();
+                                scan.nextLine();
+                            } catch (InputMismatchException e) {
+                                System.out.println("Please enter a valid number:");
+                                scan.nextLine();
+                            }
+                        } while (selection == null);
+                        if (selection == 1) { // if the user wants to search for a buyer, enter this statement
+                            System.out.println("Enter the username of a buyer:");
+                            recipient = scan.nextLine();
+                            if (checkIfRecipientExists(recipient)) {
+                                break; // at this point we know that the variable 'recipient' contains a valid username
+                            } else {
+                                System.out.println("Sorry! This user does not exist!");
+                            }
+                        } else if (selection == 2) { // if the user wants to see a list of people to contact
+                            try {
+                                String[] allAvailableUsers = getAvailableUsers();
+                                for (int i = 0; i < allAvailableUsers.length; i++) {
+                                    System.out.println((i + 1) + ". " + allAvailableUsers[i]);
+                                }
+                                System.out.println(allAvailableUsers.length + 1 + ": Cancel");
+                                System.out.println("Make a selection:");
+                                selection = null;
+                                do {
+                                    try {
+                                        selection = scan.nextInt();
+                                        scan.nextLine();
+                                        if ((selection < 1 || selection > allAvailableUsers.length + 1)) {
+                                            System.out.println("Please enter a valid number:");
+                                            selection = null;
+                                        }
+                                    } catch (InputMismatchException e) {
+                                        System.out.println("Please enter a valid number:");
+                                        scan.nextLine();
+                                    }
+                                } while (selection == null);
+                                if (selection != allAvailableUsers.length + 1) {
+                                    recipient = allAvailableUsers[selection - 1];
+                                    break; // at this point we again know that the variable 'recipient' contains a valid username
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                System.out.println("Sorry, there was an error reading the users, please try again!");
+                            }
+                        } else {
+                            proceed = ""; // set proceed to not 'yes' so that we return out of function
+                            break;
+                        }
+                    } while (true);
                 }
-                selection = scan.nextInt();
-                scan.nextLine();
-            } catch (InputMismatchException e) {
-                System.out.println("Please enter a valid number:");
-                scan.nextLine();
+            } else { // lots of repeated code here, but I think needed because of slightly different print statements
+                System.out.println("Do you wish to contact, block, or unblock a store? (Yes/No)");
+                proceed = scan.nextLine();
+                if (proceed.equalsIgnoreCase("yes")) { // if the user has selected to message someone...
+                    do { // keep prompting for a recipient until they either select a valid recipient, or cancel
+                        System.out.println("Enter '1' to search for a store, enter '2' to see a list of stores, " +
+                                "or enter any number to cancel:");
+                        selection = null;
+                        do {
+                            try {
+                                selection = scan.nextInt();
+                                scan.nextLine();
+                            } catch (InputMismatchException e) {
+                                System.out.println("Please enter a valid number:");
+                                scan.nextLine();
+                            }
+                        } while (selection == null);
+                        if (selection == 1) { // if the user wants to search for a store, enter this statement
+                            System.out.println("Enter the name of a store:");
+                            recipient = scan.nextLine();
+                            if (checkIfRecipientExists(recipient)) {
+                                break; // at this point we know that the variable 'recipient' contains a valid username
+                            } else {
+                                System.out.println("Sorry! This store does not exist!");
+                            }
+                        } else if (selection == 2) { // if the user wants to see a list of people to contact
+
+                            try {
+                                String[] allAvailableUsers = getAvailableUsers();
+                                for (int i = 0; i < allAvailableUsers.length; i++) {
+                                    System.out.println((i + 1) + ". " + allAvailableUsers[i]);
+                                }
+                                System.out.println(allAvailableUsers.length + 1 + ": Cancel");
+                                System.out.println("Make a selection:");
+                                selection = null;
+                                do {
+                                    try {
+                                        selection = scan.nextInt();
+                                        scan.nextLine();
+                                        if ((selection < 1 || selection > allAvailableUsers.length + 1)) {
+                                            System.out.println("Please enter a valid number:");
+                                            selection = null;
+                                        }
+                                    } catch (InputMismatchException e) {
+                                        System.out.println("Please enter a valid number:");
+                                        scan.nextLine();
+                                    }
+                                } while (selection == null);
+                                if (selection != allAvailableUsers.length + 1) {
+                                    recipient = allAvailableUsers[selection - 1];
+                                    break; // at this point we again know that the variable 'recipient' contains a valid username
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                System.out.println("Sorry, there was an error reading the users, please try again!");
+                            }
+                        } else {
+                            proceed = ""; // set proceed to not 'yes' so that we return out of function
+                            break;
+                        }
+                    } while (true);
+                }
             }
-        } while ((selection < 1 || selection > 8));
-        switch (selection) {
-            case 1 -> appendMessage(recipient);
-            case 2 -> editMessage(recipient);
-            case 3 -> deleteMessage(recipient);
-            case 4 -> blockUser(recipient);
-            case 5 -> unblockUser(recipient);
-            // TODO case 6 -> implement;
-            // TODO case 7 -> implement;
-        }
+            /* at this point in program one of two things has happened: Either the String recipient contains a valid
+            username, or the user said "No" to wanting to send message */
+            if (!proceed.equalsIgnoreCase("yes")) {
+                return;
+            } // after this statement we know that String recipient contains a valid value
+            checkIfMessageExists(recipient); // this will check if message has already been created and create if not
+            System.out.printf("Connected with %s!\nPlease select an option:\n", recipient);
+            selection = null;
+            System.out.println("1. Send a message\n" +
+                    "2. Edit a message\n" +
+                    "3. Delete a message\n" +
+                    "4. Block this " + ((this.isSeller) ? "buyer\n" : "store\n") +
+                    "5. Unblock this " + ((this.isSeller) ? "buyer\n" : "store\n") +
+                    "6. Import a .txt file\n" +
+                    "7. Export message as a .csv file\n" +
+                    "8. Cancel");
+            selection = -1;
+            do {
+                try {
+                    if (selection != -1) {
+                        System.out.println("Please enter a valid number:");
+                    }
+                    selection = scan.nextInt();
+                    scan.nextLine();
+                } catch (InputMismatchException e) {
+                    System.out.println("Please enter a valid number:");
+                    scan.nextLine();
+                }
+            } while ((selection < 1 || selection > 8));
+            switch (selection) {
+                case 1 -> appendMessage(recipient);
+                case 2 -> editMessage(recipient);
+                case 3 -> deleteMessage(recipient);
+                case 4 -> blockUser(recipient);
+                case 5 -> unblockUser(recipient);
+                // TODO case 6 -> implement;
+                // TODO case 7 -> implement;
+            }
+            System.out.println("Would you like to complete another action (Yes,No)?");
+            keepGoing = (scan.nextLine()).equalsIgnoreCase("yes");
+        } while (keepGoing);
         System.out.println("Thank you for using the messaging system!");
     }
 
     /**
      * Get a list of users that this user can message
      * @return an array of available people for messaging
-     * @throws IOException
+     * @throws IOException in case of any error reading file
      */
     public String[] getAvailableUsers() throws IOException {
         ArrayList<String> available = new ArrayList<>();
@@ -280,9 +284,9 @@ public class MarketUser implements User{
     /**
      * Adds message to both sender and receiver file
      *
-     * @param recipient
+     * @param recipient is the name of the sender
      *
-     * @Author John Brooks
+     * @author John Brooks
      */
 
     public void appendMessage(String recipient) {
@@ -333,9 +337,9 @@ public class MarketUser implements User{
      * Searches file for index that matches one given by the user and changes that line and
      * writes it back to the file
      *
-     * @param recipient
+     * @param recipient is the name of the sender
      *
-     * @Author John Brooks
+     * @author John Brooks
      */
     public void editMessage(String recipient) {
 
@@ -420,9 +424,9 @@ public class MarketUser implements User{
         * Searches file for index that matches one given by the user to not add it to an arraylist and
         * therefore not write it to the file
          *
-        * @param recipient
+        * @param recipient is name of sender
          *
-        * @Author John Brooks
+        * @author John Brooks
          */
 
     public void deleteMessage(String recipient) {
@@ -459,6 +463,7 @@ public class MarketUser implements User{
                 PrintWriter messageSenderWriter = new PrintWriter(fosSend);
                 Scanner scan = new Scanner(System.in);
                 //get index of delete
+                System.out.println("Which index would you like to change?");
                 do {
                     flag = 0;
                     try {
@@ -497,7 +502,6 @@ public class MarketUser implements User{
      * Block a user if not already blocked
      * @param username: name of person to block
      * @return true if already blocked, false if notBlocked
-     * @throws IOException
      */
     public boolean blockUser(String username) {
         try {
@@ -528,7 +532,7 @@ public class MarketUser implements User{
     /**
      * Return a list of blocked users for this user
      * @return array of blocked usernames
-     * @throws IOException
+     * @throws IOException in case of error reading file
      */
     public String[] blockedList() throws IOException{
         ArrayList<String> victims = new ArrayList<>();
