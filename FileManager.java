@@ -34,18 +34,11 @@ public class FileManager {
         if (Files.exists(Paths.get("data/sellers/" + username))) return true;
         return false;
     }
-    /**
-     * Checks if a User with given username has an associated directory, is a buyer or seller, and therefore exists
-     *
-     * @param username The username associated with the user directory you wish to find
-     * @param isSeller The directory to search for the user within
-     * @return if the directory exists
-     */
-    public static boolean checkUserExists(String username, boolean isSeller) {
-        if (Files.exists(Paths.get("data/buyers/" + username)) & !isSeller) return true;
-        if (Files.exists(Paths.get("data/sellers/" + username)) & isSeller) return true;
-        return false;
+
+    public static String getStoreDirectory(String username, String storeName) {
+        return String.format("data/sellers/%s/%s", username, storeName);
     }
+
 
     /** Used to generate a directory for new Users.
      * @param username The username of the new User you wish to create a directory for.
@@ -62,6 +55,7 @@ public class FileManager {
             }
             Files.createFile(Paths.get(filePath+"/metrics.txt"));
             Files.createFile(Paths.get(filePath+"/hasBlocked.txt"));
+            Files.createFile(Paths.get(filePath+"/isInvisible.txt"));
             return true;
         } catch (IOException e) {
             return false;
