@@ -1,4 +1,6 @@
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.SQLOutput;
 import java.util.*;
 import java.text.SimpleDateFormat;
@@ -10,6 +12,7 @@ public class MarketUser implements User{
     public static void main(String[] args) {
         MarketUser mu = new MarketUser("john",false);
         mu.message();
+        MarketUser.changeUsername("john","nathan");
     }
 
     /** Constructor creates new object with a username and tells object if it is a seller or not.
@@ -19,6 +22,106 @@ public class MarketUser implements User{
     public MarketUser(String username, boolean isSeller) {
         this.username = username;
         this.isSeller = isSeller;
+    }
+
+    /** A static method that will change the names of files and directories to match username
+     * @param oldUsername the username that is currently stored everywhere
+     * @param newUsername the new username that everything will be changed to
+     */
+
+    public static void changeUsername(String oldUsername, String newUsername) {
+        File sellerDirectories = new File("data/sellers/");
+        File buyerDirectories = new File("data/buyers/");
+        String[] sellers = sellerDirectories.list();
+        String[] buyers = buyerDirectories.list();
+        for (String seller : sellers) {
+            File currentSeller = new File("data/sellers/" + seller);
+            String[] allFiles = currentSeller.list();
+            for (String filename : allFiles) {
+                int indexOldUsername = filename.indexOf(oldUsername);
+                if (indexOldUsername >= 0) {
+                    changeNameInFile(oldUsername, newUsername, "data/sellers/" + seller + "/" + filename);
+                    String newFilename;
+                    if (indexOldUsername == 0) {
+                        newFilename = newUsername + filename.substring(oldUsername.length());
+                    } else {
+                        newFilename = filename.substring(0,indexOldUsername) + newUsername + ".txt";
+                    }
+                    try {
+                        Files.move(Paths.get("data/sellers/" + seller + "/" + filename), Paths.get("data/sellers/"
+                                + seller + "/" + newFilename));
+                    } catch (IOException e) {
+                        System.out.println("Sorry, failed to rename user!");
+                    }
+                }
+            }
+            if (seller.equals(oldUsername)) {
+                try {
+                    Files.move(Paths.get("data/sellers/" + seller), Paths.get("data/sellers/" + newUsername));
+                } catch (IOException e) {
+                    System.out.println("Sorry, failed to rename user!");
+                }
+
+            }
+        }
+        for (String buyer : buyers) {
+            File currentBuyer = new File("data/buyers/" + buyer);
+            String[] allFiles = currentBuyer.list();
+            for (String filename : allFiles) {
+                int indexOldUsername = filename.indexOf(oldUsername);
+                if (indexOldUsername >= 0) {
+                    changeNameInFile(oldUsername, newUsername, "data/buyers/" + buyer + "/" + filename);
+                    String newFilename;
+                    if (indexOldUsername == 0) {
+                        newFilename = newUsername + filename.substring(oldUsername.length());
+                    } else {
+                        newFilename = filename.substring(0,indexOldUsername) + newUsername + ".txt";
+                    }
+                    try {
+                        Files.move(Paths.get("data/buyers/" + buyer + "/" + filename), Paths.get("data/buyers/"
+                                + buyer + "/" + newFilename));
+                    } catch (IOException e) {
+                        System.out.println("Sorry, failed to rename user!");
+                    }
+                }
+            }
+            if (buyer.equals(oldUsername)) {
+                try {
+                    Files.move(Paths.get("data/buyers/" + buyer), Paths.get("data/buyers/" + newUsername));
+                } catch (IOException e) {
+                    System.out.println("Sorry, failed to rename user!");
+                }
+            }
+        }
+        /* at this point the directory has been renamed, now go through all directories, find files that contain old
+        username, go through files and change all the names and rename files */
+    }
+
+    /** A static method that will go through given file and replace old username with new username
+     * @param oldUsername the username that is currently stored everywhere
+     * @param newUsername the new username that everything will be changed to
+     * @param filepath the file path of the file being modified
+     */
+
+    public static void changeNameInFile(String oldUsername, String newUsername, String filepath) {
+        try (BufferedReader bfr = new BufferedReader(new FileReader(filepath))) {
+            String line = bfr.readLine();
+            ArrayList<String> fileContents = new ArrayList<>();
+            while (line != null) {
+                if (line.substring(0,oldUsername.length()).equals(oldUsername)) {
+                    line = newUsername + line.substring(oldUsername.length());
+                }
+                fileContents.add(line);
+                line = bfr.readLine();
+            }
+            PrintWriter pw = new PrintWriter(new FileOutputStream(filepath,false));
+            for (String fileLine : fileContents) {
+                pw.println(fileLine);
+            }
+            pw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /** Method called when user is logged in, using System.out.println() will ask user if they want to message someone,
