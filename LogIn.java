@@ -108,9 +108,6 @@ public class LogIn {
             f = new File("users/" + user + "/" + user);
         } else {
             try {
-                // Make file in correct directory
-                //TODO FileManager.generateDirectoryFromUsername(user,true);
-                //TODO this is to generate the directory for each user for the other guys to use
                 if (!dir.createNewFile()) {
                     while (!dir.createNewFile()) {
                         System.out.println("User already exists! Please enter another username.");
@@ -150,11 +147,19 @@ public class LogIn {
                     }
                     if (isSeller.equalsIgnoreCase("yes")) {
                         isSeller = "true";
+                        FileManager.generateDirectoryFromUsername(user,true);
                         System.out.println("Please enter your store name.");
                         String storeName = scan.nextLine();
+                        if (storeName.equals("")) {
+                            while (storeName.equals("")) {
+                                System.out.println("Store name cannot be blank! Please enter a valid store name.");
+                                storeName = scan.nextLine();
+                            }
+                        }
                         fileStatus = writeFile(user, isSeller);
                         fileStatus = writeFile(user, storeName);
                     } else {
+                        FileManager.generateDirectoryFromUsername(user,false);
                         isSeller = "false";
                         fileStatus = writeFile(user, isSeller);
                     }
