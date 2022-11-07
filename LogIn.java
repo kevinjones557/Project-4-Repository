@@ -110,6 +110,7 @@ public class LogIn {
             try {
                 // Make file in correct directory
                 //TODO FileManager.generateDirectoryFromUsername(user,true);
+                //TODO this is to generate the directory for each user for the other guys to use
                 if (!dir.createNewFile()) {
                     while (!dir.createNewFile()) {
                         System.out.println("User already exists! Please enter another username.");
@@ -304,6 +305,12 @@ public class LogIn {
             while (!done) {
                 try {
                     String user = scan.nextLine();
+                    if (user.contains(" ")) {
+                        while (user.contains(" ")) {
+                            System.out.println("Spaces are not permitted in usernames! Please enter a username without spaces.");
+                            user = scan.nextLine();
+                        }
+                    }
                     createUser(user, scan);
                     done = true;
                     return (user);
@@ -356,4 +363,3 @@ public class LogIn {
 //TODO add edit and delete functionality
 //TODO if user edits username, call MarketUser.changeUsername(oldUsername, newUsername) and then change username in yours as well
 //TODO if user is a seller prompt to add stores, make sure sellers can't add store that already exists
-//TODO make sure username doesn't have spaces
