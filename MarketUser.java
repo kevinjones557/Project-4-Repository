@@ -317,8 +317,8 @@ public class MarketUser implements User{
         String[] usernames = recipientType.list();
         //Loop through user directories
         for(String userDir : usernames) {
-            File thatUserBlockedFile = new File(buyerOrSeller+"/" + userDir + "/" + "hasBlocked");
-            BufferedReader bfr = new BufferedReader(new FileReader(thatUserBlockedFile));
+            File thatUserInvisbleFile = new File(buyerOrSeller+"/" + userDir + "/" + "isInvisible");
+            BufferedReader bfr = new BufferedReader(new FileReader(thatUserInvisbleFile));
             String line;
             boolean blocked = false;
             //Check the hasBlocked file, if this.username isn't there add the user to available
@@ -622,26 +622,26 @@ public class MarketUser implements User{
     }
 
     /**
-     * Block a user if not already blocked
-     * @param username: name of person to block
-     * @return true if already blocked, false if notBlocked
+     * Become invisible to a user if not already invisible
+     * @param username: name of person to become invisible to
+     * @return true if already invisible, false otherwise
      * @throws IOException
      */
-    public boolean blockUser(String username) {
+    public boolean becomeInvisibleToUser(String username) {
         try {
-            String blockedFilePath = "data/" + ((this.isSeller) ? "sellers/" : "buyers/") + this.username + "/hasBlocked";
-            File blockedFile = new File(blockedFilePath);
-            BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
+            String invisibleFilePath = "data/" + ((this.isSeller) ? "sellers/" : "buyers/") + this.username + "/isInvisible";
+            File invisibleFile = new File(invisibleFilePath);
+            BufferedReader bfr = new BufferedReader(new FileReader(invisibleFile));
             String line;
             while ((line = bfr.readLine()) != null) {
                 if (line.equals(username)) {
-                    //The user is already blocked
+                    //Already invisible to this user
                     return true;
                 }
             }
             bfr.close();
-            //Write the name of the victim to hasBlocked file
-            PrintWriter pw = new PrintWriter(new FileWriter(blockedFile, true));
+            //Write the name of the victim to isInvisible file
+            PrintWriter pw = new PrintWriter(new FileWriter(invisibleFile, true));
             pw.write(username);
             pw.println();
             pw.flush();
@@ -675,8 +675,90 @@ public class MarketUser implements User{
     }
 
     /**
-     * unblocked a user from the blockedList() return array
+     * Become visible to a user from the isInvisible file
+     * return
      * @param username: name of person to unblock
+     */
+    public void becomeVisibleAgain(String username) {
+        try {
+            ArrayList<String> lines = new ArrayList<>();
+            String invisibleFilePath = "data/" + ((this.isSeller) ? "sellers/" : "buyers/") + this.username + "/isInvisible";
+            File invisibleFile = new File(invisibleFilePath);
+            BufferedReader bfr = new BufferedReader(new FileReader(invisibleFile));
+            String line;
+            while ((line = bfr.readLine()) != null) {
+                if (!line.equals(username)) {
+                    lines.add(line);
+                }
+            }
+            bfr.close();
+            PrintWriter pw = new PrintWriter(new FileWriter(invisibleFile, false));
+            for (String l : lines) {
+                pw.write(l);
+                pw.println();
+            }
+            pw.flush();
+            pw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Return list of people that can't see this user
+     * @return array of people that can't see this user
+     * @throws IOException
+     */
+    public String[] invisibleList() throws IOException{
+        ArrayList<String> victims = new ArrayList<>();
+        String invisibleFilePath = "data/" + ((this.isSeller)? "sellers/": "buyers/") + this.username + "/isInvisible";
+        File invisibleFile = new File(invisibleFilePath);
+        BufferedReader bfr = new BufferedReader(new FileReader(invisibleFile));
+        String line;
+        while((line = bfr.readLine())!= null) {
+            victims.add(line);
+        }
+        String[] invisibleList = new String[victims.size()];
+        for(int i = 0; i < victims.size();i++) {
+            invisibleList[i] = victims.get(i);
+        }
+        return invisibleList;
+    }
+
+    /**
+     * Blocked a user if not already blocked
+     * @param username
+     * @return true if already blocked, false otherwise
+     */
+    public boolean blockUser(String username) {
+        try {
+            String blockedFilePath = "data/" + ((this.isSeller) ? "sellers/" : "buyers/") + this.username + "/hasBlocked";
+            File blockedFile = new File(blockedFilePath);
+            BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
+            String line;
+            while ((line = bfr.readLine()) != null) {
+                if (line.equals(username)) {
+                    //Already blocked this user
+                    return true;
+                }
+            }
+            bfr.close();
+            //Write the name of the victim to hasBlocked file
+            PrintWriter pw = new PrintWriter(new FileWriter(blockedFile, true));
+            pw.write(username);
+            pw.println();
+            pw.flush();
+            pw.close();
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * unblocked a user listed in the blockedList
+     * @param username
      */
     public void unblockUser(String username) {
         try {
