@@ -138,28 +138,53 @@ public class LogIn {
                 }
                 done = false;
                 System.out.println("Are you a seller? Please enter 'yes' or 'no.'");
+                String isSeller = scan.nextLine();
                 while (!done) {
-                    String isSeller = scan.nextLine();
                     while (!isSeller.equalsIgnoreCase("yes") &&
                             !isSeller.equalsIgnoreCase("no")) {
                         System.out.println("Please enter 'yes' or 'no'!");
                         isSeller = scan.nextLine();
                     }
+                    //TODO make user confirm store name
                     if (isSeller.equalsIgnoreCase("yes")) {
                         isSeller = "true";
-                        FileManager.generateDirectoryFromUsername(user,true);
-                        System.out.println("Please enter your store name.");
-                        String storeName = scan.nextLine();
-                        if (storeName.equals("")) {
-                            while (storeName.equals("")) {
-                                System.out.println("Store name cannot be blank! Please enter a valid store name.");
-                                storeName = scan.nextLine();
+                        FileManager.generateDirectoryFromUsername(user, true);
+                        boolean doneStores = false;
+                        ArrayList<String> storeNames = new ArrayList<>();
+                        while (!doneStores) {
+                            System.out.println("Please enter your store name.");
+                            String storeName = scan.nextLine();
+                            if (storeName.equals("")) {
+                                while (storeName.equals("")) {
+                                    System.out.println("Store name cannot be blank! Please enter a valid store name.");
+                                    storeName = scan.nextLine();
+                                }
+                            }
+                            storeNames.add(storeName);
+                            int input = -1;
+                            System.out.println("Enter '1' to add an additional store or '2' to finish adding stores.");
+                            boolean inputTaken = false;
+                            while (!inputTaken) {
+                                try {
+                                    input = scan.nextInt();
+                                    scan.nextLine();
+                                    if (input == 1 || input == 2) {
+                                        inputTaken = true;
+                                    } else {
+                                        System.out.println("Please enter '1' or '2' as input!");
+                                    }
+                                } catch (Exception e) {
+                                    System.out.println("Please enter '1' or '2' as input!");
+                                }
+                            }
+                            if (input == 2) {
+                                doneStores = true;
                             }
                         }
                         fileStatus = writeFile(user, isSeller);
-                        fileStatus = writeFile(user, storeName);
+                        fileStatus = writeFile(user, storeNames.toString());
                     } else {
-                        FileManager.generateDirectoryFromUsername(user,false);
+                        FileManager.generateDirectoryFromUsername(user, false);
                         isSeller = "false";
                         fileStatus = writeFile(user, isSeller);
                     }
@@ -349,15 +374,6 @@ public class LogIn {
                 }
             } catch (Exception e) {
                 System.out.println("An unknown error occurred!");
-            }
-            System.out.println("\nUser information:");
-            //TODO Users will be created/accessed by the following information:
-            System.out.printf("Username: %s%n" +
-                            "isSeller: %s%n",
-                    fileContents.get(0),
-                    fileContents.get(1));
-            if (fileContents.size() == 3) {
-                System.out.println("Store Name: " + fileContents.get(2));
             }
         } else {
             System.out.println("Goodbye!");
