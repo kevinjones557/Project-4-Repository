@@ -108,6 +108,8 @@ public class LogIn {
             f = new File("users/" + user + "/" + user);
         } else {
             try {
+                // Make file in correct directory
+                //TODO FileManager.generateDirectoryFromUsername(user,true);
                 if (!dir.createNewFile()) {
                     while (!dir.createNewFile()) {
                         System.out.println("User already exists! Please enter another username.");
@@ -331,6 +333,7 @@ public class LogIn {
                         fileContents.add(line);
                     }
                     line = bfr.readLine();
+
                 }
             } catch (Exception e) {
                 System.out.println("An unknown error occurred!");
@@ -349,3 +352,8 @@ public class LogIn {
         }
     }
 }
+//TODO prompt for email as well (check for @)
+//TODO add edit and delete functionality
+//TODO if user edits username, call MarketUser.changeUsername(oldUsername, newUsername) and then change username in yours as well
+//TODO if user is a seller prompt to add stores, make sure sellers can't add store that already exists
+//TODO make sure username doesn't have spaces
