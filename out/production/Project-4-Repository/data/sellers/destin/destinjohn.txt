@@ -1,3 +1,2 @@
-john: what is up
-john: hello there
-john: another one, this one im deleting from john but should stay in destin
+john 11:07:00:52:24- hey
+john 11:07:00:58:41- hi

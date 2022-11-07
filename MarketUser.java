@@ -1,5 +1,7 @@
 import java.io.*;
+import java.sql.SQLOutput;
 import java.util.*;
+import java.text.SimpleDateFormat;
 
 public class MarketUser implements User{
     private String username;
@@ -22,17 +24,21 @@ public class MarketUser implements User{
     /** Method called when user is logged in, using System.out.println() will ask user if they want to message someone,
      * who they want to message, and what they want to message.
      */
+    /** Method called when user is logged in, using System.out.println() will ask user if they want to message someone,
+     * who they want to message, and what they want to message.
+     */
     public void message() {
-        Integer selection = null;
+        Integer selection;
         String recipient = "";
         String proceed;
         boolean keepGoing = true;
         Scanner scan = new Scanner(System.in);
-        do {
-            if (isSeller) { // if it is a seller, enter this statement
-                System.out.println("Do you wish to contact, block, or unblock a potential buyer? (Yes/No)");
-                proceed = scan.nextLine();
-                if (proceed.equalsIgnoreCase("yes")) { // if the user has selected to message someone...
+        String buyOrSell = (isSeller)? "potential buyer" : "store";
+        System.out.println("Do you wish to contact, block, or unblock a " + buyOrSell + "? (Yes,No)");
+        proceed = scan.nextLine();
+        if (proceed.equalsIgnoreCase("yes")) {
+            do {
+                if (isSeller) { // if it is a seller, enter this statement
                     do { // keep prompting for a recipient until they either select a valid recipient, or cancel
                         System.out.println("Enter '1' to search for a buyer, enter '2' to see a list of buyers," +
                                 "or enter any number to cancel:");
@@ -89,11 +95,7 @@ public class MarketUser implements User{
                             break;
                         }
                     } while (true);
-                }
-            } else { // lots of repeated code here, but I think needed because of slightly different print statements
-                System.out.println("Do you wish to contact, block, or unblock a store? (Yes/No)");
-                proceed = scan.nextLine();
-                if (proceed.equalsIgnoreCase("yes")) { // if the user has selected to message someone...
+                } else { // lots of repeated code here, but I think needed because of slightly different print statements
                     do { // keep prompting for a recipient until they either select a valid recipient, or cancel
                         System.out.println("Enter '1' to search for a store, enter '2' to see a list of stores, " +
                                 "or enter any number to cancel:");
@@ -151,56 +153,58 @@ public class MarketUser implements User{
                             break;
                         }
                     } while (true);
+
                 }
-            }
-            /* at this point in program one of two things has happened: Either the String recipient contains a valid
-            username, or the user said "No" to wanting to send message */
-            if (!proceed.equalsIgnoreCase("yes")) {
-                return;
-            } // after this statement we know that String recipient contains a valid value
-            checkIfMessageExists(recipient); // this will check if message has already been created and create if not
-            System.out.printf("Connected with %s!\nPlease select an option:\n", recipient);
-            selection = null;
-            System.out.println("1. Send a message\n" +
-                    "2. Edit a message\n" +
-                    "3. Delete a message\n" +
-                    "4. Block this " + ((this.isSeller) ? "buyer\n" : "store\n") +
-                    "5. Unblock this " + ((this.isSeller) ? "buyer\n" : "store\n") +
-                    "6. Import a .txt file\n" +
-                    "7. Export message as a .csv file\n" +
-                    "8. Cancel");
-            selection = -1;
-            do {
-                try {
-                    if (selection != -1) {
-                        System.out.println("Please enter a valid number:");
+                // after this statement we know that String recipient contains a valid value
+                checkIfMessageExists(recipient); // this will check if message has already been created and create if not
+                System.out.printf("Connected with %s!\nPlease select an option:\n", recipient);
+                boolean stayConnected;
+                do {
+                    System.out.println("1. Send a message\n" +
+                            "2. Edit a message\n" +
+                            "3. Delete a message\n" +
+                            "4. Block this " + ((this.isSeller) ? "buyer\n" : "store\n") +
+                            "5. Unblock this " + ((this.isSeller) ? "buyer\n" : "store\n") +
+                            "6. Import a .txt file\n" +
+                            "7. Export message as a .csv file\n" +
+                            "8. Cancel");
+                    selection = -1;
+                    do {
+                        try {
+                            if (selection != -1) {
+                                System.out.println("Please enter a valid number:");
+                            }
+                            selection = scan.nextInt();
+                            scan.nextLine();
+                        } catch (InputMismatchException e) {
+                            System.out.println("Please enter a valid number:");
+                            scan.nextLine();
+                        }
+                    } while ((selection < 1 || selection > 8));
+                    switch (selection) {
+                        case 1 -> appendMessage(recipient);
+                        case 2 -> editMessage(recipient);
+                        case 3 -> deleteMessage(recipient);
+                        case 4 -> blockUser(recipient);
+                        case 5 -> unblockUser(recipient);
+                        // TODO case 6 -> implement;
+                        // TODO case 7 -> implement;
                     }
-                    selection = scan.nextInt();
-                    scan.nextLine();
-                } catch (InputMismatchException e) {
-                    System.out.println("Please enter a valid number:");
-                    scan.nextLine();
-                }
-            } while ((selection < 1 || selection > 8));
-            switch (selection) {
-                case 1 -> appendMessage(recipient);
-                case 2 -> editMessage(recipient);
-                case 3 -> deleteMessage(recipient);
-                case 4 -> blockUser(recipient);
-                case 5 -> unblockUser(recipient);
-                // TODO case 6 -> implement;
-                // TODO case 7 -> implement;
-            }
-            System.out.println("Would you like to complete another action (Yes,No)?");
-            keepGoing = (scan.nextLine()).equalsIgnoreCase("yes");
-        } while (keepGoing);
+                    System.out.println("Would you like to complete another action with this user? (Yes,No)");
+                    stayConnected = scan.nextLine().equals("yes");
+                } while (stayConnected);
+                buyOrSell = (isSeller) ? "potential buyer" : "store";
+                System.out.println("Would you like to contact, block, or unblock another " + buyOrSell + "? (Yes,No)?");
+                keepGoing = (scan.nextLine()).equalsIgnoreCase("yes");
+            } while (keepGoing);
+        }
         System.out.println("Thank you for using the messaging system!");
     }
 
     /**
      * Get a list of users that this user can message
      * @return an array of available people for messaging
-     * @throws IOException in case of any error reading file
+     * @throws IOException
      */
     public String[] getAvailableUsers() throws IOException {
         ArrayList<String> available = new ArrayList<>();
@@ -283,9 +287,9 @@ public class MarketUser implements User{
     /**
      * Adds message to both sender and receiver file
      *
-     * @param recipient is the name of the sender
+     * @param recipient
      *
-     * @author John Brooks
+     * @Author John Brooks
      */
 
     public void appendMessage(String recipient) {
@@ -318,11 +322,12 @@ public class MarketUser implements User{
                 FileOutputStream fosReceive = new FileOutputStream(recipientF, true);
                 PrintWriter messageReceiveWriter = new PrintWriter(fosReceive);
                 Scanner scan = new Scanner(System.in);
-                System.out.print(username + ": ");
+                System.out.print(username + "- ");
                 message = scan.nextLine();
                 //write it on the end of each person's file
-                messageSenderWriter.println(username + ": " + message);
-                messageReceiveWriter.println(username + ": " + message);
+                String timeStamp = new SimpleDateFormat("MM:dd:HH:mm:ss").format(new java.util.Date());
+                messageSenderWriter.println(username + " " + timeStamp + "- " + message);
+                messageReceiveWriter.println(username + " " + timeStamp + "- " + message);
                 display.close();
                 messageSenderWriter.close();
                 messageReceiveWriter.close();
@@ -336,9 +341,9 @@ public class MarketUser implements User{
      * Searches file for index that matches one given by the user and changes that line and
      * writes it back to the file
      *
-     * @param recipient is the name of the sender
+     * @param recipient
      *
-     * @author John Brooks
+     * @Author John Brooks
      */
     public void editMessage(String recipient) {
 
@@ -346,7 +351,7 @@ public class MarketUser implements User{
         String fileSender = "";
         String message;
         String printFile;
-        int count = 1;
+        int count = 0;
         int ind = -1;
         int flag;
 
@@ -366,52 +371,77 @@ public class MarketUser implements User{
                 BufferedReader display = new BufferedReader(new FileReader(senderF));
                 printFile = display.readLine();
                 while (printFile != null) {
-                    System.out.println(count + ": " + printFile);
                     count++;
+                    System.out.println(count + ": " + printFile);
                     printFile = display.readLine();
                 }
-                BufferedReader buffSender = new BufferedReader(new FileReader(senderF));
-                FileOutputStream fosSend = new FileOutputStream(senderF, false);
-                PrintWriter messageSenderWriter = new PrintWriter(fosSend);
-                FileOutputStream fosReceive = new FileOutputStream(recipientF, false);
-                PrintWriter messageReceiveWriter = new PrintWriter(fosReceive);
-                Scanner scan = new Scanner(System.in);
-                //acquiring index
-                System.out.println("Which index would you like to change?");
-                do {
-                    flag = 0;
-                    try {
-                        ind = Integer.parseInt(scan.nextLine());
-                    } catch (NumberFormatException n) {
-                        flag++;
+                if (count > 0) {
+                    BufferedReader buffSender = new BufferedReader(new FileReader(senderF));
+                    BufferedReader buffReceiver = new BufferedReader(new FileReader(recipientF));
+                    FileOutputStream fosSend = new FileOutputStream(senderF, false);
+                    PrintWriter messageSenderWriter = new PrintWriter(fosSend);
+                    FileOutputStream fosReceive = new FileOutputStream(recipientF, false);
+                    PrintWriter messageReceiveWriter = new PrintWriter(fosReceive);
+                    Scanner scan = new Scanner(System.in);
+                    //acquiring index
+                    System.out.println("Which index would you like to change?");
+                    do {
+                        flag = 0;
+                        try {
+                            ind = Integer.parseInt(scan.nextLine());
+                        } catch (NumberFormatException n) {
+                            flag++;
+                        }
+                        if (flag == 1 || (ind < 1 || ind > count))
+                            System.out.println("Your index must be a number and must be available. Try again:");
+                    } while (flag == 1 || (ind < 1 || ind > count));
+                    System.out.println("What would you like the new version to say?");
+                    String edit = scan.nextLine();
+                    ArrayList<String> readSenderFile = new ArrayList<>();
+                    ArrayList<String> readReceiverFile = new ArrayList<>();
+                    String messageToChange = "";
+                    String line1 = buffSender.readLine();
+                    while (line1 != null) {
+                        readSenderFile.add(line1);
+                        line1 = buffSender.readLine();
                     }
-                    if (flag == 1 || (ind < 1 || ind > count))
-                        System.out.println("Your index must be a number and must be available. Try again:");
-                } while (flag == 1 || (ind < 1 || ind > count));
-                System.out.println("What would you like the new version to say?");
-                String edit = scan.nextLine();
-                ArrayList<String> readSenderFile = new ArrayList<>();
-                ArrayList<String> readReceiverFile = new ArrayList<>();
-                String line = buffSender.readLine();
-                //run through array, add lines, and check throughout if line matches criteria and then change it
-                int count2 = 0;
-                while (line != null) {
-                    if (ind - 1 == count2) {
-                        line = edit;
+                    String line2 = buffReceiver.readLine();
+                    while (line2 != null) {
+                        readReceiverFile.add(line2);
+                        line2 = buffReceiver.readLine();
                     }
-                    readSenderFile.add(username + ": " + line);
-                    line = buffSender.readLine();
-                    count2++;
-                }
-                //write back to files
-                for (int i = 0; i < readSenderFile.size(); i++) {
-                    messageSenderWriter.write(readSenderFile.get(i));
-                    messageReceiveWriter.write(readSenderFile.get(i));
-                }
-                display.close();
-                buffSender.close();
-                messageSenderWriter.close();
-                messageReceiveWriter.close();
+                    // runs through senders file to find index and change to edit
+                    String extractNameAndTime;
+                    for (int i = 0; i < readSenderFile.size(); i++) {
+                        if (i == ind - 1) {
+                            extractNameAndTime = readSenderFile.get(i).substring(0, readSenderFile.get(i).indexOf("-") + 1);
+                            // this stores the message prior to editing so it can be found in the receivers file
+                            messageToChange = readSenderFile.get(i);
+                            edit = extractNameAndTime + " " + edit;
+                            readSenderFile.set(i, edit);
+                        }
+                    }
+                    // runs through the receivers file and finds the message to change, and changes it
+                    for (int i = 0; i < readReceiverFile.size(); i++) {
+                        if (readReceiverFile.get(i) == messageToChange) {
+                            readReceiverFile.set(i, edit);
+                        }
+                    }
+
+                    //write back to files
+                    for (int i = 0; i < readSenderFile.size(); i++) {
+                        messageSenderWriter.write(readSenderFile.get(i));
+                    }
+                    for (int i = 0; i < readReceiverFile.size(); i++) {
+                        messageReceiveWriter.write(readReceiverFile.get(i));
+                    }
+                    display.close();
+                    buffSender.close();
+                    buffReceiver.close();
+                    messageSenderWriter.close();
+                    messageReceiveWriter.close();
+                } else
+                    System.out.println("There is nothing in this file to edit.");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -420,23 +450,23 @@ public class MarketUser implements User{
     }
 
     /**
-        * Searches file for index that matches one given by the user to not add it to an arraylist and
-        * therefore not write it to the file
-         *
-        * @param recipient is name of sender
-         *
-        * @author John Brooks
-         */
+     * Searches file for index that matches one given by the user to not add it to an arraylist and
+     * therefore not write it to the file
+     *
+     * @param recipient
+     *
+     * @Author John Brooks
+     */
 
     public void deleteMessage(String recipient) {
         String fileRecipient = "";
         String fileSender = "";
         String message;
         String printFile;
-        int count = 1;
+        int count = 0;
         int flag;
         int indexOfDelete = -1;
-        
+
         if (isSeller) {
             fileSender = "data/sellers/" + username + "/";
             fileRecipient = "data/buyers/" + recipient + "/";
@@ -453,54 +483,57 @@ public class MarketUser implements User{
                 BufferedReader display = new BufferedReader(new FileReader(senderF));
                 printFile = display.readLine();
                 while (printFile != null) {
-                    System.out.println(count + ": " + printFile);
                     count++;
+                    System.out.println(count + ": " + printFile);
                     printFile = display.readLine();
                 }
-                BufferedReader buffSender = new BufferedReader(new FileReader(senderF));
-                FileOutputStream fosSend = new FileOutputStream(senderF, false);
-                PrintWriter messageSenderWriter = new PrintWriter(fosSend);
-                Scanner scan = new Scanner(System.in);
-                //get index of delete
-                System.out.println("Which index would you like to change?");
-                do {
-                    flag = 0;
-                    try {
-                        indexOfDelete = Integer.parseInt(scan.nextLine());
-                    } catch (NumberFormatException n) {
-                        flag++;
-                    }
-                    if (flag == 1 || (indexOfDelete < 1 || indexOfDelete > count))
-                        System.out.println("Your index must be a number and must be available. Try again:");
-                } while (flag == 1 || (indexOfDelete < 1 || indexOfDelete > count));
+                if (count > 0) {
+                    BufferedReader buffSender = new BufferedReader(new FileReader(senderF));
+                    FileOutputStream fosSend = new FileOutputStream(senderF, false);
+                    PrintWriter messageSenderWriter = new PrintWriter(fosSend);
+                    Scanner scan = new Scanner(System.in);
+                    //get index of delete
+                    do {
+                        flag = 0;
+                        try {
+                            indexOfDelete = Integer.parseInt(scan.nextLine());
+                        } catch (NumberFormatException n) {
+                            flag++;
+                        }
+                        if (flag == 1 || (indexOfDelete < 1 || indexOfDelete > count))
+                            System.out.println("Your index must be a number and must be available. Try again:");
+                    } while (flag == 1 || (indexOfDelete < 1 || indexOfDelete > count));
 
-                ArrayList<String> readSenderFile = new ArrayList<>();
-                String line = buffSender.readLine();
-                //run through array, add lines, and check throughout if line matches criteria then dont add it
-                int count2 = 1;
-                while (line != null) {
-                    if (!(count2 == indexOfDelete)) {
-                        readSenderFile.add(line);
+                    ArrayList<String> readSenderFile = new ArrayList<>();
+                    String line = buffSender.readLine();
+                    //run through array, add lines, and check throughout if line matches indexOfDelete then dont add it
+                    int count2 = 0;
+                    while (line != null) {
+                        count2++;
+                        if (count2 != indexOfDelete) {
+                            readSenderFile.add(line);
+                        }
+                        line = buffSender.readLine();
                     }
-                    line = buffSender.readLine();
-                    count2++;
-                }
-                for (int i = 0; i < readSenderFile.size(); i++) {
-                    messageSenderWriter.write(readSenderFile.get(i));
-                }
-                display.close();
-                buffSender.close();
-                messageSenderWriter.close();
+                    for (int i = 0; i < readSenderFile.size(); i++) {
+                        messageSenderWriter.write(readSenderFile.get(i));
+                    }
+                    display.close();
+                    buffSender.close();
+                    messageSenderWriter.close();
+                } else
+                    System.out.println("There is nothing in this file to delete.");
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-   /**
+    /**
      * Block a user if not already blocked
      * @param username: name of person to block
      * @return true if already blocked, false if notBlocked
+     * @throws IOException
      */
     public boolean blockUser(String username) {
         try {
@@ -527,11 +560,11 @@ public class MarketUser implements User{
             return false;
         }
     }
-    
+
     /**
      * Return a list of blocked users for this user
      * @return array of blocked usernames
-     * @throws IOException in case of error reading file
+     * @throws IOException
      */
     public String[] blockedList() throws IOException{
         ArrayList<String> victims = new ArrayList<>();
@@ -548,7 +581,7 @@ public class MarketUser implements User{
         }
         return blockedList;
     }
-    
+
     /**
      * unblocked a user from the blockedList() return array
      * @param username: name of person to unblock

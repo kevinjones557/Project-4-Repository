@@ -1,4 +1,0 @@
-john: what is up
-john: hello there
-john: another one, this one im deleting from john but should stay in destin
-john: wanted to know more about your prodduct
