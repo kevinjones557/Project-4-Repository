@@ -1,1 +1,6 @@
-john: hi
+john 11:07:00:41:58- hey, how is it going
+john 11:07:00:43:03- just wanted to check up
+john 11:07:00:43:23- one more for fun
+john 11:07:00:48:00- hey man
+john 11:07:00:48:11- how r u
+john 11:07:00:58:25- hi
