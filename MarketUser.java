@@ -599,7 +599,7 @@ public class MarketUser implements User{
                 }
             }
             bfr.close();
-            PrintWriter pw = new PrintWriter(new FileWriter(blockedFile, true));
+            PrintWriter pw = new PrintWriter(new FileWriter(blockedFile, false));
             for (String l : lines) {
                 pw.write(l);
                 pw.println();
