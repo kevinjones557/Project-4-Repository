@@ -12,7 +12,7 @@ public class MarketUser implements User{
     public static void main(String[] args) {
         MarketUser mu = new MarketUser("john",false);
         mu.message();
-        MarketUser.changeUsername("john","nathan");
+        MarketUser.changeUsername("destin","pringles");
     }
 
     /** Constructor creates new object with a username and tells object if it is a seller or not.
@@ -24,11 +24,12 @@ public class MarketUser implements User{
         this.isSeller = isSeller;
     }
 
+    //TODO add deleteUser()
+
     /** A static method that will change the names of files and directories to match username
      * @param oldUsername the username that is currently stored everywhere
      * @param newUsername the new username that everything will be changed to
      */
-
     public static void changeUsername(String oldUsername, String newUsername) {
         File sellerDirectories = new File("data/sellers/");
         File buyerDirectories = new File("data/buyers/");
@@ -161,7 +162,7 @@ public class MarketUser implements User{
                             if (checkIfRecipientExists(recipient)) {
                                 break; // at this point we know that the variable 'recipient' contains a valid username
                             } else {
-                                System.out.println("Sorry! This user does not exist!");
+                                System.out.println("Sorry! This buyer does not exist!");
                             }
                         } else if (selection == 2) { // if the user wants to see a list of people to contact
                             try {
@@ -703,3 +704,9 @@ public class MarketUser implements User{
         }
     }
 }
+/*
+Ted owns walmart and target
+john messages walmart 'hi' and target 'hello
+
+john(walmart)
+ */
