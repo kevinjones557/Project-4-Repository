@@ -65,6 +65,11 @@ public class LogIn {
         return (true);
     }
 
+    /**
+     * Updates the store list by adding a store name that has been confirmed to not be in use already
+     *
+     * @param storeName the store name being appended to the file
+     */
     public static void updateStoreList (String storeName) {
         try (PrintWriter pw = new PrintWriter(new FileOutputStream("users/storeNames", true))) {
             pw.println(storeName);
@@ -424,4 +429,3 @@ public class LogIn {
 //TODO prompt for email as well (check for @)
 //TODO add edit and delete functionality
 //TODO if user edits username, call MarketUser.changeUsername(oldUsername, newUsername) and then change username in yours as well
-//TODO if user is a seller prompt to add stores, make sure sellers can't add store that already exists
