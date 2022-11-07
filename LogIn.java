@@ -36,6 +36,44 @@ public class LogIn {
     }
 
     /**
+     * Checks to see if the given store name is already in use
+     *
+     * @param storeName the name of the store being checked
+     * @return boolean of if the store exists or not for handling in main
+     */
+    public static boolean checkStoreList (String storeName) {
+        try (BufferedReader br = new BufferedReader(new FileReader("users/storeNames"))) {
+            ArrayList<String> fileContents = new ArrayList<>();
+            String line = br.readLine();
+            if (line == null) {
+                updateStoreList(storeName);
+                return (true);
+            }
+            while (line != null) {
+                fileContents.add(line);
+                line = br.readLine();
+            }
+            for (int i = 0; i < fileContents.size(); i++) {
+                if (fileContents.get(i).equals(storeName)) {
+                    return (false);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("An unknown error occurred!");
+        }
+        updateStoreList(storeName);
+        return (true);
+    }
+
+    public static void updateStoreList (String storeName) {
+        try (PrintWriter pw = new PrintWriter(new FileOutputStream("users/storeNames", true))) {
+            pw.println(storeName);
+        } catch (Exception e) {
+            System.out.println("An unknown error occurred!");
+        }
+    }
+
+    /**
      * Encrypts the password of the user file when an account is created
      *
      * @param user the user whose password is being encrypted
@@ -154,10 +192,13 @@ public class LogIn {
                         while (!doneStores) {
                             System.out.println("Please enter your store name.");
                             String storeName = scan.nextLine();
-                            if (storeName.equals("")) {
-                                while (storeName.equals("")) {
-                                    System.out.println("Store name cannot be blank! Please enter a valid store name.");
+                            boolean nameChecked = checkStoreList(storeName);
+                            //skips line underneath
+                            if (storeName.equals("") || !nameChecked) {
+                                while (storeName.equals("") || !nameChecked) {
+                                    System.out.println("Store name is either blank or in use! Please enter a valid store name.");
                                     storeName = scan.nextLine();
+                                    nameChecked = checkStoreList(storeName);
                                 }
                             }
                             storeNames.add(storeName);
