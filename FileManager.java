@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,6 +24,8 @@ public class FileManager {
         }
     }
 
+    /** Returns all avaialable stores
+
     /**
      * Checks if a User with given username has an associated directory, and therefore exists
      *
@@ -35,8 +38,19 @@ public class FileManager {
         return false;
     }
 
-    public static String getStoreDirectory(String username, String storeName) {
-        return String.format("data/sellers/%s/%s", username, storeName);
+    public static String getStoreDirectory(String storeName) {
+        File sellers = new File("data/sellers");
+        String[] sellerNames = sellers.list();
+        for (String name : sellerNames) {
+            File stores = new File("data/sellers/" + name);
+            String[] storeNames = stores.list();
+            for (String store : storeNames) {
+                if (store.equals(storeName)) {
+                    return "data/sellers/" + name + "/" + storeName;
+                }
+            }
+        }
+        return "";
     }
 
 
