@@ -36,6 +36,49 @@ public class LogIn {
     }
 
     /**
+     * Checks to see if the given store name is already in use
+     *
+     * @param storeName the name of the store being checked
+     * @return boolean of if the store exists or not for handling in main
+     */
+    public static boolean checkStoreList (String storeName) {
+        try (BufferedReader br = new BufferedReader(new FileReader("users/storeNames"))) {
+            ArrayList<String> fileContents = new ArrayList<>();
+            String line = br.readLine();
+            if (line == null) {
+                updateStoreList(storeName);
+                return (true);
+            }
+            while (line != null) {
+                fileContents.add(line);
+                line = br.readLine();
+            }
+            for (String fileContent : fileContents) {
+                if (fileContent.equals(storeName)) {
+                    return (false);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("An unknown error occurred!");
+        }
+        updateStoreList(storeName);
+        return (true);
+    }
+
+    /**
+     * Updates the store list by adding a store name that has been confirmed to not be in use already
+     *
+     * @param storeName the store name being appended to the file
+     */
+    public static void updateStoreList (String storeName) {
+        try (PrintWriter pw = new PrintWriter(new FileOutputStream("users/storeNames", true))) {
+            pw.println(storeName);
+        } catch (Exception e) {
+            System.out.println("An unknown error occurred!");
+        }
+    }
+
+    /**
      * Encrypts the password of the user file when an account is created
      *
      * @param user the user whose password is being encrypted
@@ -108,8 +151,6 @@ public class LogIn {
             f = new File("users/" + user + "/" + user);
         } else {
             try {
-                // Make file in correct directory
-                //TODO FileManager.generateDirectoryFromUsername(user,true);
                 if (!dir.createNewFile()) {
                     while (!dir.createNewFile()) {
                         System.out.println("User already exists! Please enter another username.");
@@ -121,7 +162,7 @@ public class LogIn {
                 f = new File("users/" + user + "/" + user);
             } catch (Exception e) {
                 e.printStackTrace();
-                System.out.println("An unknown error occurred line 116!");
+                System.out.println("An unknown error occurred!");
             }
         }
         boolean fileStatus = writeFile(user);
@@ -129,31 +170,73 @@ public class LogIn {
         if (fileStatus) {
             try {
                 while (!done) {
-                    System.out.println("Please enter a password.");
+                    System.out.println("Please enter a password between 8 and 16 characters.");
                     String password = scan.nextLine();
+                    if (password.length() < 8 || password.length() > 16) {
+                        while (password.length() < 8 || password.length() > 16) {
+                            System.out.println("Password length must be between 8 and 16 characters! Please enter a valid password.");
+                            password = scan.nextLine();
+                        }
+                    }
                     fileStatus = writeFile(user, password);
                     if (!fileStatus) {
-                        break;
+                        System.out.println("An unknown error occurred! Please try again.");
                     }
                     encryptFile(user);
                     done = true;
                 }
                 done = false;
                 System.out.println("Are you a seller? Please enter 'yes' or 'no.'");
+                String isSeller = scan.nextLine();
                 while (!done) {
-                    String isSeller = scan.nextLine();
                     while (!isSeller.equalsIgnoreCase("yes") &&
                             !isSeller.equalsIgnoreCase("no")) {
                         System.out.println("Please enter 'yes' or 'no'!");
                         isSeller = scan.nextLine();
                     }
+                    //TODO make user confirm store name
                     if (isSeller.equalsIgnoreCase("yes")) {
                         isSeller = "true";
-                        System.out.println("Please enter your store name.");
-                        String storeName = scan.nextLine();
+                        FileManager.generateDirectoryFromUsername(user, true);
+                        boolean doneStores = false;
+                        ArrayList<String> storeNames = new ArrayList<>();
+                        while (!doneStores) {
+                            System.out.println("Please enter your store name.");
+                            String storeName = scan.nextLine();
+                            boolean nameChecked = checkStoreList(storeName);
+                            //skips line underneath
+                            if (storeName.equals("") || !nameChecked) {
+                                while (storeName.equals("") || !nameChecked) {
+                                    System.out.println("Store name is either blank or in use! Please enter a valid store name.");
+                                    storeName = scan.nextLine();
+                                    nameChecked = checkStoreList(storeName);
+                                }
+                            }
+                            storeNames.add(storeName);
+                            int input = -1;
+                            System.out.println("Enter '1' to add an additional store or '2' to finish adding stores.");
+                            boolean inputTaken = false;
+                            while (!inputTaken) {
+                                try {
+                                    input = scan.nextInt();
+                                    scan.nextLine();
+                                    if (input == 1 || input == 2) {
+                                        inputTaken = true;
+                                    } else {
+                                        System.out.println("Please enter '1' or '2' as input!");
+                                    }
+                                } catch (Exception e) {
+                                    System.out.println("Please enter '1' or '2' as input!");
+                                }
+                            }
+                            if (input == 2) {
+                                doneStores = true;
+                            }
+                        }
                         fileStatus = writeFile(user, isSeller);
-                        fileStatus = writeFile(user, storeName);
+                        fileStatus = writeFile(user, storeNames.toString());
                     } else {
+                        FileManager.generateDirectoryFromUsername(user, false);
                         isSeller = "false";
                         fileStatus = writeFile(user, isSeller);
                     }
@@ -304,6 +387,12 @@ public class LogIn {
             while (!done) {
                 try {
                     String user = scan.nextLine();
+                    if (user.contains(" ")) {
+                        while (user.contains(" ")) {
+                            System.out.println("Spaces are not permitted in usernames! Please enter a username without spaces.");
+                            user = scan.nextLine();
+                        }
+                    }
                     createUser(user, scan);
                     done = true;
                     return (user);
@@ -338,15 +427,6 @@ public class LogIn {
             } catch (Exception e) {
                 System.out.println("An unknown error occurred!");
             }
-            System.out.println("\nUser information:");
-            //TODO Users will be created/accessed by the following information:
-            System.out.printf("Username: %s%n" +
-                            "isSeller: %s%n",
-                    fileContents.get(0),
-                    fileContents.get(1));
-            if (fileContents.size() == 3) {
-                System.out.println("Store Name: " + fileContents.get(2));
-            }
         } else {
             System.out.println("Goodbye!");
         }
@@ -355,5 +435,4 @@ public class LogIn {
 //TODO prompt for email as well (check for @)
 //TODO add edit and delete functionality
 //TODO if user edits username, call MarketUser.changeUsername(oldUsername, newUsername) and then change username in yours as well
-//TODO if user is a seller prompt to add stores, make sure sellers can't add store that already exists
-//TODO make sure username doesn't have spaces
+//TODO limit password length
