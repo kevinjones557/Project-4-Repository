@@ -1,7 +1,6 @@
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.SQLOutput;
 import java.util.*;
 import java.text.SimpleDateFormat;
 
@@ -24,7 +23,12 @@ public class MarketUser implements User{
         this.isSeller = isSeller;
     }
 
-    //TODO add deleteUser()
+    /** A static method that will change the names of files and directories to match username
+     * @param username the username that is currently stored everywhere
+     */
+    public static void deleteUsername(String username) throws UserNotFoundException{
+        FileUtils.d
+    }
 
     /** A static method that will change the names of files and directories to match username
      * @param oldUsername the username that is currently stored everywhere
