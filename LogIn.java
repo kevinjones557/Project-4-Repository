@@ -46,7 +46,6 @@ public class LogIn {
             ArrayList<String> fileContents = new ArrayList<>();
             String line = br.readLine();
             if (line == null) {
-                updateStoreList(storeName);
                 return (true);
             }
             while (line != null) {
@@ -61,7 +60,6 @@ public class LogIn {
         } catch (Exception e) {
             System.out.println("An unknown error occurred!");
         }
-        updateStoreList(storeName);
         return (true);
     }
 
@@ -212,9 +210,25 @@ public class LogIn {
                                     nameChecked = checkStoreList(storeName);
                                 }
                             }
-                            storeNames.add(storeName);
+                            System.out.println("Are you sure you want to add this store to your account? Enter 'yes' to confirm or 'no' to abort.");
+                            String addStore = "";
+                            boolean storeInput = false;
+                            while (!storeInput) {
+                                try {
+                                    addStore = scan.nextLine();
+                                    if (addStore.equals("yes") || addStore.equals("no")) {
+                                        storeInput = true;
+                                    }
+                                } catch (Exception e) {
+                                    System.out.println("Please enter valid input!");
+                                }
+                            }
+                            if (addStore.equalsIgnoreCase("yes")) {
+                                storeNames.add(storeName);
+                                updateStoreList(storeName);
+                            }
                             int input = -1;
-                            System.out.println("Enter '1' to add an additional store or '2' to finish adding stores.");
+                            System.out.println("Enter '1' to add a store or '2' to finish adding stores.");
                             boolean inputTaken = false;
                             while (!inputTaken) {
                                 try {
@@ -229,8 +243,10 @@ public class LogIn {
                                     System.out.println("Please enter '1' or '2' as input!");
                                 }
                             }
-                            if (input == 2) {
+                            if (input == 2 && !storeNames.isEmpty()) {
                                 doneStores = true;
+                            } else if (input == 2 && storeNames.isEmpty()){
+                                System.out.println("Sellers must have at least one store! Please add a store before continuing.");
                             }
                         }
                         fileStatus = writeFile(user, isSeller);
@@ -245,7 +261,20 @@ public class LogIn {
                     }
                     done = true;
                 }
+                done = false;
+                String email = null;
+                System.out.println("Please enter an email to be associated with your account.");
+                while (!done) {
+                    email = scan.nextLine();
+                    if (email.equals("") || !email.contains("@")) {
+                        System.out.println("That's not a valid email! Please enter an email with a valid name and domain.");
+                    } else {
+                        done = true;
+                    }
+                }
+                writeFile(user, email);
             } catch (Exception e) {
+                e.printStackTrace();
                 System.out.println("Please enter a valid String input!");
             }
         }
@@ -282,10 +311,12 @@ public class LogIn {
 
     /**
      * Allows users to log in OR calls methods above and builds a file of the following format for a new user:
+     *
      * username
      * password (encrypted)
      * isSeller (true or false)
-     * storeName (included ONLY is user isSeller)
+     * [storeName(s)] array in String representation (included ONLY is user isSeller)
+     * email address
      *
      * @return String of the user's name
      */
@@ -432,7 +463,6 @@ public class LogIn {
         }
     }
 }
-//TODO prompt for email as well (check for @)
 //TODO add edit and delete functionality
 //TODO if user edits username, call MarketUser.changeUsername(oldUsername, newUsername) and then change username in yours as well
 //TODO limit password length
