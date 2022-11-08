@@ -53,8 +53,8 @@ public class LogIn {
                 fileContents.add(line);
                 line = br.readLine();
             }
-            for (int i = 0; i < fileContents.size(); i++) {
-                if (fileContents.get(i).equals(storeName)) {
+            for (String fileContent : fileContents) {
+                if (fileContent.equals(storeName)) {
                     return (false);
                 }
             }
@@ -162,7 +162,7 @@ public class LogIn {
                 f = new File("users/" + user + "/" + user);
             } catch (Exception e) {
                 e.printStackTrace();
-                System.out.println("An unknown error occurred line 116!");
+                System.out.println("An unknown error occurred!");
             }
         }
         boolean fileStatus = writeFile(user);
@@ -170,11 +170,17 @@ public class LogIn {
         if (fileStatus) {
             try {
                 while (!done) {
-                    System.out.println("Please enter a password.");
+                    System.out.println("Please enter a password between 8 and 16 characters.");
                     String password = scan.nextLine();
+                    if (password.length() < 8 || password.length() > 16) {
+                        while (password.length() < 8 || password.length() > 16) {
+                            System.out.println("Password length must be between 8 and 16 characters! Please enter a valid password.");
+                            password = scan.nextLine();
+                        }
+                    }
                     fileStatus = writeFile(user, password);
                     if (!fileStatus) {
-                        break;
+                        System.out.println("An unknown error occurred! Please try again.");
                     }
                     encryptFile(user);
                     done = true;
@@ -429,3 +435,4 @@ public class LogIn {
 //TODO prompt for email as well (check for @)
 //TODO add edit and delete functionality
 //TODO if user edits username, call MarketUser.changeUsername(oldUsername, newUsername) and then change username in yours as well
+//TODO limit password length
