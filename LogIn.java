@@ -192,7 +192,6 @@ public class LogIn {
                         System.out.println("Please enter 'yes' or 'no'!");
                         isSeller = scan.nextLine();
                     }
-                    //TODO make user confirm store name
                     if (isSeller.equalsIgnoreCase("yes")) {
                         isSeller = "true";
                         FileManager.generateDirectoryFromUsername(user, true);
@@ -465,4 +464,3 @@ public class LogIn {
 }
 //TODO add edit and delete functionality
 //TODO if user edits username, call MarketUser.changeUsername(oldUsername, newUsername) and then change username in yours as well
-//TODO limit password length
