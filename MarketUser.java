@@ -14,7 +14,8 @@ public class MarketUser implements User{
     public LinkedHashMap<String,String> storeNameMap;
 
     public static void main(String[] args) {
-        MarketUser mu = new MarketUser("nathan",false, false);
+        MarketUser mu = new MarketUser("storeTest",true, true);
+        MarketUser.changeUsername("nathan","harlom");
         mu.message();
     }
 
@@ -59,20 +60,45 @@ public class MarketUser implements User{
             File currentSeller = new File("data/sellers/" + seller);
             String[] allFiles = currentSeller.list();
             for (String filename : allFiles) {
-                int indexOldUsername = filename.indexOf(oldUsername);
-                if (indexOldUsername >= 0) {
-                    changeNameInFile(oldUsername, newUsername, "data/sellers/" + seller + "/" + filename);
-                    String newFilename;
-                    if (indexOldUsername == 0) {
-                        newFilename = newUsername + filename.substring(oldUsername.length());
-                    } else {
-                        newFilename = filename.substring(0,indexOldUsername) + newUsername + ".txt";
+                File possibleStore = new File("data/sellers/" + seller + "/" + filename);
+                if (possibleStore.isDirectory()) {
+                    String[] storeFiles = possibleStore.list();
+                    for (String storeFile : storeFiles) {
+                        int indexOldUsername = storeFile.indexOf(oldUsername);
+                        if (indexOldUsername >= 0) {
+                            changeNameInFile(oldUsername, newUsername, "data/sellers/" + seller + "/"
+                                    + filename + "/" + storeFile);
+                            String newFilename;
+                            if (indexOldUsername == 0) {
+                                newFilename = newUsername + filename.substring(oldUsername.length());
+                            } else {
+                                newFilename = filename.substring(0,indexOldUsername) + newUsername + ".txt";
+                            }
+                            try {
+                                Files.move(Paths.get("data/sellers/" + seller + "/"
+                                        + filename + "/" + storeFile), Paths.get("data/sellers/" + seller + "/"
+                                        + filename + "/" + newFilename));
+                            } catch (IOException e) {
+                                System.out.println("Sorry, failed to rename user!");
+                            }
+                        }
                     }
-                    try {
-                        Files.move(Paths.get("data/sellers/" + seller + "/" + filename), Paths.get("data/sellers/"
-                                + seller + "/" + newFilename));
-                    } catch (IOException e) {
-                        System.out.println("Sorry, failed to rename user!");
+                } else {
+                    int indexOldUsername = filename.indexOf(oldUsername);
+                    if (indexOldUsername >= 0) {
+                        changeNameInFile(oldUsername, newUsername, "data/sellers/" + seller + "/" + filename);
+                        String newFilename;
+                        if (indexOldUsername == 0) {
+                            newFilename = newUsername + filename.substring(oldUsername.length());
+                        } else {
+                            newFilename = filename.substring(0, indexOldUsername) + newUsername + ".txt";
+                        }
+                        try {
+                            Files.move(Paths.get("data/sellers/" + seller + "/" + filename), Paths.get("data/sellers/"
+                                    + seller + "/" + newFilename));
+                        } catch (IOException e) {
+                            System.out.println("Sorry, failed to rename user!");
+                        }
                     }
                 }
             }
@@ -88,6 +114,8 @@ public class MarketUser implements User{
         for (String buyer : buyers) {
             File currentBuyer = new File("data/buyers/" + buyer);
             String[] allFiles = currentBuyer.list();
+            System.out.println(buyer);
+            System.out.println(Arrays.toString(allFiles));
             for (String filename : allFiles) {
                 int indexOldUsername = filename.indexOf(oldUsername);
                 if (indexOldUsername >= 0) {
@@ -286,14 +314,15 @@ public class MarketUser implements User{
                 System.out.printf("Connected with %s!\nPlease select an option:\n", recipient);
                 boolean stayConnected;
                 do {
-                    System.out.println("1. Send a message\n" +
-                            "2. Edit a message\n" +
-                            "3. Delete a message\n" +
-                            "4. Block this " + ((this.isSeller) ? "buyer\n" : "store\n") +
-                            "5. Unblock this " + ((this.isSeller) ? "buyer\n" : "store\n") +
-                            "6. Import a .txt file\n" +
-                            "7. Export message as a .csv file\n" +
-                            "8. Cancel");
+                    System.out.println("1. View message history\n" +
+                            "2. Send a message\n" +
+                            "3. Edit a message\n" +
+                            "4. Delete a message\n" +
+                            "5. Block this " + ((this.isSeller) ? "buyer\n" : "store\n") +
+                            "6. Unblock this " + ((this.isSeller) ? "buyer\n" : "store\n") +
+                            "7. Import a .txt file\n" +
+                            "8. Export message as a .csv file\n" +
+                            "9. Cancel");
                     selection = -1;
                     do {
                         try {
@@ -306,9 +335,12 @@ public class MarketUser implements User{
                             System.out.println("Please enter a valid number:");
                             scan.nextLine();
                         }
-                    } while ((selection < 1 || selection > 8));
+                    } while ((selection < 1 || selection > 9));
                     switch (selection) {
                         case 1:
+                            displayMessage(recipient);
+                            break;
+                        case 2:
                             if (!isRecipientStore && !isUserStore) {
                                 appendMessage(recipient);
                             } else if (isRecipientStore) {
@@ -317,21 +349,25 @@ public class MarketUser implements User{
                                 appendMessage(storeNameMap.get(username),recipient);
                             }
                             break;
-                        case 2:
-                            if (!isRecipientStore) {
-                                editMessage(recipient);
-                            } else {
-                                editMessage(storeNameMap.get(recipient),recipient);
-                            }
-                            break;
                         case 3:
-                            if (!isRecipientStore) {
-                                deleteMessage(recipient);
+                            if (!isRecipientStore && !isUserStore) {
+                                editMessage(recipient);
+                            } else if (isRecipientStore) {
+                                editMessage(storeNameMap.get(recipient),recipient);
                             } else {
-                                deleteMessage(storeNameMap.get(recipient),recipient);
+                                editMessage(storeNameMap.get(username),recipient);
                             }
                             break;
                         case 4:
+                            if (!isRecipientStore && !isUserStore) {
+                                deleteMessage(recipient);
+                            } else if (isRecipientStore) {
+                                deleteMessage(storeNameMap.get(recipient),recipient);
+                            } else {
+                                deleteMessage(storeNameMap.get(username),recipient);
+                            }
+                            break;
+                        case 5:
                             boolean alreadyBlocked = blockUser(recipient);
                             if(alreadyBlocked) {
                                 System.out.println("Current user has already blocked " + recipient);
@@ -339,11 +375,27 @@ public class MarketUser implements User{
                                 System.out.println("Successfully blocked " + recipient);
                             }
                             break;
-                        case 5:
+                        case 6:
                             unblockUser(recipient);
                             break;
-                        // TODO case 6 -> implement;
-                        // TODO case 7 -> implement;
+                        case 7:
+                            String path;
+                            System.out.println("Please enter the path to the text file you would like to import or " +
+                                    "type 'cancel' to Cancel.");
+                            do {
+                                path = scan.nextLine();
+                                if (path.equalsIgnoreCase("cancel")) {
+                                    break;
+                                }
+                                if (path.endsWith(".txt")) {
+                                    break;
+                                }
+                                System.out.println("Please enter a valid path");
+                            } while (!path.endsWith(".txt"));
+                            if (!path.equalsIgnoreCase("cancel")) {
+                                importFile(path, recipient, isRecipientStore);
+                            }
+                        // TODO case 8 -> implement;
                     }
                     System.out.println("Would you like to complete another action with this user? (Yes,No)");
                     stayConnected = scan.nextLine().equals("yes");
@@ -359,7 +411,7 @@ public class MarketUser implements User{
     /**
      * Get a list of users that this user can message
      * @return an array of available people for messaging
-     * @throws IOException
+     * @throws IOException if error
      */
     public String[] getAvailableUsers() throws IOException {
         ArrayList<String> available = new ArrayList<>();
@@ -415,7 +467,7 @@ public class MarketUser implements User{
     /**
      * Get a list of users that this user can message
      * @return an array of available people for messaging
-     * @throws IOException
+     * @throws IOException in case of error
      */
     public String[] getAvailableStores() throws IOException {
         boolean invisible = true;
@@ -427,6 +479,7 @@ public class MarketUser implements User{
             for (String seller : possibleSellers) {
                 if (seller.equals(name)) {
                     invisible = false;
+                    break;
                 }
             }
             if (!invisible) {
@@ -494,9 +547,9 @@ public class MarketUser implements User{
     /**
      * Creates filepath to message files and calls append execution
      *
-     * @param recipient
+     * @param recipient user to send to
      *
-     * @Author John Brooks
+     * @author John Brooks
      */
 
     public void appendMessage(String recipient) {
@@ -535,6 +588,35 @@ public class MarketUser implements User{
             fileSender = "data/sellers/" + seller + "/" + username + "/";
             fileRecipient = "data/buyers/" + recipient + "/";
             appendMessageExecute(recipient, fileSender, fileRecipient);
+        }
+    }
+
+    /**
+     * Simply displays message contents
+     *
+     * @param recipient receiver of message
+     * @author Kevin Jones
+     */
+    public void displayMessage(String recipient) {
+        String path = "";
+        if (isUserStore) {
+            path = FileManager.getStoreDirectory(storeNameMap.get(username),username) + "/";
+        } else {
+            try {
+                path = FileManager.getDirectoryFromUsername(recipient);
+            } catch (UserNotFoundException u) {
+                System.out.println("Unable to load message1");
+            }
+        }
+        try (BufferedReader bfr = new BufferedReader(new FileReader(path + username + recipient + ".txt"))) {
+            String line = bfr.readLine();
+            while (line != null) {
+                System.out.println(line);
+                line = bfr.readLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Unable to load message");
         }
     }
 
@@ -618,13 +700,14 @@ public class MarketUser implements User{
     public void editMessage(String seller, String recipient) {
         String fileRecipient;
         String fileSender;
-        if (!isUserStore) { // this means recipient is the storeName
+        if (!isUserStore) { // this means recipient is the store
             fileSender = "data/buyers/" + username + "/";
             fileRecipient = "data/sellers/" + seller + "/" + recipient + "/";
             editMessageExecute(recipient, fileSender, fileRecipient);
         } else {
             fileSender = "data/sellers/" + seller + "/" + username + "/";
             fileRecipient = "data/buyers/" + recipient + "/";
+            System.out.println(fileSender + "\n" + fileRecipient);
             editMessageExecute(recipient, fileSender, fileRecipient);
         }
     }
@@ -844,6 +927,58 @@ public class MarketUser implements User{
                 e.printStackTrace();
             }
         }
+    }
+    /**
+     * imports .txt file if path provided is valid
+     * @param path: path of file
+     * @param recipient recipient of message
+     * @param isRecipientStore whether recipient is store or not
+     */
+
+    public void importFile(String path, String recipient, boolean isRecipientStore) {
+        // set up paths to correct files
+        String fileSender;
+        String fileReceiver;
+        if (isUserStore) {
+            fileSender = FileManager.getStoreDirectory(storeNameMap.get(username),username);
+            fileReceiver = "data/buyers/" + recipient + "/";
+        } else if (isSeller) {
+            fileReceiver = "data/buyers/" + recipient + "/";
+            fileSender = "data/sellers/" + username + "/";
+        } else if (isRecipientStore) {
+            fileSender = "data/buyers/" + username + "/";
+            fileReceiver = FileManager.getStoreDirectory(storeNameMap.get(recipient),recipient);
+        } else {
+            fileReceiver = "data/sellers/" + recipient + "/";
+            fileSender = "data/buyers/" + username + "/";
+        }
+
+        fileReceiver += recipient + username + ".txt";
+        fileSender += username + recipient + ".txt";
+
+        File senderFile = new File(fileSender);
+        File receiverFile = new File(fileReceiver);
+        File importFile = new File(path);
+        try (BufferedReader bfr = new BufferedReader(new FileReader(importFile))) {
+            PrintWriter pwReceiver = new PrintWriter(new FileWriter(receiverFile,true));
+            PrintWriter pwSender = new PrintWriter(new FileWriter(senderFile,true));
+
+            String timeStamp = new SimpleDateFormat("MM/dd HH:mm:ss").format(new java.util.Date());
+
+            String line = bfr.readLine();
+            while (line != null) {
+                pwSender.print(username + " " + timeStamp + "- ");
+                pwReceiver.print(username + " " + timeStamp + "- ");
+                pwReceiver.println(line);
+                pwSender.println(line);
+                line = bfr.readLine();
+            }
+            pwReceiver.close();
+            pwSender.close();
+        } catch (IOException e) {
+            System.out.println("Error reading file!");
+        }
+
     }
 
     /**
