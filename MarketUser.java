@@ -435,7 +435,7 @@ public class MarketUser implements User{
     }
 
     /**
-     * Adds message to both sender and receiver file
+     * Creates filepath to message files and calls append execution
      *
      * @param recipient
      *
@@ -446,8 +446,6 @@ public class MarketUser implements User{
 
         String fileRecipient = "";
         String fileSender = "";
-        String message;
-        String printFile;
 
         if (isSeller) {
             fileSender = "data/sellers/" + username + "/";
@@ -456,6 +454,47 @@ public class MarketUser implements User{
             fileSender = "data/buyers/" + username + "/";
             fileRecipient = "data/sellers/" + recipient + "/";
         }
+        appendMessageExecute(recipient, fileSender, fileRecipient);
+    }
+
+    /**
+     * Creates filepath to message files and calls append execution, overloaded in the case of
+     * messaging a store
+     *
+     * @param recipient receiver of message
+     * @param storeName name of store
+     *
+     * @author John Brooks
+     */
+
+    public void appendMessage(String recipient, String storeName) {
+
+        String fileRecipient = "";
+        String fileSender = "";
+
+        if (isSeller) {
+            fileSender = "data/sellers/" + username + "/" + storeName + "/";
+            fileRecipient = "data/buyers/" + recipient + "/";
+        } else {
+            fileSender = "data/buyers/" + username + "/";
+            fileRecipient = "data/sellers/" + recipient + "/" + storeName + "/";
+        }
+        appendMessageExecute(recipient, fileSender, fileRecipient);
+    }
+
+    /**
+     * Executes appending by prompting for and adding message to both files given
+     *
+     * @param recipient receiver of message
+     * @param fileSender is path to Senders file
+     * @param fileRecipient is path to Receivers file
+     *
+     * @author John Brooks
+     */
+    public void appendMessageExecute(String recipient, String fileSender, String fileRecipient) {
+        String message;
+        String printFile;
+
         File senderF = new File(fileSender + username + recipient + ".txt");
         File recipientF = new File(fileRecipient + recipient + username + ".txt");
         if (senderF.exists() && recipientF.exists()) {
@@ -485,25 +524,19 @@ public class MarketUser implements User{
                 e.printStackTrace();
             }
         }
-    } // add to both files
+    }
 
     /**
-     * Searches file for index that matches one given by the user and changes that line and
-     * writes it back to the file
+     * Prepares to execute edit by forming file paths
      *
-     * @param recipient
+     * @param recipient receiver of message
      *
-     * @Author John Brooks
+     * @author John Brooks
      */
     public void editMessage(String recipient) {
 
         String fileRecipient = "";
         String fileSender = "";
-        String message;
-        String printFile;
-        int count = 0;
-        int ind = -1;
-        int flag;
 
         if (isSeller) {
             fileSender = "data/sellers/" + username + "/";
@@ -512,6 +545,49 @@ public class MarketUser implements User{
             fileSender = "data/buyers/" + username + "/";
             fileRecipient = "data/sellers/" + recipient + "/";
         }
+        editMessageExecute(recipient, fileSender, fileRecipient);
+    }
+
+    /**
+     * Prepares to execute edit by forming file paths with store name in case of overload
+     *
+     * @param recipient receiver of message
+     * @param storeName name of store
+     *
+     * @author John Brooks
+     */
+    public void editMessage(String recipient, String storeName) {
+
+        String fileRecipient = "";
+        String fileSender = "";
+
+        if (isSeller) {
+            fileSender = "data/sellers/" + username + "/" + storeName + "/";
+            fileRecipient = "data/buyers/" + recipient + "/";
+        } else {
+            fileSender = "data/buyers/" + username + "/";
+            fileRecipient = "data/sellers/" + recipient + "/" + storeName + "/";
+        }
+        editMessageExecute(recipient, fileSender, fileRecipient);
+    }
+
+    /**
+     * Searches file for index that matches one given by the user and changes that line and
+     * writes it back to the file
+     *
+     * @param recipient receives file
+     * @param fileSender sender file path
+     * @param fileRecipient recipient file path
+     *
+     * @author John Brooks
+     */
+    public void editMessageExecute(String recipient, String fileSender, String fileRecipient) {
+        String message;
+        String printFile;
+        int count = 0;
+        int ind = -1;
+        int flag;
+
         File senderF = new File(fileSender + username + recipient + ".txt");
         File recipientF = new File(fileRecipient + recipient + username + ".txt");
 
@@ -595,25 +671,19 @@ public class MarketUser implements User{
                 e.printStackTrace();
             }
         }
-
     }
 
     /**
-     * Searches file for index that matches one given by the user to not add it to an arraylist and
-     * therefore not write it to the file
+     * Prepares to execute delete by forming file paths
      *
-     * @param recipient
+     * @param recipient receiver of message
      *
-     * @Author John Brooks
+     * @author John Brooks
      */
-
     public void deleteMessage(String recipient) {
+
         String fileRecipient = "";
         String fileSender = "";
-        String printFile;
-        int count = 0;
-        int flag;
-        int indexOfDelete = -1;
 
         if (isSeller) {
             fileSender = "data/sellers/" + username + "/";
@@ -622,6 +692,47 @@ public class MarketUser implements User{
             fileSender = "data/buyers/" + username + "/";
             fileRecipient = "data/sellers/" + recipient + "/";
         }
+        deleteMessageExecute(recipient, fileSender, fileRecipient);
+    }
+
+    /**
+     * Prepares to execute delete by forming file paths with store name in case of overload
+     *
+     * @param recipient receiver of message
+     * @param storeName name of store
+     *
+     * @author John Brooks
+     */
+    public void deleteMessage(String recipient, String storeName) {
+
+        String fileRecipient = "";
+        String fileSender = "";
+
+        if (isSeller) {
+            fileSender = "data/sellers/" + username + "/" + storeName + "/";
+            fileRecipient = "data/buyers/" + recipient + "/";
+        } else {
+            fileSender = "data/buyers/" + username + "/";
+            fileRecipient = "data/sellers/" + recipient + "/" + storeName + "/";
+        }
+        deleteMessageExecute(recipient, fileSender, fileRecipient);
+    }
+
+    /**
+     * Searches file for index that matches one given by the user to not add it to an arraylist and
+     * therefore not write it to the file
+     *
+     * @param recipient receiver of message
+     *
+     * @author John Brooks
+     */
+
+    public void deleteMessageExecute(String recipient, String fileSender, String fileRecipient) {
+        String printFile;
+        int count = 0;
+        int flag;
+        int indexOfDelete = -1;
+
         File senderF = new File(fileSender + username + recipient + ".txt");
         File recipientF = new File(fileRecipient + recipient + username + ".txt");
         ArrayList<String> readSenderFile = new ArrayList<>();
