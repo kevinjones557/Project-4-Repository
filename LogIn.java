@@ -65,6 +65,12 @@ public class LogIn {
         return (true);
     }
 
+    /**
+     * Returns the stores that a user has registered under their username
+     *
+     * @param user user's username
+     * @return String representation of the user's stores
+     */
     public static String getUsersStores(String user) {
         try (BufferedReader br = new BufferedReader(new FileReader("users/" + user + "/" + user))) {
             String stores = "";
@@ -84,7 +90,11 @@ public class LogIn {
         }
     }
 
-    //TODO add comments for these methods
+    /**
+     * Removes a deleted user's stores from the store list
+     *
+     * @param storesString String representation of the user's stores
+     */
     public static void appendStoreList(String storesString) {
         try (BufferedReader br = new BufferedReader(new FileReader("users/storeNames"))) {
             List<String> stores = Arrays.asList(storesString.split(", "));
@@ -111,6 +121,13 @@ public class LogIn {
         }
     }
 
+
+    /**
+     * Deletes user's account from both central database and local account information database
+     *
+     * @param user user's username
+     * @param scan scanner to capture input
+     */
     public static void deleteUser(String user, Scanner scan) {
         System.out.println("Are you sure you want to delete your account? Enter 'yes' to confirm or 'no' to abort.");
         String response = "";
@@ -555,6 +572,5 @@ public class LogIn {
         }
     }
 }
-//TODO add edit and delete functionality
+//TODO add edit functionality
 //TODO if user edits username, call MarketUser.changeUsername(oldUsername, newUsername) and then change username in yours as well
-//TODO when deleted call MarketUser.deleteUsername()
