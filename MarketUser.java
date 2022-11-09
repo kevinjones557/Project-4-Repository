@@ -14,7 +14,7 @@ public class MarketUser implements User{
     public LinkedHashMap<String,String> storeNameMap;
 
     public static void main(String[] args) {
-        MarketUser mu = new MarketUser("nathan",false, false);
+        MarketUser mu = new MarketUser("storeTest",true, true);
         mu.message();
     }
 
@@ -318,17 +318,21 @@ public class MarketUser implements User{
                             }
                             break;
                         case 2:
-                            if (!isRecipientStore) {
+                            if (!isRecipientStore && !isUserStore) {
                                 editMessage(recipient);
-                            } else {
+                            } else if (isRecipientStore) {
                                 editMessage(storeNameMap.get(recipient),recipient);
+                            } else {
+                                editMessage(storeNameMap.get(username),recipient);
                             }
                             break;
                         case 3:
-                            if (!isRecipientStore) {
+                            if (!isRecipientStore && !isUserStore) {
                                 deleteMessage(recipient);
-                            } else {
+                            } else if (isRecipientStore) {
                                 deleteMessage(storeNameMap.get(recipient),recipient);
+                            } else {
+                                deleteMessage(storeNameMap.get(username),recipient);
                             }
                             break;
                         case 4:
@@ -615,13 +619,14 @@ public class MarketUser implements User{
     public void editMessage(String seller, String recipient) {
         String fileRecipient;
         String fileSender;
-        if (!isUserStore) { // this means recipient is the storeName
+        if (!isUserStore) { // this means recipient is the store
             fileSender = "data/buyers/" + username + "/";
             fileRecipient = "data/sellers/" + seller + "/" + recipient + "/";
             editMessageExecute(recipient, fileSender, fileRecipient);
         } else {
             fileSender = "data/sellers/" + seller + "/" + username + "/";
             fileRecipient = "data/buyers/" + recipient + "/";
+            System.out.println(fileSender + "\n" + fileRecipient);
             editMessageExecute(recipient, fileSender, fileRecipient);
         }
     }
