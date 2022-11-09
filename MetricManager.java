@@ -15,12 +15,12 @@ public class MetricManager {
      * @param message The Seller's message to be parsed
      * @param delete whether this message is being deleted
      */
-    public static void addDeleteMessageData(String username, String storeName, String message, boolean delete) {
+    public static void addDeleteMessageData(String username, String storePath, String message, boolean delete) {
         int messageCount = 0;
         String filePath;
         try {
-            if (storeName != null) {
-                filePath = "data/" + username + "/" + storeName;
+            if (storePath != null) {
+                filePath = storePath;
             } else {
                 filePath = FileManager.getDirectoryFromUsername(username);
             }
@@ -100,11 +100,11 @@ public class MetricManager {
      * @param previousMessage The Seller's previous message
      * @param newMessage The Seller's new, edited message
      */
-    public static void editMessageData(String username, String storeName, String previousMessage, String newMessage) {
+    public static void editMessageData(String username, String storePath, String previousMessage, String newMessage) {
         int messageCount = 0;
         String filePath;
         try {
-            if (storeName != null) { filePath = FileManager.getStoreDirectory(username, storeName); }
+            if (storePath != null) { filePath = storePath; }
             else { filePath = FileManager.getDirectoryFromUsername(username);
             }
         } catch (UserNotFoundException e) {
