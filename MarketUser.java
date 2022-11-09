@@ -924,11 +924,11 @@ public class MarketUser implements User{
             PrintWriter pwSender = new PrintWriter(new FileWriter(senderFile,true));
 
             String timeStamp = new SimpleDateFormat("MM/dd HH:mm:ss").format(new java.util.Date());
-            pwSender.print(username + " " + timeStamp + "- ");
-            pwReceiver.print(username + " " + timeStamp + "- ");
 
             String line = bfr.readLine();
             while (line != null) {
+                pwSender.print(username + " " + timeStamp + "- ");
+                pwReceiver.print(username + " " + timeStamp + "- ");
                 pwReceiver.println(line);
                 pwSender.println(line);
                 line = bfr.readLine();
