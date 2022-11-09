@@ -579,7 +579,6 @@ public class MarketUser implements User{
                 if (isSeller) {
                     MetricManager.addDeleteMessageData(username, fileSender, message, false);
                 }
-                MetricManager.addDeleteMessage(username, 
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -727,7 +726,7 @@ public class MarketUser implements User{
                     messageReceiveWriter.close();
                     if (isSeller) {
                         messageToChange = messageToChange.substring(messageToChange.indexOf("-") + 1);
-                        MetricManager.addDeleteMessageData(username, fileSender, messageToChange, edit);
+                        MetricManager.editMessageData(username, fileSender, messageToChange, edit);
                     }
                 } else
                     System.out.println("There is nothing in this file to edit.");
