@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.LinkedHashMap;
 
 /** Handles various file management methods for the program
  * @author Destin Groves
@@ -16,15 +17,13 @@ public class FileManager {
      */
     public static String getDirectoryFromUsername(String username) throws UserNotFoundException {
         if (Files.exists(Paths.get("data/buyers/"+username))) {
-            return "data/buyers/"+username;
+            return "data/buyers/"+username+"/";
         } else if (Files.exists(Paths.get("data/sellers/"+username))) {
-            return "data/sellers/"+username;
+            return "data/sellers/"+username+"/";
         } else {
             throw new UserNotFoundException("The requested User does not exist!");
         }
     }
-
-    /** Returns all avaialable stores
 
     /**
      * Checks if a User with given username has an associated directory, and therefore exists
@@ -38,19 +37,8 @@ public class FileManager {
         return false;
     }
 
-    public static String getStoreDirectory(String storeName) {
-        File sellers = new File("data/sellers");
-        String[] sellerNames = sellers.list();
-        for (String name : sellerNames) {
-            File stores = new File("data/sellers/" + name);
-            String[] storeNames = stores.list();
-            for (String store : storeNames) {
-                if (store.equals(storeName)) {
-                    return "data/sellers/" + name + "/" + storeName;
-                }
-            }
-        }
-        return "";
+    public static String getStoreDirectory(String username, String storeName) {
+        return String.format("data/sellers/%s/%s/", username, storeName);
     }
 
 
@@ -74,5 +62,41 @@ public class FileManager {
         } catch (IOException e) {
             return false;
         }
+    }
+
+    /** Generates a store subdirectory for a Seller user.
+     *
+     * @param username the Username of the Seller
+     * @param storeName the name of the Store the Seller wishes to make
+     * @return true if the directory was created, false if the directory already exists or an exception occurs.
+     */
+    public static boolean generateStoreForSeller(String username, String storeName) {
+        try {
+            Path filePath = Files.createDirectory(Paths.get(getDirectoryFromUsername(username) + storeName));
+            Files.createFile(Paths.get(filePath+"/metrics.txt"));
+            return true;
+        } catch (UserNotFoundException e) {
+            System.out.println("Seller not found.");
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static LinkedHashMap<String, String> mapStoresToSellers() {
+        LinkedHashMap<String, String> storesMapped = new LinkedHashMap<>();
+        String[] sellerList = new File("data/sellers/").list();
+        for (String seller : sellerList) {
+            String[] storesOwned = new File("data/sellers/"+seller).list();
+            for (String store : storesOwned) {
+                storesMapped.put(store, seller);
+            }
+        }
+        return storesMapped;
+    }
+
+    public static String getSellerFromStore(String storeName, LinkedHashMap<String, String> dataList) {
+        return dataList.get(storeName);
     }
 }

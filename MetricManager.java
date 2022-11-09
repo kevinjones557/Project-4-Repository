@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /** Handles various metric data for Sellers
  *
@@ -95,11 +96,13 @@ public class MetricManager {
      * @param previousMessage The Seller's previous message
      * @param newMessage The Seller's new, edited message
      */
-    public static void editMessageData(String username, String previousMessage, String newMessage) {
+    public static void editMessageData(String username, String storeName, String previousMessage, String newMessage) {
         int messageCount = 0;
         String filePath;
         try {
-            filePath = FileManager.getDirectoryFromUsername(username);
+            if (storeName != null) { filePath = FileManager.getStoreDirectory(username, storeName); }
+            else { filePath = FileManager.getDirectoryFromUsername(username);
+            }
         } catch (UserNotFoundException e) {
             throw new RuntimeException("User does not exist!");
         }
