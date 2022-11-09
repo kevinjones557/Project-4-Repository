@@ -1,5 +1,7 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class LogIn {
@@ -41,7 +43,7 @@ public class LogIn {
      * @param storeName the name of the store being checked
      * @return boolean of if the store exists or not for handling in main
      */
-    public static boolean checkStoreList (String storeName) {
+    public static boolean checkStoreList(String storeName) {
         try (BufferedReader br = new BufferedReader(new FileReader("users/storeNames"))) {
             ArrayList<String> fileContents = new ArrayList<>();
             String line = br.readLine();
@@ -64,11 +66,120 @@ public class LogIn {
     }
 
     /**
+     * Returns the stores that a user has registered under their username
+     *
+     * @param user user's username
+     * @return String representation of the user's stores
+     */
+    public static String getUsersStores(String user) {
+        try (BufferedReader br = new BufferedReader(new FileReader("users/" + user + "/" + user))) {
+            String stores = "";
+            int lineIndex = 0;
+            String line = br.readLine();
+            while (line != null) {
+                if (lineIndex == 3) {
+                    stores = line;
+                }
+                line = br.readLine();
+                lineIndex++;
+            }
+            stores = stores.substring(1, stores.length() - 1);
+            return (stores);
+        } catch (Exception e) {
+            return (null);
+        }
+    }
+
+    public static void appendUsername (String user, Scanner scan) {
+        System.out.println("Please enter your new username!");
+        String newUser = scan.nextLine();
+        //TODO make sure username doesn't already exist
+        if (newUser.equals("")) {
+            while (newUser.equals("")) {
+                System.out.println("New username cannot be blank! Please enter your new username.");
+                newUser = scan.nextLine();
+            }
+        }
+        File oldFile = new File("user/" + user + "/" + user);
+        File oldDir = new File("user/" + user);
+        //TODO implement file name changing
+        MarketUser.changeUsername(user, newUser);
+    }
+
+    /**
+     * Removes a deleted user's stores from the store list
+     *
+     * @param storesString String representation of the user's stores
+     */
+    public static void appendStoreList(String storesString) {
+        try (BufferedReader br = new BufferedReader(new FileReader("users/storeNames"))) {
+            List<String> stores = Arrays.asList(storesString.split(", "));
+            List<String> fileContents = new ArrayList<>();
+            String line = br.readLine();
+            while (line != null) {
+                fileContents.add(line);
+                line = br.readLine();
+            }
+            for (String s : stores) {
+                if (fileContents.contains(s)) {
+                    fileContents.remove(s);
+                }
+            }
+            try (PrintWriter pw = new PrintWriter(new FileOutputStream("users/storeNames", false))) {
+                for (String s : fileContents) {
+                    pw.println(s);
+                }
+            } catch (Exception e) {
+                System.out.println("An unknown error occurred!");
+            }
+        } catch (Exception e) {
+            System.out.println("An unknown error occurred!");
+        }
+    }
+
+
+    /**
+     * Deletes user's account from both central database and local account information database
+     *
+     * @param user user's username
+     * @param scan scanner to capture input
+     */
+    public static void deleteUser(String user, Scanner scan) {
+        System.out.println("Are you sure you want to delete your account? Enter 'yes' to confirm or 'no' to abort.");
+        String response = "";
+        boolean userInput = false;
+        while (!userInput) {
+            try {
+                response = scan.nextLine();
+                if (response.equals("yes") || response.equals("no")) {
+                    userInput = true;
+                }
+            } catch (Exception e) {
+                System.out.println("Please enter valid input!");
+            }
+        }
+        if (response.equalsIgnoreCase("yes")) {
+            String stores = getUsersStores(user);
+            if (stores != null) {
+                appendStoreList(stores);
+            }
+            MarketUser.deleteUsername(user);
+            File userInfo = new File("users/" + user + "/" + user);
+            userInfo.delete();
+            File userDirectory = new File("users/" + user);
+            userDirectory.delete();
+            System.out.println("Thank you for your business, " + user + "!");
+        } else {
+            System.out.println("We're glad you decided to stay!");
+        }
+    }
+
+    /**
      * Updates the store list by adding a store name that has been confirmed to not be in use already
      *
      * @param storeName the store name being appended to the file
      */
-    public static void updateStoreList (String storeName) {
+    public static void updateStoreList(String storeName) {
         try (PrintWriter pw = new PrintWriter(new FileOutputStream("users/storeNames", true))) {
             pw.println(storeName);
         } catch (Exception e) {
@@ -151,7 +262,7 @@ public class LogIn {
             try {
                 if (!dir.createNewFile()) {
                     while (!dir.createNewFile()) {
-                        System.out.println("User already exists! Please enter another username.");
+                        System.out.println("Username already exists! Please enter another username.");
                         user = scan.nextLine();
                         dir = new File("users/" + user);
                     }
@@ -231,8 +342,7 @@ public class LogIn {
                             boolean inputTaken = false;
                             while (!inputTaken) {
                                 try {
-                                    input = scan.nextInt();
-                                    scan.nextLine();
+                                    input = Integer.parseInt(scan.nextLine());
                                     if (input == 1 || input == 2) {
                                         inputTaken = true;
                                     } else {
@@ -244,7 +354,7 @@ public class LogIn {
                             }
                             if (input == 2 && !storeNames.isEmpty()) {
                                 doneStores = true;
-                            } else if (input == 2 && storeNames.isEmpty()){
+                            } else if (input == 2 && storeNames.isEmpty()) {
                                 System.out.println("Sellers must have at least one store! Please add a store before continuing.");
                             }
                         }
@@ -310,7 +420,7 @@ public class LogIn {
 
     /**
      * Allows users to log in OR calls methods above and builds a file of the following format for a new user:
-     *
+     * <p>
      * username
      * password (encrypted)
      * isSeller (true or false)
@@ -319,20 +429,18 @@ public class LogIn {
      *
      * @return String of the user's name
      */
-    public static String userInteraction() {
-        Scanner scan = new Scanner(System.in);
+    public static String userInteraction(Scanner scan) {
         System.out.println("Welcome! Please enter 1 to log in or 2 to create a new account.");
         boolean done = false;
         int input = 0;
         while (!done) {
             try {
-                input = scan.nextInt();
-                scan.nextLine();
+                input = Integer.parseInt(scan.nextLine());
                 if (input == 1 || input == 2) {
                     done = true;
                 }
             } catch (Exception e) {
-                System.out.println("That's not a valid input!");
+                System.out.println("That's not a valid input! Please enter 1 to log in or 2 to create a new account.");
             }
         }
         if (input == 1) {
@@ -342,26 +450,31 @@ public class LogIn {
             while (!done) {
                 System.out.println("Please enter your username.");
                 user = scan.nextLine();
-                File F = new File("users/" + user + "/" + user);
+                if (user.equals("")) {
+                    while (user.equals("")) {
+                        System.out.println("Username cannot be blank! Please enter your username.");
+                        user = scan.nextLine();
+                    }
+                }
                 try {
-                    if (F.createNewFile()) {
-                        F.delete();
+                    File f = new File("users/" + user);
+                    if (f.createNewFile()) {
+                        f.delete();
                         System.out.println("That user doesn't exist! Press 1 to try again and 2 to exit.");
                         boolean continueUser = false;
                         while (!continueUser) {
                             try {
-                                input = scan.nextInt();
-                                scan.nextLine();
+                                input = Integer.parseInt(scan.nextLine());
                                 if (input == 2) {
                                     done = true;
                                     break;
                                 } else if (input == 1) {
                                     continueUser = true;
                                 } else {
-                                    System.out.println("Please enter a valid input!");
+                                    System.out.println("Please enter a valid input! Press 1 to try again and 2 to exit.");
                                 }
                             } catch (Exception e) {
-                                System.out.println("Please enter a valid input!");
+                                System.out.println("Please enter a valid input! Press 1 to try again and 2 to exit.");
                             }
                         }
                     } else {
@@ -369,6 +482,7 @@ public class LogIn {
                         done = true;
                     }
                 } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
             if (userFound) {
@@ -387,8 +501,7 @@ public class LogIn {
                             while (!continuePassword) {
                                 System.out.println("Incorrect password! Enter 1 to try again or 2 to exit.");
                                 try {
-                                    input = scan.nextInt();
-                                    scan.nextLine();
+                                    input = Integer.parseInt(scan.nextLine());
                                     if (input == 2) {
                                         done = true;
                                         break;
@@ -417,6 +530,12 @@ public class LogIn {
             while (!done) {
                 try {
                     String user = scan.nextLine();
+                    if (user.equals("")) {
+                        while (user.equals("")) {
+                            System.out.println("Username cannot be blank! Please enter a username.");
+                            user = scan.nextLine();
+                        }
+                    }
                     if (user.contains(" ")) {
                         while (user.contains(" ")) {
                             System.out.println("Spaces are not permitted in usernames! Please enter a username without spaces.");
@@ -440,7 +559,8 @@ public class LogIn {
      * @param args
      */
     public static void main(String[] args) {
-        String user = userInteraction();
+        Scanner scan = new Scanner(System.in);
+        String user = userInteraction(scan);
         if (user != null) {
             ArrayList<String> fileContents = new ArrayList();
             try (BufferedReader bfr = new BufferedReader(new FileReader("users/" + user + "/" + user))) {
@@ -460,7 +580,25 @@ public class LogIn {
         } else {
             System.out.println("Goodbye!");
         }
+        System.out.println("Enter '1' to edit your account or '2' to delete your account.");
+        int input = -1;
+        boolean inputTaken = false;
+        while (!inputTaken) {
+            try {
+                input = Integer.parseInt(scan.nextLine());
+                if (input == 1 || input == 2) {
+                    inputTaken = true;
+                } else {
+                    System.out.println("Please enter '1' or '2' as input!");
+                }
+            } catch (Exception e) {
+                System.out.println("Please enter '1' or '2' as input!");
+            }
+        }
+        if (input == 2) {
+            deleteUser(user, scan);
+        } else {
+            appendUsername(user, scan);
+        }
     }
 }
-//TODO add edit and delete functionality
-//TODO if user edits username, call MarketUser.changeUsername(oldUsername, newUsername) and then change username in yours as well
