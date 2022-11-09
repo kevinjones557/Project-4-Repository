@@ -90,6 +90,22 @@ public class LogIn {
         }
     }
 
+    public static void appendUsername (String user, Scanner scan) {
+        System.out.println("Please enter your new username!");
+        String newUser = scan.nextLine();
+        //TODO make sure username doesn't already exist
+        if (newUser.equals("")) {
+            while (newUser.equals("")) {
+                System.out.println("New username cannot be blank! Please enter your new username.");
+                newUser = scan.nextLine();
+            }
+        }
+        File oldFile = new File("user/" + user + "/" + user);
+        File oldDir = new File("user/" + user);
+        //TODO implement file name changing
+        MarketUser.changeUsername(user, newUser);
+    }
+
     /**
      * Removes a deleted user's stores from the store list
      *
@@ -246,7 +262,7 @@ public class LogIn {
             try {
                 if (!dir.createNewFile()) {
                     while (!dir.createNewFile()) {
-                        System.out.println("User already exists! Please enter another username.");
+                        System.out.println("Username already exists! Please enter another username.");
                         user = scan.nextLine();
                         dir = new File("users/" + user);
                     }
@@ -434,6 +450,12 @@ public class LogIn {
             while (!done) {
                 System.out.println("Please enter your username.");
                 user = scan.nextLine();
+                if (user.equals("")) {
+                    while (user.equals("")) {
+                        System.out.println("Username cannot be blank! Please enter your username.");
+                        user = scan.nextLine();
+                    }
+                }
                 try {
                     File f = new File("users/" + user);
                     if (f.createNewFile()) {
@@ -508,6 +530,12 @@ public class LogIn {
             while (!done) {
                 try {
                     String user = scan.nextLine();
+                    if (user.equals("")) {
+                        while (user.equals("")) {
+                            System.out.println("Username cannot be blank! Please enter a username.");
+                            user = scan.nextLine();
+                        }
+                    }
                     if (user.contains(" ")) {
                         while (user.contains(" ")) {
                             System.out.println("Spaces are not permitted in usernames! Please enter a username without spaces.");
@@ -569,8 +597,8 @@ public class LogIn {
         }
         if (input == 2) {
             deleteUser(user, scan);
+        } else {
+            appendUsername(user, scan);
         }
     }
 }
-//TODO add edit functionality
-//TODO if user edits username, call MarketUser.changeUsername(oldUsername, newUsername) and then change username in yours as well
