@@ -9,6 +9,8 @@ public class MarketUser implements User{
     private String username;
     private boolean isSeller;
 
+    public LinkedHashMap<String,String> storeNameMap;
+
     public static void main(String[] args) {
         MarketUser mu = new MarketUser("vinh",false);
         mu.message();
@@ -143,10 +145,10 @@ public class MarketUser implements User{
     /** Method called when user is logged in, using System.out.println() will ask user if they want to message someone,
      * who they want to message, and what they want to message.
      */
-    /** Method called when user is logged in, using System.out.println() will ask user if they want to message someone,
-     * who they want to message, and what they want to message.
-     */
+
     public void message() {
+        storeNameMap = FileManager.mapStoresToSellers();
+
         Integer selection;
         String recipient = "";
         String proceed;
@@ -278,6 +280,7 @@ public class MarketUser implements User{
                 // after this statement we know that String recipient contains a valid value
                 System.out.println("recipient:" + recipient + "isStore:" + isStore);
                 checkIfMessageExists(recipient, isStore); // this will check if message has already been created and create if not
+
                 System.out.printf("Connected with %s!\nPlease select an option:\n", recipient);
                 boolean stayConnected;
                 do {
@@ -303,11 +306,33 @@ public class MarketUser implements User{
                         }
                     } while ((selection < 1 || selection > 8));
                     switch (selection) {
-                        case 1 -> appendMessage(recipient);
-                        case 2 -> editMessage(recipient);
-                        case 3 -> deleteMessage(recipient);
-                        case 4 -> blockUser(recipient);
-                        case 5 -> unblockUser(recipient);
+                        case 1:
+                            if (!isStore) {
+                                appendMessage(recipient);
+                            } else {
+                                appendMessage(storeNameMap.get(recipient),recipient);
+                            }
+                            break;
+                        case 2:
+                            if (!isStore) {
+                                editMessage(recipient);
+                            } else {
+                                editMessage(storeNameMap.get(recipient),recipient);
+                            }
+                            break;
+                        case 3:
+                            if (!isStore) {
+                                deleteMessage(recipient);
+                            } else {
+                                deleteMessage(storeNameMap.get(recipient),recipient);
+                            }
+                            break;
+                        case 4:
+                            blockUser(recipient);
+                            break;
+                        case 5:
+                            unblockUser(recipient);
+                            break;
                         // TODO case 6 -> implement;
                         // TODO case 7 -> implement;
                     }
@@ -424,8 +449,9 @@ public class MarketUser implements User{
                         + "/" + username + recipient + ".txt");
                 boolean didCreate = fUser.createNewFile();
                 if (didCreate) {
-                    File fRecipient = new File(FileManager.getStoreDirectory(recipient)
-                            + "/" + recipient + username + ".txt");
+                    String sellerName = storeNameMap.get(recipient);
+                    File fRecipient = new File("data/sellers/" + sellerName
+                            + "/" + recipient +"/" + recipient + username + ".txt");
                     fRecipient.createNewFile();
                 }
             } catch (Exception e) {
@@ -468,7 +494,6 @@ public class MarketUser implements User{
      */
 
     public void appendMessage(String recipient, String storeName) {
-
         String fileRecipient = "";
         String fileSender = "";
 

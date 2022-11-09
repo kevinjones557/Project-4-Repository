@@ -464,3 +464,4 @@ public class LogIn {
 }
 //TODO add edit and delete functionality
 //TODO if user edits username, call MarketUser.changeUsername(oldUsername, newUsername) and then change username in yours as well
+//TODO when deleted call MarketUser.deleteUsername()
