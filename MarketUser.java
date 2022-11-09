@@ -9,10 +9,12 @@ public class MarketUser implements User{
     private String username;
     private boolean isSeller;
 
+    private boolean isUserStore;
+
     public LinkedHashMap<String,String> storeNameMap;
 
     public static void main(String[] args) {
-        MarketUser mu = new MarketUser("vinh",false);
+        MarketUser mu = new MarketUser("nathan",false, false);
         mu.message();
     }
 
@@ -20,9 +22,10 @@ public class MarketUser implements User{
      * @param username The username associated with the user directory you wish to find
      * @param isSeller Tells class whether this instance is a seller or not
      */
-    public MarketUser(String username, boolean isSeller) {
+    public MarketUser(String username, boolean isSeller, boolean isUserStore) {
         this.username = username;
         this.isSeller = isSeller;
+        this.isUserStore = isUserStore;
     }
 
     /** A static method that will change the names of files and directories to match username
@@ -153,9 +156,9 @@ public class MarketUser implements User{
         String recipient = "";
         String proceed;
         boolean keepGoing = true;
-        boolean isStore = false;
+        boolean isRecipientStore = false;
         Scanner scan = new Scanner(System.in);
-        String buyOrSell = (isSeller)? "potential buyer" : "store";
+        String buyOrSell = (isSeller)? "potential buyer" : "store or seller";
         System.out.println("Do you wish to contact, block, or unblock a " + buyOrSell + "? (Yes,No)");
         proceed = scan.nextLine();
         if (proceed.equalsIgnoreCase("yes")) {
@@ -177,7 +180,7 @@ public class MarketUser implements User{
                         if (selection == 1) { // if the user wants to search for a buyer, enter this statement
                             System.out.println("Enter the username of a buyer:");
                             recipient = scan.nextLine();
-                            if (FileManager.checkUserExists(recipient)) {
+                            if (FileManager.checkBuyerExists(recipient)) {
                                 break; // at this point we know that the variable 'recipient' contains a valid username
                             } else {
                                 System.out.println("Sorry! This buyer does not exist!");
@@ -234,7 +237,7 @@ public class MarketUser implements User{
                         if (selection == 1) { // if the user wants to search for a store, enter this statement
                             System.out.println("Enter the name of a seller:");
                             recipient = scan.nextLine();
-                            if (FileManager.checkUserExists(recipient)) {
+                            if (FileManager.checkSellerExists(recipient)) {
                                 break; // at this point we know that the variable 'recipient' contains a valid username
                             } else {
                                 System.out.println("Sorry! This seller does not exist!");
@@ -263,7 +266,7 @@ public class MarketUser implements User{
                                 } while (selection == null);
                                 if (selection != allAvailableStores.length + 1) {
                                     recipient = allAvailableStores[selection - 1];
-                                    isStore = true;
+                                    isRecipientStore = true;
                                     break; // at this point we again know that the variable 'recipient' contains a valid username
                                 }
                             } catch (IOException e) {
@@ -278,8 +281,7 @@ public class MarketUser implements User{
 
                 }
                 // after this statement we know that String recipient contains a valid value
-                System.out.println("recipient:" + recipient + "isStore:" + isStore);
-                checkIfMessageExists(recipient, isStore); // this will check if message has already been created and create if not
+                checkIfMessageExists(recipient, isRecipientStore); // this will check if message has already been created and create if not
 
                 System.out.printf("Connected with %s!\nPlease select an option:\n", recipient);
                 boolean stayConnected;
@@ -307,21 +309,23 @@ public class MarketUser implements User{
                     } while ((selection < 1 || selection > 8));
                     switch (selection) {
                         case 1:
-                            if (!isStore) {
+                            if (!isRecipientStore && !isUserStore) {
                                 appendMessage(recipient);
-                            } else {
+                            } else if (isRecipientStore) {
                                 appendMessage(storeNameMap.get(recipient),recipient);
+                            } else {
+                                appendMessage(storeNameMap.get(username),recipient);
                             }
                             break;
                         case 2:
-                            if (!isStore) {
+                            if (!isRecipientStore) {
                                 editMessage(recipient);
                             } else {
                                 editMessage(storeNameMap.get(recipient),recipient);
                             }
                             break;
                         case 3:
-                            if (!isStore) {
+                            if (!isRecipientStore) {
                                 deleteMessage(recipient);
                             } else {
                                 deleteMessage(storeNameMap.get(recipient),recipient);
@@ -446,13 +450,16 @@ public class MarketUser implements User{
      * if nto create both files
      * @param recipient The username associated with the person the user wishes to measure
      */
-    public void checkIfMessageExists(String recipient, boolean isStore) {// check if <username><recipient>.txt exits in directory or not
-        if (!isStore) {
+    public void checkIfMessageExists(String recipient, boolean isRecipientStore) {// check if <username><recipient>.txt exits in directory or not
+        if (!isRecipientStore) {
             String path1 = "";
             String path2 = "";
             if (isSeller) {
                 path1 = "data/sellers/" + username + "/";
                 path2 = "data/buyers/" + recipient + "/";
+                if (isUserStore) {
+                    path1 = "data/sellers/" + storeNameMap.get(username) + "/" + username + "/";
+                }
             } else {
                 path1 = "data/buyers/" + username + "/";
                 path2 = "data/sellers/" + recipient + "/";
@@ -511,24 +518,24 @@ public class MarketUser implements User{
      * Creates filepath to message files and calls append execution, overloaded in the case of
      * messaging a store
      *
-     * @param recipient receiver of message
-     * @param storeName name of store
+     * @param seller seller associated with store
+     * @param recipient name of store or recipient
      *
      * @author John Brooks
      */
 
-    public void appendMessage(String recipient, String storeName) {
-        String fileRecipient = "";
-        String fileSender = "";
-
-        if (isSeller) {
-            fileSender = "data/sellers/" + username + "/" + storeName + "/";
-            fileRecipient = "data/buyers/" + recipient + "/";
-        } else {
+    public void appendMessage(String seller, String recipient) {
+        String fileRecipient;
+        String fileSender;
+        if (!isUserStore) { // this means recipient is the storeName
             fileSender = "data/buyers/" + username + "/";
-            fileRecipient = "data/sellers/" + recipient + "/" + storeName + "/";
+            fileRecipient = "data/sellers/" + seller + "/" + recipient + "/";
+            appendMessageExecute(recipient, fileSender, fileRecipient);
+        } else {
+            fileSender = "data/sellers/" + seller + "/" + username + "/";
+            fileRecipient = "data/buyers/" + recipient + "/";
+            appendMessageExecute(recipient, fileSender, fileRecipient);
         }
-        appendMessageExecute(recipient, fileSender, fileRecipient);
     }
 
     /**
@@ -601,24 +608,24 @@ public class MarketUser implements User{
      * Prepares to execute edit by forming file paths with store name in case of overload
      *
      * @param recipient receiver of message
-     * @param storeName name of store
+     * @param seller name of store
      *
      * @author John Brooks
      */
-    public void editMessage(String recipient, String storeName) {
-
-        String fileRecipient = "";
-        String fileSender = "";
-
-        if (isSeller) {
-            fileSender = "data/sellers/" + username + "/" + storeName + "/";
-            fileRecipient = "data/buyers/" + recipient + "/";
-        } else {
+    public void editMessage(String seller, String recipient) {
+        String fileRecipient;
+        String fileSender;
+        if (!isUserStore) { // this means recipient is the storeName
             fileSender = "data/buyers/" + username + "/";
-            fileRecipient = "data/sellers/" + recipient + "/" + storeName + "/";
+            fileRecipient = "data/sellers/" + seller + "/" + recipient + "/";
+            editMessageExecute(recipient, fileSender, fileRecipient);
+        } else {
+            fileSender = "data/sellers/" + seller + "/" + username + "/";
+            fileRecipient = "data/buyers/" + recipient + "/";
+            editMessageExecute(recipient, fileSender, fileRecipient);
         }
-        editMessageExecute(recipient, fileSender, fileRecipient);
     }
+
 
     /**
      * Searches file for index that matches one given by the user and changes that line and
@@ -748,23 +755,22 @@ public class MarketUser implements User{
      * Prepares to execute delete by forming file paths with store name in case of overload
      *
      * @param recipient receiver of message
-     * @param storeName name of store
+     * @param seller name of store
      *
      * @author John Brooks
      */
-    public void deleteMessage(String recipient, String storeName) {
-
-        String fileRecipient = "";
-        String fileSender = "";
-
-        if (isSeller) {
-            fileSender = "data/sellers/" + username + "/" + storeName + "/";
-            fileRecipient = "data/buyers/" + recipient + "/";
-        } else {
+    public void deleteMessage(String seller, String recipient) {
+        String fileRecipient;
+        String fileSender;
+        if (!isUserStore) { // this means recipient is the storeName
             fileSender = "data/buyers/" + username + "/";
-            fileRecipient = "data/sellers/" + recipient + "/" + storeName + "/";
+            fileRecipient = "data/sellers/" + seller + "/" + recipient + "/";
+            deleteMessageExecute(recipient, fileSender, fileRecipient);
+        } else {
+            fileSender = "data/sellers/" + seller + "/" + username + "/";
+            fileRecipient = "data/buyers/" + recipient + "/";
+            deleteMessageExecute(recipient, fileSender, fileRecipient);
         }
-        deleteMessageExecute(recipient, fileSender, fileRecipient);
     }
 
     /**

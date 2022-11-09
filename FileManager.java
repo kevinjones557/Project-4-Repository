@@ -37,6 +37,14 @@ public class FileManager {
         return false;
     }
 
+    public static boolean checkSellerExists(String username) {
+        return (Files.exists(Paths.get("data/sellers/" + username)));
+    }
+
+    public static boolean checkBuyerExists(String username) {
+        return (Files.exists(Paths.get("data/buyers/" + username)));
+    }
+
     public static String getStoreDirectory(String username, String storeName) {
         return String.format("data/sellers/%s/%s/", username, storeName);
     }
