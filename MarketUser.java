@@ -15,6 +15,7 @@ public class MarketUser implements User{
 
     public static void main(String[] args) {
         MarketUser mu = new MarketUser("storeTest",true, true);
+        MarketUser.changeUsername("nathan","harlom");
         mu.message();
     }
 
@@ -59,20 +60,45 @@ public class MarketUser implements User{
             File currentSeller = new File("data/sellers/" + seller);
             String[] allFiles = currentSeller.list();
             for (String filename : allFiles) {
-                int indexOldUsername = filename.indexOf(oldUsername);
-                if (indexOldUsername >= 0) {
-                    changeNameInFile(oldUsername, newUsername, "data/sellers/" + seller + "/" + filename);
-                    String newFilename;
-                    if (indexOldUsername == 0) {
-                        newFilename = newUsername + filename.substring(oldUsername.length());
-                    } else {
-                        newFilename = filename.substring(0,indexOldUsername) + newUsername + ".txt";
+                File possibleStore = new File("data/sellers/" + seller + "/" + filename);
+                if (possibleStore.isDirectory()) {
+                    String[] storeFiles = possibleStore.list();
+                    for (String storeFile : storeFiles) {
+                        int indexOldUsername = storeFile.indexOf(oldUsername);
+                        if (indexOldUsername >= 0) {
+                            changeNameInFile(oldUsername, newUsername, "data/sellers/" + seller + "/"
+                                    + filename + "/" + storeFile);
+                            String newFilename;
+                            if (indexOldUsername == 0) {
+                                newFilename = newUsername + filename.substring(oldUsername.length());
+                            } else {
+                                newFilename = filename.substring(0,indexOldUsername) + newUsername + ".txt";
+                            }
+                            try {
+                                Files.move(Paths.get("data/sellers/" + seller + "/"
+                                        + filename + "/" + storeFile), Paths.get("data/sellers/" + seller + "/"
+                                        + filename + "/" + newFilename));
+                            } catch (IOException e) {
+                                System.out.println("Sorry, failed to rename user!");
+                            }
+                        }
                     }
-                    try {
-                        Files.move(Paths.get("data/sellers/" + seller + "/" + filename), Paths.get("data/sellers/"
-                                + seller + "/" + newFilename));
-                    } catch (IOException e) {
-                        System.out.println("Sorry, failed to rename user!");
+                } else {
+                    int indexOldUsername = filename.indexOf(oldUsername);
+                    if (indexOldUsername >= 0) {
+                        changeNameInFile(oldUsername, newUsername, "data/sellers/" + seller + "/" + filename);
+                        String newFilename;
+                        if (indexOldUsername == 0) {
+                            newFilename = newUsername + filename.substring(oldUsername.length());
+                        } else {
+                            newFilename = filename.substring(0, indexOldUsername) + newUsername + ".txt";
+                        }
+                        try {
+                            Files.move(Paths.get("data/sellers/" + seller + "/" + filename), Paths.get("data/sellers/"
+                                    + seller + "/" + newFilename));
+                        } catch (IOException e) {
+                            System.out.println("Sorry, failed to rename user!");
+                        }
                     }
                 }
             }
@@ -88,6 +114,8 @@ public class MarketUser implements User{
         for (String buyer : buyers) {
             File currentBuyer = new File("data/buyers/" + buyer);
             String[] allFiles = currentBuyer.list();
+            System.out.println(buyer);
+            System.out.println(Arrays.toString(allFiles));
             for (String filename : allFiles) {
                 int indexOldUsername = filename.indexOf(oldUsername);
                 if (indexOldUsername >= 0) {
