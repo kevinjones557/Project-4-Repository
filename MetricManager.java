@@ -15,15 +15,19 @@ public class MetricManager {
      * @param message The Seller's message to be parsed
      * @param delete whether this message is being deleted
      */
-    public static void addDeleteMessageData(String username, String message, boolean delete) {
+    public static void addDeleteMessageData(String username, String storeName, String message, boolean delete) {
         int messageCount = 0;
         String filePath;
         try {
-            filePath = FileManager.getDirectoryFromUsername(username);
+            if (storeName != null) {
+                filePath = "data/" + username + "/" + storeName;
+            } else {
+                filePath = FileManager.getDirectoryFromUsername(username);
+            }
         } catch (UserNotFoundException e) {
             throw new RuntimeException("User does not exist!");
         }
-        filePath = filePath + "metrics.txt";
+        filePath = filePath + "/metrics.txt";
         Map<String, Integer> fileData = new LinkedHashMap<>();
         /* The formatting for the Metrics file goes as follows:
 
@@ -106,7 +110,7 @@ public class MetricManager {
         } catch (UserNotFoundException e) {
             throw new RuntimeException("User does not exist!");
         }
-        filePath = filePath + "metrics.txt";
+        filePath = filePath + "/metrics.txt";
         Map<String, Integer> fileData = new LinkedHashMap<>();
         /* The formatting for the Metrics file goes as follows:
 
