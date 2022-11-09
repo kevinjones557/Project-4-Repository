@@ -3,6 +3,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class LogIn {
     /**
@@ -12,7 +15,7 @@ public class LogIn {
      * @return boolean of if file was successfully written or not
      */
     public static boolean writeFile(String user) {
-        try (PrintWriter pw = new PrintWriter(new FileOutputStream("users/" + user + "/" + user))) {
+        try (PrintWriter pw = new PrintWriter(new FileOutputStream("users/" + user + "/" + user, false))) {
             pw.println(user);
             return (true);
         } catch (Exception e) {
@@ -90,20 +93,60 @@ public class LogIn {
         }
     }
 
-    public static void appendUsername (String user, Scanner scan) {
+    /**
+     * Changes the user's name to their new desired name
+     *
+     * @param user the user changing their name
+     * @param scan scanner to capture input
+     */
+    public static void appendUsername(String user, Scanner scan) {
         System.out.println("Please enter your new username!");
         String newUser = scan.nextLine();
-        //TODO make sure username doesn't already exist
+        File dir = new File("users/" + newUser);
+        try {
+            if (!dir.createNewFile()) {
+                while (!dir.createNewFile()) {
+                    System.out.println("Username already exists! Please enter another username.");
+                    newUser = scan.nextLine();
+                    dir = new File("users/" + newUser);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("An unknown error occurred!");
+        }
+        dir.delete();
         if (newUser.equals("")) {
             while (newUser.equals("")) {
                 System.out.println("New username cannot be blank! Please enter your new username.");
                 newUser = scan.nextLine();
             }
         }
-        File oldFile = new File("user/" + user + "/" + user);
-        File oldDir = new File("user/" + user);
-        //TODO implement file name changing
-        MarketUser.changeUsername(user, newUser);
+        try {
+            Path source = Paths.get("users/" + user + "/" + user);
+            Files.move(source, source.resolveSibling(newUser));
+            source = Paths.get("users/" + user);
+            Files.move(source, source.resolveSibling(newUser));
+            MarketUser.changeUsername(user, newUser);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Name change was not successful!");
+        }
+        try (BufferedReader br = new BufferedReader(new FileReader("users/" + newUser + "/" + newUser))) {
+            ArrayList<String> fileContents = new ArrayList<>();
+            String line = br.readLine();
+            while (line != null) {
+                fileContents.add(line);
+                line = br.readLine();
+            }
+            writeFile(newUser);
+            fileContents.remove(0);
+            for (String s : fileContents) {
+                writeFile(newUser, s);
+            }
+            System.out.println("Name change successful! Enjoy your new username, " + newUser + "!");
+        } catch (Exception e) {
+            System.out.println("Name change was not successful!");
+        }
     }
 
     /**
@@ -580,13 +623,13 @@ public class LogIn {
         } else {
             System.out.println("Goodbye!");
         }
-        System.out.println("Enter '1' to edit your account or '2' to delete your account.");
+        System.out.println("Enter '1' to edit your name, '2' to delete your account, or '3' to exit");
         int input = -1;
         boolean inputTaken = false;
         while (!inputTaken) {
             try {
                 input = Integer.parseInt(scan.nextLine());
-                if (input == 1 || input == 2) {
+                if (input == 1 || input == 2 || input == 3) {
                     inputTaken = true;
                 } else {
                     System.out.println("Please enter '1' or '2' as input!");
@@ -597,8 +640,10 @@ public class LogIn {
         }
         if (input == 2) {
             deleteUser(user, scan);
-        } else {
+        } else if (input == 1) {
             appendUsername(user, scan);
+        } else {
+            System.out.println("Goodbye!");
         }
     }
 }
