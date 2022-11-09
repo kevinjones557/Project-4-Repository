@@ -576,6 +576,10 @@ public class MarketUser implements User{
                 display.close();
                 messageSenderWriter.close();
                 messageReceiveWriter.close();
+                if (isSeller) {
+                    MetricManager.addDeleteMessageData(username, fileSender, message, false);
+                }
+                MetricManager.addDeleteMessage(username, 
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -721,6 +725,10 @@ public class MarketUser implements User{
                     buffReceiver.close();
                     messageSenderWriter.close();
                     messageReceiveWriter.close();
+                    if (isSeller) {
+                        messageToChange = messageToChange.substring(messageToChange.indexOf("-") + 1);
+                        MetricManager.addDeleteMessageData(username, fileSender, messageToChange, edit);
+                    }
                 } else
                     System.out.println("There is nothing in this file to edit.");
             } catch (IOException e) {
@@ -787,6 +795,7 @@ public class MarketUser implements User{
         int count = 0;
         int flag;
         int indexOfDelete = -1;
+        String message = "";
 
         File senderF = new File(fileSender + username + recipient + ".txt");
         File recipientF = new File(fileRecipient + recipient + username + ".txt");
@@ -822,10 +831,14 @@ public class MarketUser implements User{
                     for (int i = 0; i < readSenderFile.size(); i++) {
                         if (i + 1 != indexOfDelete) {
                             messageSenderWriter.println(readSenderFile.get(i));
-                        }
+                        } else
+                            message = readSenderFile.get(i).substring(readSenderFile.get(i).indexOf("-") + 1);
                     }
                     display.close();
                     messageSenderWriter.close();
+                    if (isSeller) {
+                        MetricManager.addDeleteMessageData(username, fileSender, message, true);
+                    }
                 } else
                     System.out.println("There is nothing in this file to delete.");
             } catch (IOException e) {

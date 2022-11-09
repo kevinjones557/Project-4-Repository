@@ -92,6 +92,10 @@ public class FileManager {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public static LinkedHashMap<String, String> mapStoresToSellers() {
         LinkedHashMap<String, String> storesMapped = new LinkedHashMap<>();
         String[] sellerList = new File("data/sellers/").list();
@@ -102,9 +106,5 @@ public class FileManager {
             }
         }
         return storesMapped;
-    }
-
-    public static String getSellerFromStore(String storeName, LinkedHashMap<String, String> dataList) {
-        return dataList.get(storeName);
     }
 }
