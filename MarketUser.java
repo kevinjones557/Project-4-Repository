@@ -307,7 +307,7 @@ public class MarketUser implements User{
                             System.out.println("Please enter a valid number:");
                             scan.nextLine();
                         }
-                    } while ((selection < 1 || selection > 8));
+                    } while ((selection < 1 || selection > 9));
                     switch (selection) {
                         case 1:
                             displayMessage(recipient);

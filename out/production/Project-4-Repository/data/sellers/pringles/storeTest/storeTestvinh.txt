@@ -6,3 +6,9 @@ lets see what happens
 who0
 storeTest 11/09 15:47:36- hello
 storeTest 11/09 16:00:00- cool
+storeTest 11/09 17:42:19- this is a very long essay but this is all one line this is a very long essay but this is all one line this is a very long essay but this is all one line
+storeTest 11/09 17:42:19- and now this is a new line
+storeTest 11/09 17:42:19- lets see what happens
+storeTest 11/09 17:42:19- 
+storeTest 11/09 17:42:19- !!
+storeTest 11/09 17:42:19- who0
