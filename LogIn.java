@@ -3,16 +3,25 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+/** A class to create accounts for users, log them in, and perform any necessary interaction with said accounts.
+ *
+ * author @Adenr4615
+ * version 11/9/22
+ * */
 
 public class LogIn {
-    /**
-     * Writes user's username to a file
+
+    /** Writes user's username to a file
      *
      * @param user String of the user's username
      * @return boolean of if file was successfully written or not
      */
     public static boolean writeFile(String user) {
-        try (PrintWriter pw = new PrintWriter(new FileOutputStream("users/" + user + "/" + user))) {
+        try (PrintWriter pw = new PrintWriter(new FileOutputStream("users/" + user + "/" + user, false))) {
             pw.println(user);
             return (true);
         } catch (Exception e) {
@@ -21,8 +30,7 @@ public class LogIn {
         }
     }
 
-    /**
-     * Appends an additional line to a given user's file
+    /** Appends an additional line to a given user's file
      *
      * @param user     the user whose file is being appended
      * @param toAppend the parameter that is being appended to the file
@@ -37,8 +45,7 @@ public class LogIn {
         }
     }
 
-    /**
-     * Checks to see if the given store name is already in use
+    /** Checks to see if the given store name is already in use
      *
      * @param storeName the name of the store being checked
      * @return boolean of if the store exists or not for handling in main
@@ -65,8 +72,7 @@ public class LogIn {
         return (true);
     }
 
-    /**
-     * Returns the stores that a user has registered under their username
+    /** Returns the stores that a user has registered under their username
      *
      * @param user user's username
      * @return String representation of the user's stores
@@ -90,8 +96,63 @@ public class LogIn {
         }
     }
 
-    /**
-     * Removes a deleted user's stores from the store list
+    /** Changes the user's name to their new desired name
+     *
+     * @param user the user changing their name
+     * @param scan scanner to capture input
+     */
+    public static void appendUsername(String user, Scanner scan) {
+        System.out.println("Please enter your new username!");
+        String newUser = scan.nextLine();
+        File dir = new File("users/" + newUser);
+        try {
+            if (!dir.createNewFile()) {
+                while (!dir.createNewFile()) {
+                    System.out.println("Username already exists! Please enter another username.");
+                    newUser = scan.nextLine();
+                    dir = new File("users/" + newUser);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("An unknown error occurred!");
+        }
+        dir.delete();
+        if (newUser.equals("")) {
+            while (newUser.equals("")) {
+                System.out.println("New username cannot be blank! Please enter your new username.");
+                newUser = scan.nextLine();
+            }
+        }
+        try {
+            //this method was retrieved with help from StackOverflow user @kr37
+            Path source = Paths.get("users/" + user + "/" + user);
+            Files.move(source, source.resolveSibling(newUser));
+            source = Paths.get("users/" + user);
+            Files.move(source, source.resolveSibling(newUser));
+            MarketUser.changeUsername(user, newUser);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Name change was not successful!");
+        }
+        try (BufferedReader br = new BufferedReader(new FileReader("users/" + newUser + "/" + newUser))) {
+            ArrayList<String> fileContents = new ArrayList<>();
+            String line = br.readLine();
+            while (line != null) {
+                fileContents.add(line);
+                line = br.readLine();
+            }
+            writeFile(newUser);
+            fileContents.remove(0);
+            for (String s : fileContents) {
+                writeFile(newUser, s);
+            }
+            System.out.println("Name change successful! Enjoy your new username, " + newUser + "!");
+        } catch (Exception e) {
+            System.out.println("Name change was not successful!");
+        }
+    }
+
+    /** Removes a deleted user's stores from the store list
      *
      * @param storesString String representation of the user's stores
      */
@@ -122,8 +183,7 @@ public class LogIn {
     }
 
 
-    /**
-     * Deletes user's account from both central database and local account information database
+    /** Deletes user's account from both central database and local account information database
      *
      * @param user user's username
      * @param scan scanner to capture input
@@ -158,8 +218,7 @@ public class LogIn {
         }
     }
 
-    /**
-     * Updates the store list by adding a store name that has been confirmed to not be in use already
+    /** Updates the store list by adding a store name that has been confirmed to not be in use already
      *
      * @param storeName the store name being appended to the file
      */
@@ -171,8 +230,7 @@ public class LogIn {
         }
     }
 
-    /**
-     * Encrypts the password of the user file when an account is created
+    /** Encrypts the password of the user file when an account is created
      *
      * @param user the user whose password is being encrypted
      */
@@ -208,8 +266,7 @@ public class LogIn {
         }
     }
 
-    /**
-     * Takes a password input by a user attempting to log in and uses the key to encrypt it for comparison
+    /** Takes a password input by a user attempting to log in and uses the key to encrypt it for comparison
      *
      * @param input the password being encrypted
      * @return String of the encrypted password
@@ -230,8 +287,7 @@ public class LogIn {
         return (finalInput);
     }
 
-    /**
-     * Creates the file and directory for a user only if the account doesn't already exist
+    /** Creates the file and directory for a user only if the account doesn't already exist
      *
      * @param user the user whose file is being created
      * @param scan scanner object to capture input
@@ -246,7 +302,7 @@ public class LogIn {
             try {
                 if (!dir.createNewFile()) {
                     while (!dir.createNewFile()) {
-                        System.out.println("User already exists! Please enter another username.");
+                        System.out.println("Username already exists! Please enter another username.");
                         user = scan.nextLine();
                         dir = new File("users/" + user);
                     }
@@ -377,8 +433,7 @@ public class LogIn {
         System.out.printf("Account created! Welcome, %s!%n", user);
     }
 
-    /**
-     * Reads the password of the file for comparison
+    /** Reads the password of the file for comparison
      *
      * @param user the user whose password is being read
      * @return String of the encrypted password
@@ -402,9 +457,8 @@ public class LogIn {
         return (null);
     }
 
-    /**
-     * Allows users to log in OR calls methods above and builds a file of the following format for a new user:
-     * <p>
+    /** Allows users to log in OR calls methods above and builds a file of the following format for a new user:
+     *
      * username
      * password (encrypted)
      * isSeller (true or false)
@@ -434,6 +488,12 @@ public class LogIn {
             while (!done) {
                 System.out.println("Please enter your username.");
                 user = scan.nextLine();
+                if (user.equals("")) {
+                    while (user.equals("")) {
+                        System.out.println("Username cannot be blank! Please enter your username.");
+                        user = scan.nextLine();
+                    }
+                }
                 try {
                     File f = new File("users/" + user);
                     if (f.createNewFile()) {
@@ -508,6 +568,12 @@ public class LogIn {
             while (!done) {
                 try {
                     String user = scan.nextLine();
+                    if (user.equals("")) {
+                        while (user.equals("")) {
+                            System.out.println("Username cannot be blank! Please enter a username.");
+                            user = scan.nextLine();
+                        }
+                    }
                     if (user.contains(" ")) {
                         while (user.contains(" ")) {
                             System.out.println("Spaces are not permitted in usernames! Please enter a username without spaces.");
@@ -525,8 +591,7 @@ public class LogIn {
         return (null);
     }
 
-    /**
-     * Runs all LogIn methods to either create a user or log one in; afterwards, creates String ArrayList of user information
+    /** Runs all LogIn methods to either create a user or log one in; afterwards, creates String ArrayList of user information
      *
      * @param args
      */
@@ -544,7 +609,6 @@ public class LogIn {
                         fileContents.add(line);
                     }
                     line = bfr.readLine();
-
                 }
             } catch (Exception e) {
                 System.out.println("An unknown error occurred!");
@@ -552,13 +616,13 @@ public class LogIn {
         } else {
             System.out.println("Goodbye!");
         }
-        System.out.println("Enter '1' to edit your account or '2' to delete your account.");
+        System.out.println("Enter '1' to edit your name, '2' to delete your account, or '3' to exit");
         int input = -1;
         boolean inputTaken = false;
         while (!inputTaken) {
             try {
                 input = Integer.parseInt(scan.nextLine());
-                if (input == 1 || input == 2) {
+                if (input == 1 || input == 2 || input == 3) {
                     inputTaken = true;
                 } else {
                     System.out.println("Please enter '1' or '2' as input!");
@@ -569,8 +633,10 @@ public class LogIn {
         }
         if (input == 2) {
             deleteUser(user, scan);
+        } else if (input == 1) {
+            appendUsername(user, scan);
+        } else {
+            System.out.println("Goodbye!");
         }
     }
 }
-//TODO add edit functionality
-//TODO if user edits username, call MarketUser.changeUsername(oldUsername, newUsername) and then change username in yours as well
