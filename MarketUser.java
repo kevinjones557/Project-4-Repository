@@ -169,7 +169,7 @@ public class MarketUser implements User{
             }
             pw.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Unknown Error");
         }
     }
 
