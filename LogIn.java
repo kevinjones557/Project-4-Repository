@@ -83,6 +83,9 @@ public class LogIn {
             int lineIndex = 0;
             String line = br.readLine();
             while (line != null) {
+                if (lineIndex == 2 && line.equals("false")) {
+                    return(null);
+                }
                 if (lineIndex == 3) {
                     stores = line;
                 }
@@ -96,10 +99,72 @@ public class LogIn {
         }
     }
 
+    /** Allows users to change any given store name
+     *
+     * @param user user's username
+     * @param scan Scanner to capture input
+     */
+    public static void changeStoreName (String user, Scanner scan) {
+        if (getUsersStores(user) != null) {
+            String stores = getUsersStores(user);
+            List<String> storesArray = Arrays.asList(stores.split(", "));
+            System.out.println("Which store name would you like to change?");
+            System.out.println(storesArray);
+            String storeToChange = null;
+            boolean storeFound = false;
+            try {
+                while (!storeFound) {
+                    storeToChange = scan.nextLine();
+                    for (String s : storesArray) {
+                        if (s.equals(storeToChange)) {
+                            storeFound = true;
+                        }
+                    }
+                    if (!storeFound) {
+                        System.out.println("That store was not found under your account! Please enter one of the following stores:");
+                        System.out.println(storesArray);
+                    }
+                }
+                System.out.println("Please enter the new store name.");
+                String newName = scan.nextLine();
+                boolean nameInUse = checkStoreList(newName);
+                while (!nameInUse) {
+                    System.out.println("That name is in use! Please enter another name.");
+                    newName = scan.nextLine();
+                    nameInUse = checkStoreList(newName);
+                }
+                storesArray.set(storesArray.indexOf(storeToChange), newName);
+                try (BufferedReader br = new BufferedReader(new FileReader("users/" + user + "/" + user))) {
+                    ArrayList<String> fileContents = new ArrayList<>();
+                    String line = br.readLine();
+                    while (line != null) {
+                        fileContents.add(line);
+                        line = br.readLine();
+                    }
+                    fileContents.set(3, storesArray.toString());
+                    writeFile(user);
+                    for (int i = 0; i < fileContents.size(); i++) {
+                        if (i != 0) {
+                            writeFile(user, fileContents.get(i));
+                        }
+                    }
+                    removeRenamedStore(storeToChange, newName);
+                    System.out.println("Name change successful!");
+                } catch (Exception e) {
+                    System.out.println("Name change was not successful!");
+                }
+            } catch (Exception e) {
+                System.out.println("An unknown error occurred!");
+            }
+        } else {
+            System.out.println("You are not a seller!");
+        }
+    }
+
     /** Changes the user's name to their new desired name
      *
      * @param user the user changing their name
-     * @param scan scanner to capture input
+     * @param scan Scanner to capture input
      */
     public static void appendUsername(String user, Scanner scan) {
         System.out.println("Please enter your new username!");
@@ -182,11 +247,31 @@ public class LogIn {
         }
     }
 
+    public static void removeRenamedStore(String store, String newStore) {
+        try (BufferedReader br = new BufferedReader(new FileReader("users/storeNames"))) {
+            List<String> fileContents = new ArrayList<>();
+            String line = br.readLine();
+            while (line != null) {
+                fileContents.add(line);
+                line = br.readLine();
+            }
+            fileContents.set(fileContents.indexOf(store), newStore);
+            try (PrintWriter pw = new PrintWriter(new FileOutputStream("users/storeNames", false))) {
+                for (String s : fileContents) {
+                    pw.println(s);
+                }
+            } catch (Exception e) {
+                System.out.println("An unknown error occurred!");
+            }
+        } catch (Exception e) {
+            System.out.println("An unknown error occurred!");
+        }
+    }
 
     /** Deletes user's account from both central database and local account information database
      *
      * @param user user's username
-     * @param scan scanner to capture input
+     * @param scan Scanner to capture input
      */
     public static void deleteUser(String user, Scanner scan) {
         System.out.println("Are you sure you want to delete your account? Enter 'yes' to confirm or 'no' to abort.");
@@ -462,7 +547,7 @@ public class LogIn {
      * username
      * password (encrypted)
      * isSeller (true or false)
-     * [storeName(s)] array in String representation (included ONLY is user isSeller)
+     * [storeName(s)] array in String representation (included ONLY if user isSeller)
      * email address
      *
      * @return String of the user's name
@@ -616,25 +701,27 @@ public class LogIn {
         } else {
             System.out.println("Goodbye!");
         }
-        System.out.println("Enter '1' to edit your name, '2' to delete your account, or '3' to exit");
+        System.out.println("Enter '1' to edit your name, '2' to delete your account, '3' to change a store name, or '4' to exit.");
         int input = -1;
         boolean inputTaken = false;
         while (!inputTaken) {
             try {
                 input = Integer.parseInt(scan.nextLine());
-                if (input == 1 || input == 2 || input == 3) {
+                if (input == 1 || input == 2 || input == 3 || input == 4) {
                     inputTaken = true;
                 } else {
-                    System.out.println("Please enter '1' or '2' as input!");
+                    System.out.println("Please enter '1,' '2,' '3,' or '4' as input!");
                 }
             } catch (Exception e) {
-                System.out.println("Please enter '1' or '2' as input!");
+                System.out.println("Please enter '1,' '2,' '3,' or '4' as input!");
             }
         }
         if (input == 2) {
             deleteUser(user, scan);
         } else if (input == 1) {
             appendUsername(user, scan);
+        } else if (input == 3) {
+            changeStoreName(user, scan);
         } else {
             System.out.println("Goodbye!");
         }
