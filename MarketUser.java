@@ -114,8 +114,8 @@ public class MarketUser implements User{
         for (String buyer : buyers) {
             File currentBuyer = new File("data/buyers/" + buyer);
             String[] allFiles = currentBuyer.list();
-            System.out.println(buyer);
-            System.out.println(Arrays.toString(allFiles));
+            //System.out.println(buyer);
+            //System.out.println(Arrays.toString(allFiles));
             for (String filename : allFiles) {
                 int indexOldUsername = filename.indexOf(oldUsername);
                 if (indexOldUsername >= 0) {
