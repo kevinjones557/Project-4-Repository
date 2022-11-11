@@ -15,6 +15,8 @@ import java.nio.file.Paths;
 
 public class LogIn {
 
+    private String userLocation;
+
     /** Writes user's username to a file
      *
      * @param user String of the user's username
@@ -161,6 +163,44 @@ public class LogIn {
         }
     }
 
+    /** Allows user to log in to an individual store account
+     *
+     * @param user user logging in to their store
+     * @param scan Scanner to capture input
+     * @return the new location of the user after they logged in to a store
+     */
+    public static String changeUserLocation (String user, Scanner scan) {
+        if (getUsersStores(user) != null) {
+            String stores = getUsersStores(user);
+            List<String> storesArray = Arrays.asList(stores.split(", "));
+            System.out.println("Which store would you like to log in to?");
+            System.out.println(storesArray);
+            String logInLocation = null;
+            boolean storeFound = false;
+            try {
+                while (!storeFound) {
+                    logInLocation = scan.nextLine();
+                    for (String s : storesArray) {
+                        if (s.equals(logInLocation)) {
+                            storeFound = true;
+                        }
+                    }
+                    if (!storeFound) {
+                        System.out.println("That store was not found under your account! Please enter one of the following stores:");
+                        System.out.println(storesArray);
+                    }
+                }
+                System.out.println("Log in successful!");
+                return (logInLocation);
+            } catch (Exception e) {
+                System.out.println("Log in was not successful!");
+            }
+        } else {
+            System.out.println("You are not a seller!");
+        }
+        return (null);
+    }
+
     /** Changes the user's name to their new desired name
      *
      * @param user the user changing their name
@@ -247,6 +287,11 @@ public class LogIn {
         }
     }
 
+    /** Removes the name of a store that gets renamed
+     *
+     * @param store the store being deleted
+     * @param newStore the new store name overwriting the old store name
+     */
     public static void removeRenamedStore(String store, String newStore) {
         try (BufferedReader br = new BufferedReader(new FileReader("users/storeNames"))) {
             List<String> fileContents = new ArrayList<>();
@@ -701,19 +746,19 @@ public class LogIn {
         } else {
             System.out.println("Goodbye!");
         }
-        System.out.println("Enter '1' to edit your name, '2' to delete your account, '3' to change a store name, or '4' to exit.");
+        System.out.println("Enter '1' to edit your name, '2' to delete your account, '3' to change a store name, '4' to log in to one of your stores, or '5' to exit.");
         int input = -1;
         boolean inputTaken = false;
         while (!inputTaken) {
             try {
                 input = Integer.parseInt(scan.nextLine());
-                if (input == 1 || input == 2 || input == 3 || input == 4) {
+                if (input == 1 || input == 2 || input == 3 || input == 4 || input == 5) {
                     inputTaken = true;
                 } else {
-                    System.out.println("Please enter '1,' '2,' '3,' or '4' as input!");
+                    System.out.println("Please enter '1,' '2,' '3,' '4,' or '5' as input!");
                 }
             } catch (Exception e) {
-                System.out.println("Please enter '1,' '2,' '3,' or '4' as input!");
+                System.out.println("Please enter '1,' '2,' '3,' '4,' or '5' as input!");
             }
         }
         if (input == 2) {
@@ -722,8 +767,11 @@ public class LogIn {
             appendUsername(user, scan);
         } else if (input == 3) {
             changeStoreName(user, scan);
+        } else if (input == 4) {
+            System.out.println("New user location: " + changeUserLocation(user, scan));
         } else {
             System.out.println("Goodbye!");
         }
     }
 }
+//TODO maybe add username and password confirmation?
