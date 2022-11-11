@@ -128,10 +128,17 @@ public class LogIn {
                 System.out.println("Please enter the new store name.");
                 String newName = scan.nextLine();
                 boolean nameInUse = checkStoreList(newName);
-                while (!nameInUse) {
-                    System.out.println("That name is in use! Please enter another name.");
-                    newName = scan.nextLine();
-                    nameInUse = checkStoreList(newName);
+                boolean done = false;
+                if (newName.equals("") || !nameInUse || newName.length() < 4 || newName.length() > 16) {
+                    while (newName.equals("") || !nameInUse || newName.length() < 4 || newName.length() > 16) {
+                        System.out.println("Store name constraints: " +
+                                "\n- Cannot be blank " +
+                                "\n- Cannot be in use" +
+                                "\n- Must be in between 4 and 16 characters inclusive " +
+                                "\nPlease enter a valid store name.");
+                        newName = scan.nextLine();
+                        nameInUse = checkStoreList(newName);
+                    }
                 }
                 storesArray.set(storesArray.indexOf(storeToChange), newName);
                 try (BufferedReader br = new BufferedReader(new FileReader("users/" + user + "/" + user))) {
@@ -225,6 +232,10 @@ public class LogIn {
             while (newUser.equals("")) {
                 System.out.println("New username cannot be blank! Please enter your new username.");
                 newUser = scan.nextLine();
+                if (newUser.length() > 16 || newUser.length() < 6) {
+                    newUser = "";
+                    System.out.println("That name is not in between 6 and 16 characters inclusive! Please enter a name of proper length.");
+                }
             }
         }
         try {
@@ -429,11 +440,19 @@ public class LogIn {
             f = new File("users/" + user + "/" + user);
         } else {
             try {
-                if (!dir.createNewFile()) {
-                    while (!dir.createNewFile()) {
-                        System.out.println("Username already exists! Please enter another username.");
-                        user = scan.nextLine();
-                        dir = new File("users/" + user);
+                boolean done = false;
+                while (!done) {
+                    if (!dir.createNewFile()) {
+                        while (!dir.createNewFile()) {
+                            System.out.println("Username already exists! Please enter another username.");
+                            user = scan.nextLine();
+                            dir = new File("users/" + user);
+                        }
+                    }
+                    if (user.length() > 16 || user.length() < 6) {
+                        System.out.println("That name is not in between 6 and 16 characters inclusive! Please enter a name of proper length.");
+                    } else {
+                        done = true;
                     }
                 }
                 dir.mkdirs();
@@ -460,8 +479,14 @@ public class LogIn {
                     if (!fileStatus) {
                         System.out.println("An unknown error occurred! Please try again.");
                     }
-                    encryptFile(user);
-                    done = true;
+                    System.out.println("Please enter your password again to confirm it.");
+                    String passwordToCheck = scan.nextLine();
+                    if (passwordToCheck.equals(password)) {
+                        encryptFile(user);
+                        done = true;
+                    } else {
+                        System.out.println("Passwords did not match! Please try again.");
+                    }
                 }
                 done = false;
                 System.out.println("Are you a seller? Please enter 'yes' or 'no.'");
@@ -482,9 +507,13 @@ public class LogIn {
                             String storeName = scan.nextLine();
                             boolean nameChecked = checkStoreList(storeName);
                             //skips line underneath
-                            if (storeName.equals("") || !nameChecked) {
-                                while (storeName.equals("") || !nameChecked) {
-                                    System.out.println("Store name is either blank or in use! Please enter a valid store name.");
+                            if (storeName.equals("") || !nameChecked || storeName.length() < 4 || storeName.length() > 16) {
+                                while (storeName.equals("") || !nameChecked || storeName.length() < 4 || storeName.length() > 16) {
+                                    System.out.println("Store name constraints: " +
+                                            "\n- Cannot be blank " +
+                                            "\n- Cannot be in use" +
+                                            "\n- Must be in between 4 and 16 characters inclusive " +
+                                            "\nPlease enter a valid store name.");
                                     storeName = scan.nextLine();
                                     nameChecked = checkStoreList(storeName);
                                 }
@@ -693,19 +722,17 @@ public class LogIn {
             }
         } else {
             done = false;
-            System.out.println("Please enter a username.");
+            System.out.println("Please enter a username in between 6 and 16 characters inclusive.");
             while (!done) {
                 try {
                     String user = scan.nextLine();
-                    if (user.equals("")) {
-                        while (user.equals("")) {
-                            System.out.println("Username cannot be blank! Please enter a username.");
-                            user = scan.nextLine();
-                        }
-                    }
-                    if (user.contains(" ")) {
-                        while (user.contains(" ")) {
-                            System.out.println("Spaces are not permitted in usernames! Please enter a username without spaces.");
+                    if (user.equals("") || user.length() < 6 || user.length() > 16 || user.contains(" ")) {
+                        while (user.equals("") || user.length() < 6 || user.length() > 16 || user.contains(" ")) {
+                            System.out.println("Username constraints: " +
+                                    "\n- Cannot be blank " +
+                                    "\n- Must be in between 6 and 16 characters inclusive " +
+                                    "\n- Cannot contain spaces " +
+                                    "\nPlease enter a valid username.");
                             user = scan.nextLine();
                         }
                     }
@@ -745,6 +772,10 @@ public class LogIn {
         } else {
             System.out.println("Goodbye!");
         }
+        //TODO make accessor for isSeller()
+        //MarketUser currentUser = new MarketUser(user, boolean isSeller)
+        //currentUser.message()
+        //TODO have the user enter '1' to enter messaging or '2' to make account changes
         System.out.println("Enter '1' to edit your name, '2' to delete your account, '3' to change a store name, '4' to log in to one of your stores, or '5' to exit.");
         int input = -1;
         boolean inputTaken = false;
@@ -773,4 +804,3 @@ public class LogIn {
         }
     }
 }
-//TODO maybe add username and password confirmation?
