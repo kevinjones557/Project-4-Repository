@@ -636,6 +636,7 @@ public class LogIn {
                                     }
                                 } catch (Exception e) {
                                     System.out.println("Please enter a valid input!");
+
                                 }
                             }
                         }
@@ -727,3 +728,4 @@ public class LogIn {
         }
     }
 }
+//TODO don't ask buyers to change store name
