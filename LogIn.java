@@ -845,7 +845,12 @@ public class LogIn {
                     appendUsername(user, scan);
                     nameChanged = true;
                 } else if (input == 3) {
-                    changeStoreName(user, scan);
+                    //TODO this is needed because of same reason as above
+                    if (!nameChanged) {
+                        changeStoreName(user, scan);
+                    } else {
+                        System.out.println("You have recently changed your name. For security purposes, please log back in to change store names.");
+                    }
                 } else {
                     running = false;
                 }
