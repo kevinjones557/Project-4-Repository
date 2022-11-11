@@ -7,17 +7,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-/**
- * A class to create accounts for users, log them in, and perform any necessary interaction with said accounts.
- * <p>
+/** A class to create accounts for users, log them in, and perform any necessary interaction with said accounts.
+ *
  * author @Adenr4615
  * version 11/9/22
  */
 
 public class LogIn {
 
-    /**
-     * Writes user's username to a file
+    /** Writes user's username to a file
      *
      * @param user String of the user's username
      * @return boolean of if file was successfully written or not
@@ -32,8 +30,7 @@ public class LogIn {
         }
     }
 
-    /**
-     * Appends an additional line to a given user's file
+    /** Appends an additional line to a given user's file
      *
      * @param user     the user whose file is being appended
      * @param toAppend the parameter that is being appended to the file
@@ -48,8 +45,7 @@ public class LogIn {
         }
     }
 
-    /**
-     * Checks to see if the given store name is already in use
+    /** Checks to see if the given store name is already in use
      *
      * @param storeName the name of the store being checked
      * @return boolean of if the store exists or not for handling in main
@@ -99,6 +95,7 @@ public class LogIn {
             stores = stores.substring(1, stores.length() - 1);
             return (stores);
         } catch (Exception e) {
+            //TODO returning null
             return (null);
         }
     }
@@ -388,14 +385,12 @@ public class LogIn {
             userInfo.delete();
             File userDirectory = new File("users/" + user);
             userDirectory.delete();
-            System.out.println("Thank you for your business, " + user + "!");
         } else {
             System.out.println("We're glad you decided to stay!");
         }
     }
 
-    /**
-     * Updates the store list by adding a store name that has been confirmed to not be in use already
+    /** Updates the store list by adding a store name that has been confirmed to not be in use already
      *
      * @param storeName the store name being appended to the file
      */
@@ -407,8 +402,7 @@ public class LogIn {
         }
     }
 
-    /**
-     * Encrypts the password of the user file when an account is created
+    /** Encrypts the password of the user file when an account is created
      *
      * @param user the user whose password is being encrypted
      */
@@ -444,8 +438,7 @@ public class LogIn {
         }
     }
 
-    /**
-     * Takes a password input by a user attempting to log in and uses the key to encrypt it for comparison
+    /** Takes a password input by a user attempting to log in and uses the key to encrypt it for comparison
      *
      * @param input the password being encrypted
      * @return String of the encrypted password
@@ -466,8 +459,7 @@ public class LogIn {
         return (finalInput);
     }
 
-    /**
-     * Creates the file and directory for a user only if the account doesn't already exist
+    /** Creates the file and directory for a user only if the account doesn't already exist
      *
      * @param user the user whose file is being created
      * @param scan scanner object to capture input
@@ -635,8 +627,7 @@ public class LogIn {
         System.out.printf("Account created! Welcome, %s!%n", user);
     }
 
-    /**
-     * Reads the password of the file for comparison
+    /** Reads the password of the file for comparison
      *
      * @param user the user whose password is being read
      * @return String of the encrypted password
@@ -660,9 +651,8 @@ public class LogIn {
         return (null);
     }
 
-    /**
-     * Allows users to log in OR calls methods above and builds a file of the following format for a new user:
-     * <p>
+    /** Allows users to log in OR calls methods above and builds a file of the following format for a new user:
+     *
      * username
      * password (encrypted)
      * isSeller (true or false)
@@ -783,8 +773,7 @@ public class LogIn {
         return (null);
     }
 
-    /**
-     * Runs all LogIn methods to either create a user or log one in; afterwards, creates String ArrayList of user information
+    /** Runs all LogIn methods to either create a user or log one in; afterwards, creates String ArrayList of user information
      *
      * @param args
      */
@@ -792,12 +781,6 @@ public class LogIn {
         Scanner scan = new Scanner(System.in);
         String user = userInteraction(scan);
         boolean isSeller = false;
-        //TODO this is null when a user account is first created because the file isn't written until the program restarts
-        //TODO I don't know if this can be fixed, but it works as-is, the user just has to log back in to use the program
-        if (isSeller(user) == null) {
-            System.out.println("Please log back in to activate your account.");
-            return;
-        }
         if (isSeller(user).equals("true")) {
             isSeller = true;
         } else if (isSeller(user).equals("false")) {
@@ -853,8 +836,9 @@ public class LogIn {
                     if (!nameChanged) {
                         deleteUser(user, scan);
                         userDeleted = true;
+                        running = false;
                     } else {
-                        //TODO this is needed because, as explained above, program breaks if user tries to delete after a name change in the same run BUT it's not a bug, it's a feature
+                        //TODO this is needed because program breaks if user tries to delete after a name change in the same run BUT it's not a bug, it's a feature
                         System.out.println("You have recently changed your name. For security purposes, please log back in to delete your account.");
                     }
                 } else if (input == 1) {
