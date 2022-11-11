@@ -5,20 +5,22 @@ import java.util.*;
 import java.text.SimpleDateFormat;
 
 
-public class MarketUser implements User{
+public class MarketUser implements User {
     private String username;
     private boolean isSeller;
 
     private boolean isUserStore;
 
-    public LinkedHashMap<String,String> storeNameMap;
+    public LinkedHashMap<String, String> storeNameMap;
 
     public static void main(String[] args) {
-        MarketUser mu = new MarketUser("destin",true);
+        MarketUser mu = new MarketUser("destin", true);
         mu.message();
     }
 
-    /** Constructor creates new object with a username and tells object if it is a seller or not.
+    /**
+     * Constructor creates new object with a username and tells object if it is a seller or not.
+     *
      * @param username The username associated with the user directory you wish to find
      * @param isSeller Tells class whether this instance is a seller or not
      */
@@ -27,7 +29,9 @@ public class MarketUser implements User{
         this.isSeller = isSeller;
     }
 
-    /** A static method that will change the names of files and directories to match username
+    /**
+     * A static method that will change the names of files and directories to match username
+     *
      * @param username the username that is currently stored everywhere
      */
     public static void deleteUsername(String username) {
@@ -45,7 +49,9 @@ public class MarketUser implements User{
         }
     }
 
-    /** A static method that will change the names of files and directories to match username
+    /**
+     * A static method that will change the names of files and directories to match username
+     *
      * @param oldUsername the username that is currently stored everywhere
      * @param newUsername the new username that everything will be changed to
      */
@@ -67,7 +73,7 @@ public class MarketUser implements User{
                             changeNameInFile(oldUsername, newUsername, "data/sellers/" + seller + "/"
                                     + filename + "/" + storeFile);
                             String newFilename;
-                            newFilename = filename.substring(0,indexOldUsername) + newUsername + ".txt";
+                            newFilename = filename.substring(0, indexOldUsername) + newUsername + ".txt";
                             try {
                                 Files.move(Paths.get("data/sellers/" + seller + "/"
                                         + filename + "/" + storeFile), Paths.get("data/sellers/" + seller + "/"
@@ -116,7 +122,7 @@ public class MarketUser implements User{
                     if (indexOldUsername == 0) {
                         newFilename = newUsername + filename.substring(oldUsername.length());
                     } else {
-                        newFilename = filename.substring(0,indexOldUsername) + newUsername + ".txt";
+                        newFilename = filename.substring(0, indexOldUsername) + newUsername + ".txt";
                     }
                     try {
                         Files.move(Paths.get("data/buyers/" + buyer + "/" + filename), Paths.get("data/buyers/"
@@ -196,10 +202,12 @@ public class MarketUser implements User{
     }
 
 
-    /** A static method that will go through given file and replace old username with new username
+    /**
+     * A static method that will go through given file and replace old username with new username
+     *
      * @param oldUsername the username that is currently stored everywhere
      * @param newUsername the new username that everything will be changed to
-     * @param filepath the file path of the file being modified
+     * @param filepath    the file path of the file being modified
      */
 
     public static void changeNameInFile(String oldUsername, String newUsername, String filepath) {
@@ -207,13 +215,13 @@ public class MarketUser implements User{
             String line = bfr.readLine();
             ArrayList<String> fileContents = new ArrayList<>();
             while (line != null) {
-                if (line.substring(0,oldUsername.length()).equals(oldUsername)) {
+                if (line.substring(0, oldUsername.length()).equals(oldUsername)) {
                     line = newUsername + line.substring(oldUsername.length());
                 }
                 fileContents.add(line);
                 line = bfr.readLine();
             }
-            PrintWriter pw = new PrintWriter(new FileOutputStream(filepath,false));
+            PrintWriter pw = new PrintWriter(new FileOutputStream(filepath, false));
             for (String fileLine : fileContents) {
                 pw.println(fileLine);
             }
@@ -223,7 +231,8 @@ public class MarketUser implements User{
         }
     }
 
-    /** Method called when user is logged in, using System.out.println() will ask user if they want to message someone,
+    /**
+     * Method called when user is logged in, using System.out.println() will ask user if they want to message someone,
      * who they want to message, and what they want to message.
      */
 
@@ -236,12 +245,222 @@ public class MarketUser implements User{
         boolean keepGoing = true;
         boolean isRecipientStore = false;
         Scanner scan = new Scanner(System.in);
-        String buyOrSell = (isSeller)? "potential buyer" : "store or seller";
+        String buyOrSell = (isSeller) ? "potential buyer" : "store or seller";
         System.out.println("Do you wish to contact, block, or unblock a " + buyOrSell + "? (Yes,No)");
         proceed = scan.nextLine();
         if (proceed.equalsIgnoreCase("yes")) {
             do {
                 if (isSeller) { // if it is a seller, enter this statement
+                    //Blocking feature - Vinh
+                    System.out.println("Do you want to use any block/invisible features? (Yes, No)");
+                    String agree = scan.nextLine();
+                    while (true) {
+                        if (agree.equalsIgnoreCase("Yes")) {
+                            System.out.println("Enter the number associate with the option you want.");
+                            System.out.println("1. Block a user \n2. Unblock a user \n3. Become invisible to a user \n" +
+                                    "4. Become visible again");
+                            int option;
+                            while (true) {
+                                try {
+                                    option = scan.nextInt();
+                                    scan.nextLine();
+                                    if (option >= 1 && option <= 4) {
+                                        break;
+                                    } else {
+                                        System.out.println("Option number must be between 1 and 4 inclusively!");
+                                    }
+                                } catch (NumberFormatException e) {
+                                    System.out.println("Please enter a valid option number!");
+                                }
+
+                            }
+                            try {
+                                switch (option) {
+                                    case 1:
+                                        while (true) {
+                                            String[] userList = getAvailableUsers();
+                                            String[] blockedList = blockedList();
+                                            if(Arrays.equals(userList, blockedList)) {
+                                                System.out.println("You have blocked all available user!");
+                                                break;
+                                            }
+                                            boolean inBlockedList = false;
+                                            System.out.println("Please select a user to block");
+                                            for (int i = 0; i < userList.length; i++) {
+                                                for(String blockedUser: blockedList) {
+                                                    if(blockedUser.equals(userList[i])) {
+                                                        inBlockedList = true;
+                                                    }
+                                                }
+                                                System.out.printf("%d. %s" + ((inBlockedList)?"(blocked)":"") +"\n", i + 1, userList[i]);
+                                                inBlockedList = false;
+                                            }
+                                            int victim;
+                                            while (true) {
+                                                try {
+                                                    victim = scan.nextInt();
+                                                    scan.nextLine();
+                                                    if (victim >= 1 && victim <= userList.length) {
+                                                        break;
+                                                    } else {
+                                                        System.out.printf("Option number must be between 1 and %d inclusively!\n", userList.length);
+                                                    }
+                                                } catch (NumberFormatException e) {
+                                                    System.out.println("Please enter a valid option number!");
+                                                }
+                                            }
+                                            victim-=1;
+                                            boolean blocked = blockUser(userList[victim]);
+                                            if (blocked) {
+                                                System.out.printf("%s is already blocked\n", userList[victim]);
+                                            } else {
+                                                System.out.printf("Successfully block %s\n", userList[victim]);
+                                            }
+                                            System.out.println("Do you want to continue? (Yes/No)");
+                                            if ((scan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
+                                                break;
+                                            }
+                                        }
+                                        break;
+
+                                    case 2:
+                                        if (blockedList().length == 0) {
+                                            System.out.println("You haven't blocked any user");
+                                        } else {
+                                            while (blockedList().length != 0) {
+                                                String[] userList = blockedList();
+                                                System.out.println("Please select a user to unblock");
+                                                for (int i = 0; i < userList.length; i++) {
+                                                    System.out.printf("%d. %s\n", i + 1, userList[i]);
+                                                }
+                                                int victim;
+                                                while (true) {
+                                                    try {
+                                                        victim = scan.nextInt();
+                                                        scan.nextLine();
+                                                        if (victim >= 1 && victim <= userList.length) {
+                                                            break;
+                                                        } else {
+                                                            System.out.printf("Option number must be between 1 and %d inclusively!\n", userList.length);
+                                                        }
+                                                    } catch (NumberFormatException e) {
+                                                        System.out.println("Please enter a valid option number!");
+                                                    }
+                                                }
+                                                victim -=1;
+                                                unblockUser(userList[victim]);
+                                                System.out.printf("Successfully unblock %s\n", userList[victim]);
+                                                if (blockedList().length == 0) {
+                                                    System.out.println("Your blocked list is now empty");
+                                                    break;
+                                                } else {
+                                                    System.out.println("Do you want to continue? (Yes/No)");
+                                                    if ((scan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
+                                                        break;
+                                                    }
+                                                }
+                                            }
+
+                                        }
+                                        break;
+
+                                    case 3:
+                                        while (true) {
+                                            String[] userList = getAvailableUsers();
+                                            String[] invisibleList = invisibleList();
+                                            if(Arrays.equals(userList, invisibleList)) {
+                                                System.out.println("You have become invisible to all available user");
+                                                break;
+                                            }
+                                            boolean inInvisibleList = false;
+                                            for (int i = 0; i < userList.length; i++) {
+                                                for(String blockedUser: invisibleList) {
+                                                    if(blockedUser.equals(userList[i])) {
+                                                        inInvisibleList = true;
+                                                    }
+                                                }
+                                                System.out.printf("%d. %s" + ((inInvisibleList)?"(can't see you)":"") +"\n", i + 1, userList[i]);
+                                                inInvisibleList = false;
+                                            }
+                                            int victim;
+                                            while (true) {
+                                                try {
+                                                    victim = scan.nextInt();
+                                                    scan.nextLine();
+                                                    if (victim >= 1 && victim <= userList.length) {
+                                                        break;
+                                                    } else {
+                                                        System.out.printf("Option number must be between 1 and %d inclusively!\n", userList.length);
+                                                    }
+                                                } catch (NumberFormatException e) {
+                                                    System.out.println("Please enter a valid option number!");
+                                                }
+                                            }
+                                            victim-=1;
+                                            boolean invisible = becomeInvisibleToUser(userList[victim]);
+                                            if (invisible) {
+                                                System.out.printf("You are already invisible to %s\n", userList[victim]);
+                                            } else {
+                                                System.out.printf("Successfully become invisible to %s\n", userList[victim]);
+                                            }
+                                            System.out.println("Do you want to continue? (Yes/No)");
+                                            if ((scan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
+                                                break;
+                                            }
+                                        }
+                                        break;
+
+                                    case 4:
+                                        if (invisibleList().length == 0) {
+                                            System.out.println("You haven't become invisible to any user");
+                                        } else {
+                                            while (invisibleList().length != 0) {
+                                                String[] userList = invisibleList();
+                                                System.out.println("Please select a user to become visible to");
+                                                for (int i = 0; i < userList.length; i++) {
+                                                    System.out.printf("%d. %s\n", i + 1, userList[i]);
+                                                }
+                                                int victim;
+                                                while (true) {
+                                                    try {
+                                                        victim = scan.nextInt();
+                                                        scan.nextLine();
+                                                        if (victim >= 1 && victim <= userList.length) {
+                                                            break;
+                                                        } else {
+                                                            System.out.printf("Option number must be between 1 and %d inclusively!\n", userList.length);
+                                                        }
+                                                    } catch (NumberFormatException e) {
+                                                        System.out.println("Please enter a valid option number!");
+                                                    }
+                                                }
+                                                victim -=1;
+                                                unblockUser(userList[victim]);
+                                                System.out.printf("Successfully become visible again to %s\n", userList[victim]);
+                                                if (blockedList().length == 0) {
+                                                    System.out.println("Your invisible list is now empty");
+                                                    break;
+                                                } else {
+                                                    System.out.println("Do you want to continue? (Yes/No)");
+                                                    if ((scan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
+                                                        break;
+                                                    }
+                                                }
+                                            }
+
+                                        }
+                                        break;
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                System.out.println("An unknown error occurred");
+                            }
+                            System.out.println("Do you want to keep using block/invisible features?(Yes/No)");
+                            if ((scan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
+                                break;
+                            }
+                        }
+                    }
                     do { // keep prompting for a recipient until they either select a valid recipient, or cancel
                         System.out.println("Enter '1' to search for a buyer, enter '2' to see a list of buyers," +
                                 "or enter any number to cancel:");
@@ -394,32 +613,32 @@ public class MarketUser implements User{
                             if (!isRecipientStore && !isUserStore) {
                                 appendMessage(recipient);
                             } else if (isRecipientStore) {
-                                appendMessage(storeNameMap.get(recipient),recipient);
+                                appendMessage(storeNameMap.get(recipient), recipient);
                             } else {
-                                appendMessage(storeNameMap.get(username),recipient);
+                                appendMessage(storeNameMap.get(username), recipient);
                             }
                             break;
                         case 3:
                             if (!isRecipientStore && !isUserStore) {
                                 editMessage(recipient);
                             } else if (isRecipientStore) {
-                                editMessage(storeNameMap.get(recipient),recipient);
+                                editMessage(storeNameMap.get(recipient), recipient);
                             } else {
-                                editMessage(storeNameMap.get(username),recipient);
+                                editMessage(storeNameMap.get(username), recipient);
                             }
                             break;
                         case 4:
                             if (!isRecipientStore && !isUserStore) {
                                 deleteMessage(recipient);
                             } else if (isRecipientStore) {
-                                deleteMessage(storeNameMap.get(recipient),recipient);
+                                deleteMessage(storeNameMap.get(recipient), recipient);
                             } else {
-                                deleteMessage(storeNameMap.get(username),recipient);
+                                deleteMessage(storeNameMap.get(username), recipient);
                             }
                             break;
                         case 5:
                             boolean alreadyBlocked = blockUser(recipient);
-                            if(alreadyBlocked) {
+                            if (alreadyBlocked) {
                                 System.out.println("Current user has already blocked " + recipient);
                             } else {
                                 System.out.println("Successfully blocked " + recipient);
@@ -465,8 +684,9 @@ public class MarketUser implements User{
 
     /**
      * Export message data as csv file
+     *
      * @param recipient person whom the message is with
-     * @param path where the csv file will end up
+     * @param path      where the csv file will end up
      */
 
     public void writeCSV(String recipient, String path) {
@@ -476,7 +696,7 @@ public class MarketUser implements User{
         String filepath;
         File f = new File(path + username + ".csv");
         if (isUserStore) {
-            filepath = FileManager.getStoreDirectory(storeNameMap.get(username),username);
+            filepath = FileManager.getStoreDirectory(storeNameMap.get(username), username);
         } else if (isSeller) {
             filepath = "data/sellers/" + username + "/";
         } else {
@@ -484,16 +704,16 @@ public class MarketUser implements User{
         }
         try {
             f.createNewFile();
-            PrintWriter pw = new PrintWriter(new FileWriter(f,false));
+            PrintWriter pw = new PrintWriter(new FileWriter(f, false));
             pw.println("Name:,Date:,Time:,Message:");
             BufferedReader bfr = new BufferedReader(new FileReader(filepath + username + recipient + ".txt"));
             String line = bfr.readLine();
             while (line != null) {
-                String name = line.substring(0,line.indexOf(" "));
+                String name = line.substring(0, line.indexOf(" "));
                 line = line.substring(line.indexOf(" ") + 1);
-                String date = line.substring(0,line.indexOf(" "));
+                String date = line.substring(0, line.indexOf(" "));
                 line = line.substring(line.indexOf(" ") + 1);
-                String time = line.substring(0,line.indexOf(" ") - 1);
+                String time = line.substring(0, line.indexOf(" ") - 1);
                 String message = line.substring(line.indexOf(" ") + 1);
                 pw.println(name + "," + date + "," + time + "," + message);
                 line = bfr.readLine();
@@ -507,55 +727,56 @@ public class MarketUser implements User{
 
     /**
      * Get a list of users that this user can message
+     *
      * @return an array of available people for messaging
      * @throws IOException if error
      */
     public String[] getAvailableUsers() throws IOException {
         ArrayList<String> available = new ArrayList<>();
-        if(!isSeller){
+        if (!isSeller) {
             File sellersDir = new File("data/sellers");
             String[] sellers = sellersDir.list();
-            for(String seller: sellers) {
+            for (String seller : sellers) {
                 File sellerFolder = new File("data/sellers/" + seller);
                 String[] sellerFiles = sellerFolder.list();
                 File invisibleFilePath = new File("data/sellers/" + seller + "/" + sellerFiles[0] + "/isInvisible.txt");
                 BufferedReader bfr = new BufferedReader(new FileReader(invisibleFilePath));
                 String line;
                 boolean invisible = false;
-                while((line = bfr.readLine())!= null) {
-                    if(line.equals(this.username)) {
+                while ((line = bfr.readLine()) != null) {
+                    if (line.equals(this.username)) {
                         invisible = true;
                         break;
                     }
                 }
                 bfr.close();
-                if(!invisible) {
+                if (!invisible) {
                     available.add(seller);
                 }
             }
         } else {
             File buyersDir = new File("data/buyers");
             String[] buyers = buyersDir.list();
-            for(String buyer: buyers) {
+            for (String buyer : buyers) {
                 File invisibleFilePath = new File("data/buyers/" + buyer + "/isInvisible.txt");
                 BufferedReader bfr = new BufferedReader(new FileReader(invisibleFilePath));
                 String line;
                 boolean invisible = false;
-                while((line = bfr.readLine())!= null) {
-                    if(line.equals(this.username)) {
+                while ((line = bfr.readLine()) != null) {
+                    if (line.equals(this.username)) {
                         invisible = true;
                         break;
                     }
                 }
                 bfr.close();
-                if(!invisible) {
+                if (!invisible) {
                     available.add(buyer);
                 }
             }
         }
         //Just turn ArrayList into array classic 180 stuff
         String[] availables = new String[available.size()];
-        for(int i = 0; i < availables.length; i++) {
+        for (int i = 0; i < availables.length; i++) {
             availables[i] = available.get(i);
         }
         return availables;
@@ -563,6 +784,7 @@ public class MarketUser implements User{
 
     /**
      * Get a list of users that this user can message
+     *
      * @return an array of available people for messaging
      * @throws IOException in case of error
      */
@@ -595,9 +817,11 @@ public class MarketUser implements User{
         return availableStores;
     }
 
-    /** Method to see if conversation has started
+    /**
+     * Method to see if conversation has started
      * Check if <username><recipient>.txt exists because if it exists then <recipient><username>.txt also exists
      * if nto create both files
+     *
      * @param recipient The username associated with the person the user wishes to measure
      */
     public void checkIfMessageExists(String recipient, boolean isRecipientStore) {// check if <username><recipient>.txt exits in directory or not
@@ -632,7 +856,7 @@ public class MarketUser implements User{
                 if (didCreate) {
                     String sellerName = storeNameMap.get(recipient);
                     File fRecipient = new File("data/sellers/" + sellerName
-                            + "/" + recipient +"/" + recipient + username + ".txt");
+                            + "/" + recipient + "/" + recipient + username + ".txt");
                     fRecipient.createNewFile();
                 }
             } catch (Exception e) {
@@ -645,7 +869,6 @@ public class MarketUser implements User{
      * Creates filepath to message files and calls append execution
      *
      * @param recipient user to send to
-     *
      * @author John Brooks
      */
 
@@ -668,9 +891,8 @@ public class MarketUser implements User{
      * Creates filepath to message files and calls append execution, overloaded in the case of
      * messaging a store
      *
-     * @param seller seller associated with store
+     * @param seller    seller associated with store
      * @param recipient name of store or recipient
-     *
      * @author John Brooks
      */
 
@@ -697,7 +919,7 @@ public class MarketUser implements User{
     public void displayMessage(String recipient) {
         String path = "";
         if (isUserStore) {
-            path = FileManager.getStoreDirectory(storeNameMap.get(username),username) + "/";
+            path = FileManager.getStoreDirectory(storeNameMap.get(username), username) + "/";
         } else {
             try {
                 path = FileManager.getDirectoryFromUsername(recipient);
@@ -720,10 +942,9 @@ public class MarketUser implements User{
     /**
      * Executes appending by prompting for and adding message to both files given
      *
-     * @param recipient receiver of message
-     * @param fileSender is path to Senders file
+     * @param recipient     receiver of message
+     * @param fileSender    is path to Senders file
      * @param fileRecipient is path to Receivers file
-     *
      * @author John Brooks
      */
     public void appendMessageExecute(String recipient, String fileSender, String fileRecipient) {
@@ -768,7 +989,6 @@ public class MarketUser implements User{
      * Prepares to execute edit by forming file paths
      *
      * @param recipient receiver of message
-     *
      * @author John Brooks
      */
     public void editMessage(String recipient) {
@@ -790,8 +1010,7 @@ public class MarketUser implements User{
      * Prepares to execute edit by forming file paths with store name in case of overload
      *
      * @param recipient receiver of message
-     * @param seller name of store
-     *
+     * @param seller    name of store
      * @author John Brooks
      */
     public void editMessage(String seller, String recipient) {
@@ -814,10 +1033,9 @@ public class MarketUser implements User{
      * Searches file for index that matches one given by the user and changes that line and
      * writes it back to the file
      *
-     * @param recipient receives file
-     * @param fileSender sender file path
+     * @param recipient     receives file
+     * @param fileSender    sender file path
      * @param fileRecipient recipient file path
-     *
      * @author John Brooks
      */
     public void editMessageExecute(String recipient, String fileSender, String fileRecipient) {
@@ -920,7 +1138,6 @@ public class MarketUser implements User{
      * Prepares to execute delete by forming file paths
      *
      * @param recipient receiver of message
-     *
      * @author John Brooks
      */
     public void deleteMessage(String recipient) {
@@ -942,8 +1159,7 @@ public class MarketUser implements User{
      * Prepares to execute delete by forming file paths with store name in case of overload
      *
      * @param recipient receiver of message
-     * @param seller name of store
-     *
+     * @param seller    name of store
      * @author John Brooks
      */
     public void deleteMessage(String seller, String recipient) {
@@ -965,7 +1181,6 @@ public class MarketUser implements User{
      * therefore not write it to the file
      *
      * @param recipient receiver of message
-     *
      * @author John Brooks
      */
 
@@ -1025,10 +1240,12 @@ public class MarketUser implements User{
             }
         }
     }
+
     /**
      * imports .txt file if path provided is valid
-     * @param path: path of file
-     * @param recipient recipient of message
+     *
+     * @param path:            path of file
+     * @param recipient        recipient of message
      * @param isRecipientStore whether recipient is store or not
      */
 
@@ -1037,14 +1254,14 @@ public class MarketUser implements User{
         String fileSender;
         String fileReceiver;
         if (isUserStore) {
-            fileSender = FileManager.getStoreDirectory(storeNameMap.get(username),username);
+            fileSender = FileManager.getStoreDirectory(storeNameMap.get(username), username);
             fileReceiver = "data/buyers/" + recipient + "/";
         } else if (isSeller) {
             fileReceiver = "data/buyers/" + recipient + "/";
             fileSender = "data/sellers/" + username + "/";
         } else if (isRecipientStore) {
             fileSender = "data/buyers/" + username + "/";
-            fileReceiver = FileManager.getStoreDirectory(storeNameMap.get(recipient),recipient);
+            fileReceiver = FileManager.getStoreDirectory(storeNameMap.get(recipient), recipient);
         } else {
             fileReceiver = "data/sellers/" + recipient + "/";
             fileSender = "data/buyers/" + username + "/";
@@ -1057,8 +1274,8 @@ public class MarketUser implements User{
         File receiverFile = new File(fileReceiver);
         File importFile = new File(path);
         try (BufferedReader bfr = new BufferedReader(new FileReader(importFile))) {
-            PrintWriter pwReceiver = new PrintWriter(new FileWriter(receiverFile,true));
-            PrintWriter pwSender = new PrintWriter(new FileWriter(senderFile,true));
+            PrintWriter pwReceiver = new PrintWriter(new FileWriter(receiverFile, true));
+            PrintWriter pwSender = new PrintWriter(new FileWriter(senderFile, true));
 
             String timeStamp = new SimpleDateFormat("MM/dd HH:mm:ss").format(new java.util.Date());
 
@@ -1080,153 +1297,88 @@ public class MarketUser implements User{
 
     /**
      * Become invisible to a user if not already invisible
+     *
      * @param username: name of person to become invisible to
      * @return true if already invisible, false otherwise
      * @throws IOException
      */
     public boolean becomeInvisibleToUser(String username) {
         try {
-            if(!isSeller) {
-                String invisibleFilePath = "data/buyers/" + this.username + "/isInvisible.txt";
-                File invisibleFile = new File(invisibleFilePath);
-                BufferedReader bfr = new BufferedReader(new FileReader(invisibleFile));
-                String line;
-                while ((line = bfr.readLine()) != null) {
-                    if (line.equals(username)) {
-                        //Already blocked this user
-                        return true;
-                    }
-                }
-                bfr.close();
-                //Write the name of the victim to hasBlocked file
-                PrintWriter pw = new PrintWriter(new FileWriter(invisibleFile, true));
-                pw.write(username);
-                pw.println();
-                pw.flush();
-                pw.close();
-                return false;
-            } else {
-                File seller = new File("data/sellers/" + this.username);
-                String[] sellerFile = seller.list();
-                for(String fileName: sellerFile) {
-                    File file = new File("data/sellers/" + this.username +"/" + fileName);
-                    if(file.isDirectory()) {
-                        File invisibleFile = new File("data/sellers/" + this.username +"/" + fileName + "/isInvisible.txt");
-                        BufferedReader bfr = new BufferedReader(new FileReader(invisibleFile));
-                        String line;
-                        while ((line = bfr.readLine()) != null) {
-                            if (line.equals(username)) {
-                                //Store already blocked this user
-                                return true;
-                            }
-                        }
-                        bfr.close();
-                        //Write the name of the victim to hasBlocked file
-                        PrintWriter pw = new PrintWriter(new FileWriter(invisibleFile, true));
-                        pw.write(username);
-                        pw.println();
-                        pw.flush();
-                        pw.close();
-                        return false;
-                    }
+            String invisibleFilePath = "data/" + ((isSeller) ? "sellers/" : "buyers/") + this.username + "/isInvisible.txt";
+            File invisibleFile = new File(invisibleFilePath);
+            BufferedReader bfr = new BufferedReader(new FileReader(invisibleFile));
+            String line;
+            while ((line = bfr.readLine()) != null) {
+                if (line.equals(username)) {
+                    //Already blocked this user
+                    return true;
                 }
             }
+            bfr.close();
+            //Write the name of the victim to hasBlocked file
+            PrintWriter pw = new PrintWriter(new FileWriter(invisibleFile, true));
+            pw.write(username);
+            pw.println();
+            pw.flush();
+            pw.close();
+            return false;
+
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
-        return false;
     }
 
     /**
      * Return a list of blocked users for this user
+     *
      * @return array of blocked usernames
      * @throws IOException
      */
-    public String[] blockedList() throws IOException{
+    public String[] blockedList() throws IOException {
         ArrayList<String> victims = new ArrayList<>();
-        if(!isSeller) {
-            String blockedFilePath = "data/buyers/" + this.username + "hasBlocked.txt";
-            File blockedFile = new File(blockedFilePath);
-            BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
-            String line;
-            while ((line = bfr.readLine()) != null) {
+        String blockedFilePath = "data/" + ((isSeller) ? "sellers/" : "buyers/") + this.username + "/hasBlocked.txt";
+        File blockedFile = new File(blockedFilePath);
+        BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
+        String line;
+        while ((line = bfr.readLine()) != null) {
+            if(!line.isEmpty()) {
                 victims.add(line);
             }
-            String[] blockedList = new String[victims.size()];
-            for (int i = 0; i < victims.size(); i++) {
-                blockedList[i] = victims.get(i);
-            }
-            return blockedList;
-        } else {
-            File seller = new File("data/sellers/" + this.username);
-            String[] sellerFile = seller.list();
-            File blockedFile = new File("data/sellers/" + this.username + "/" + sellerFile[0] + "/hasBlocked.txt");
-            BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
-            String line;
-            while ((line = bfr.readLine()) != null) {
-                victims.add(line);
-            }
-            String[] blockedList = new String[victims.size()];
-            for (int i = 0; i < victims.size(); i++) {
-                blockedList[i] = victims.get(i);
-            }
-            return blockedList;
         }
+        String[] blockedList = new String[victims.size()];
+        for (int i = 0; i < victims.size(); i++) {
+            blockedList[i] = victims.get(i);
+        }
+        return blockedList;
     }
 
     /**
      * Become visible to a user from the isInvisible file
      * return
+     *
      * @param username: name of person to unblock
      */
     public void becomeVisibleAgain(String username) {
         try {
-            if(!isSeller) {
-                ArrayList<String> lines = new ArrayList<>();
-                String invisibleFilePath = "data/buyers/" + this.username + "/isInvisible.txt";
-                File invisibleFile = new File(invisibleFilePath);
-                BufferedReader bfr = new BufferedReader(new FileReader(invisibleFile));
-                String line;
-                while ((line = bfr.readLine()) != null) {
-                    if (!line.equals(username)) {
-                        lines.add(line);
-                    }
-                }
-                bfr.close();
-                PrintWriter pw = new PrintWriter(new FileWriter(invisibleFile, false));
-                for (String l : lines) {
-                    pw.write(l);
-                    pw.println();
-                }
-                pw.flush();
-                pw.close();
-            } else {
-                File seller = new File("data/sellers/" + this.username);
-                String[] sellerFile = seller.list();
-                for(String fileName: sellerFile) {
-                    File file = new File("data/sellers/" + this.username + "/" + fileName);
-                    if (file.isDirectory()) {
-                        ArrayList<String> lines = new ArrayList<>();
-                        File invisibleFile = new File("data/sellers/" + this.username +"/" + fileName + "/isInvisible.txt");
-                        BufferedReader bfr = new BufferedReader(new FileReader(invisibleFile));
-                        String line;
-                        while ((line = bfr.readLine()) != null) {
-                            if (!line.equals(username)) {
-                                lines.add(line);
-                            }
-                        }
-                        bfr.close();
-                        PrintWriter pw = new PrintWriter(new FileWriter(invisibleFile, false));
-                        for (String l : lines) {
-                            pw.write(l);
-                            pw.println();
-                        }
-                        pw.flush();
-                        pw.close();
-                    }
+            ArrayList<String> lines = new ArrayList<>();
+            String invisibleFilePath = "data/" + ((isSeller) ? "sellers/" : "buyers/") + this.username + "/isInvisible.txt";
+            File invisibleFile = new File(invisibleFilePath);
+            BufferedReader bfr = new BufferedReader(new FileReader(invisibleFile));
+            String line;
+            while ((line = bfr.readLine()) != null) {
+                if (!line.equals(username) && !line.isEmpty()) {
+                    lines.add(line);
                 }
             }
+            bfr.close();
+            PrintWriter pw = new PrintWriter(new FileWriter(invisibleFile, false));
+            for (String l : lines) {
+                pw.write(l);
+                pw.println();
+            }
+            pw.flush();
+            pw.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1234,155 +1386,131 @@ public class MarketUser implements User{
 
     /**
      * Return list of people that can't see this user (and his stores)
+     *
      * @return array of people that can't see this user (and his stores)
      * @throws IOException
      */
-    public String[] invisibleList() throws IOException{
+    public String[] invisibleList() throws IOException {
         ArrayList<String> victims = new ArrayList<>();
-        if(!isSeller) {
-            String invisibleFilePath = "data/buyers/" + this.username + "isInvisible.txt";
-            File invisibleFile = new File(invisibleFilePath);
-            BufferedReader bfr = new BufferedReader(new FileReader(invisibleFile));
-            String line;
-            while ((line = bfr.readLine()) != null) {
+        String invisibleFilePath = "data/" + ((isSeller) ? "sellers/" : "buyers/") + this.username + "/isInvisible.txt";
+        File invisibleFile = new File(invisibleFilePath);
+        BufferedReader bfr = new BufferedReader(new FileReader(invisibleFile));
+        String line;
+        while ((line = bfr.readLine()) != null) {
+            if(!line.isEmpty()) {
                 victims.add(line);
             }
-            String[] invisibleList = new String[victims.size()];
-            for (int i = 0; i < victims.size(); i++) {
-                invisibleList[i] = victims.get(i);
-            }
-            return invisibleList;
-        } else {
-            File seller = new File("data/sellers/" + this.username);
-            String[] sellerFile = seller.list();
-            File invisibleFile = new File("data/sellers/" + this.username + "/" + sellerFile[0] + "/isInvisible.txt");
-            BufferedReader bfr = new BufferedReader(new FileReader(invisibleFile));
-            String line;
-            while ((line = bfr.readLine()) != null) {
-                victims.add(line);
-            }
-            String[] invisibleList = new String[victims.size()];
-            for (int i = 0; i < victims.size(); i++) {
-                invisibleList[i] = victims.get(i);
-            }
-            return invisibleList;
         }
+        String[] invisibleList = new String[victims.size()];
+        for (int i = 0; i < victims.size(); i++) {
+            invisibleList[i] = victims.get(i);
+        }
+        return invisibleList;
+
     }
 
     /**
      * Blocked a user if not already blocked
+     *
      * @param username
      * @return true if already blocked, false otherwise
      */
     public boolean blockUser(String username) {
         try {
-            if(!isSeller) {
-                String blockedFilePath = "data/buyers/" + this.username + "/hasBlocked.txt";
-                File blockedFile = new File(blockedFilePath);
-                BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
-                String line;
-                while ((line = bfr.readLine()) != null) {
-                    if (line.equals(username)) {
-                        //Already blocked this user
-                        return true;
-                    }
-                }
-                bfr.close();
-                //Write the name of the victim to hasBlocked file
-                PrintWriter pw = new PrintWriter(new FileWriter(blockedFile, true));
-                pw.write(username);
-                pw.println();
-                pw.flush();
-                pw.close();
-                return false;
-            } else {
-                File seller = new File("data/sellers/" + this.username);
-                String[] sellerFile = seller.list();
-                for(String fileName: sellerFile) {
-                    File file = new File("data/sellers/" + this.username +"/" + fileName);
-                    if(file.isDirectory()) {
-                        File blockedFile = new File("data/sellers/" + this.username +"/" + fileName + "/hasBlocked.txt");
-                        BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
-                        String line;
-                        while ((line = bfr.readLine()) != null) {
-                            if (line.equals(username)) {
-                                //Store already blocked this user
-                                return true;
-                            }
-                        }
-                        bfr.close();
-                        //Write the name of the victim to hasBlocked file
-                        PrintWriter pw = new PrintWriter(new FileWriter(blockedFile, true));
-                        pw.write(username);
-                        pw.println();
-                        pw.flush();
-                        pw.close();
-                        return false;
-                    }
+            String blockedFilePath = "data/" + ((isSeller) ? "sellers/" : "buyers/") + this.username + "/hasBlocked.txt";
+            File blockedFile = new File(blockedFilePath);
+            BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
+            String line;
+            while ((line = bfr.readLine()) != null) {
+                if (line.equals(username)) {
+                    //Already blocked this user
+                    return true;
                 }
             }
+            bfr.close();
+            //Write the name of the victim to hasBlocked file
+            PrintWriter pw = new PrintWriter(new FileWriter(blockedFile, true));
+            pw.write(username);
+            pw.println();
+            pw.flush();
+            pw.close();
+            return false;
+
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
-        return false;
     }
 
     /**
      * unblocked a user listed in the blockedList
+     *
      * @param username
      */
     public void unblockUser(String username) {
         try {
-            if(!isSeller) {
-                ArrayList<String> lines = new ArrayList<>();
-                String blockedFilePath = "data/buyers/" + this.username + "/hasBlocked.txt";
-                File blockedFile = new File(blockedFilePath);
-                BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
-                String line;
-                while ((line = bfr.readLine()) != null) {
-                    if (!line.equals(username)) {
-                        lines.add(line);
-                    }
-                }
-                bfr.close();
-                PrintWriter pw = new PrintWriter(new FileWriter(blockedFile, false));
-                for (String l : lines) {
-                    pw.write(l);
-                    pw.println();
-                }
-                pw.flush();
-                pw.close();
-            } else {
-                File seller = new File("data/sellers/" + this.username);
-                String[] sellerFile = seller.list();
-                for(String fileName: sellerFile) {
-                    File file = new File("data/sellers/" + this.username + "/" + fileName);
-                    if (file.isDirectory()) {
-                        ArrayList<String> lines = new ArrayList<>();
-                        File blockedFile = new File("data/sellers/" + this.username +"/" + fileName + "/hasBlocked.txt");
-                        BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
-                        String line;
-                        while ((line = bfr.readLine()) != null) {
-                            if (!line.equals(username)) {
-                                lines.add(line);
-                            }
-                        }
-                        bfr.close();
-                        PrintWriter pw = new PrintWriter(new FileWriter(blockedFile, false));
-                        for (String l : lines) {
-                            pw.write(l);
-                            pw.println();
-                        }
-                        pw.flush();
-                        pw.close();
-                    }
+            ArrayList<String> lines = new ArrayList<>();
+            String blockedFilePath = "data/" + ((isSeller) ? "sellers/" : "buyers/") + this.username + "/hasBlocked.txt";
+            File blockedFile = new File(blockedFilePath);
+            BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
+            String line;
+            while ((line = bfr.readLine()) != null) {
+                if (!line.equals(username) && !line.isEmpty()) {
+                    lines.add(line);
                 }
             }
+            bfr.close();
+            PrintWriter pw = new PrintWriter(new FileWriter(blockedFile, false));
+            for (String l : lines) {
+                pw.write(l);
+                pw.println();
+            }
+            pw.flush();
+            pw.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+ /*   public ArrayList<String[]> getCensoredList() throws IOException {
+        ArrayList<String[]> censoredList = new ArrayList<>();
+        String censoredFilePath = "data/" + ((isSeller) ? "sellers/" : "buyers/") + this.username + "/censoredList";
+        File censoredFile = new File(censoredFilePath);
+        BufferedReader bfr = new BufferedReader(new FileReader(censoredFile));
+        String line;
+        int lineNum = 0;
+        String[] wordPair = new String[2];
+        while ((line = bfr.readLine()) != null) {
+            wordPair[lineNum % 2] = line;
+            if (lineNum % 2 == 1) {
+                censoredList.add(wordPair);
+            }
+            lineNum++;
+        }
+        bfr.close();
+        return censoredList;
+    }
+
+    public boolean addCensoredWord(String censoredWord, String replacement) throws IOException {
+        String censoredFilePath = "data/" + ((isSeller) ? "sellers/" : "buyers/") + this.username + "/censoredList";
+        File censoredFile = new File(censoredFilePath);
+        censoredFile.createNewFile();
+        ArrayList<String[]> censoredList = getCensoredList();
+        for (String[] wordPair : censoredList) {
+            if (wordPair[0].equals(censoredWord)) {
+                return false;
+            }
+        }
+        PrintWriter pr = new PrintWriter(new FileWriter(censoredFile, true));
+        pr.write(censoredWord + "\n" + replacement);
+        pr.println();
+        pr.flush();
+        pr.close();
+        return true;
+    }
+    */
+  
 }
 //TODO allow sellers to access specific stores
 //TODO fix display message
