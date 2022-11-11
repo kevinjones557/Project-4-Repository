@@ -15,8 +15,8 @@ public class MarketUser implements User{
 
     public static void main(String[] args) {
         MarketUser mu = new MarketUser("storeTest",true, true);
-        MarketUser.changeUsername("nathan","harlom");
         mu.message();
+        MarketUser.changeStoreName("Walmart","Target");
     }
 
     /** Constructor creates new object with a username and tells object if it is a seller or not.
@@ -69,11 +69,7 @@ public class MarketUser implements User{
                             changeNameInFile(oldUsername, newUsername, "data/sellers/" + seller + "/"
                                     + filename + "/" + storeFile);
                             String newFilename;
-                            if (indexOldUsername == 0) {
-                                newFilename = newUsername + filename.substring(oldUsername.length());
-                            } else {
-                                newFilename = filename.substring(0,indexOldUsername) + newUsername + ".txt";
-                            }
+                            newFilename = filename.substring(0,indexOldUsername) + newUsername + ".txt";
                             try {
                                 Files.move(Paths.get("data/sellers/" + seller + "/"
                                         + filename + "/" + storeFile), Paths.get("data/sellers/" + seller + "/"
@@ -114,8 +110,6 @@ public class MarketUser implements User{
         for (String buyer : buyers) {
             File currentBuyer = new File("data/buyers/" + buyer);
             String[] allFiles = currentBuyer.list();
-            //System.out.println(buyer);
-            //System.out.println(Arrays.toString(allFiles));
             for (String filename : allFiles) {
                 int indexOldUsername = filename.indexOf(oldUsername);
                 if (indexOldUsername >= 0) {
@@ -146,6 +140,64 @@ public class MarketUser implements User{
         username, go through files and change all the names and rename files */
     }
 
+    public static void changeStoreName(String oldStoreName, String newStoreName) {
+        File sellerDirectories = new File("data/sellers/");
+        File buyerDirectories = new File("data/buyers/");
+        String[] sellers = sellerDirectories.list();
+        String[] buyers = buyerDirectories.list();
+        for (String buyer : buyers) {
+            File currentBuyer = new File("data/buyers/" + buyer);
+            String[] allFiles = currentBuyer.list();
+            for (String filename : allFiles) {
+                int indexOldStoreName = filename.indexOf(oldStoreName);
+                if (indexOldStoreName >= 0) {
+                    changeNameInFile(oldStoreName, newStoreName, "data/buyers/" + buyer + "/" + filename);
+                    String newFilename;
+                    newFilename = filename.substring(0, indexOldStoreName) + newStoreName + ".txt";
+                    try {
+                        Files.move(Paths.get("data/buyers/" + buyer + "/" + filename), Paths.get("data/buyers/"
+                                + buyer + "/" + newFilename));
+                    } catch (IOException e) {
+                        System.out.println("Sorry, failed to rename user!");
+                    }
+                }
+            }
+        }
+        for (String seller : sellers) {
+            File currentSeller = new File("data/sellers/" + seller);
+            String[] allFiles = currentSeller.list();
+            for (String filename : allFiles) {
+                File possibleStore = new File("data/sellers/" + seller + "/" + filename);
+                if (possibleStore.isDirectory() && filename.equals(oldStoreName)) {
+                    String[] storeFiles = possibleStore.list();
+                    for (String storeFile : storeFiles) {
+                        int indexOldUsername = storeFile.indexOf(oldStoreName);
+                        if (indexOldUsername >= 0) {
+                            changeNameInFile(oldStoreName, newStoreName, "data/sellers/" + seller + "/"
+                                    + filename + "/" + storeFile);
+                            String newFilename;
+                            newFilename = newStoreName + storeFile.substring(oldStoreName.length());
+                            try {
+                                Files.move(Paths.get("data/sellers/" + seller + "/"
+                                        + filename + "/" + storeFile), Paths.get("data/sellers/" + seller + "/"
+                                        + filename + "/" + newFilename));
+                            } catch (IOException e) {
+                                System.out.println("Sorry, failed to rename user!");
+                            }
+                        }
+                    }
+                    try {
+                        Files.move(Paths.get("data/sellers/" + seller + "/" + oldStoreName),
+                                Paths.get("data/sellers/" + seller + "/" + newStoreName));
+                    } catch (Exception e) {
+                        System.out.println("Sorry, unable to rename store!");
+                    }
+                }
+            }
+        }
+    }
+
+
     /** A static method that will go through given file and replace old username with new username
      * @param oldUsername the username that is currently stored everywhere
      * @param newUsername the new username that everything will be changed to
@@ -169,7 +221,7 @@ public class MarketUser implements User{
             }
             pw.close();
         } catch (IOException e) {
-            System.out.println("Unknown Error");
+            e.printStackTrace();
         }
     }
 
@@ -395,7 +447,11 @@ public class MarketUser implements User{
                             if (!path.equalsIgnoreCase("cancel")) {
                                 importFile(path, recipient, isRecipientStore);
                             }
-                        // TODO case 8 -> implement;
+                        case 8:
+                            System.out.println("Enter the path where you would like the csv file to be stored:");
+                            String csvPath = scan.nextLine();
+                            writeCSV(recipient, csvPath);
+
                     }
                     System.out.println("Would you like to complete another action with this user? (Yes,No)");
                     stayConnected = scan.nextLine().equals("yes");
@@ -407,6 +463,48 @@ public class MarketUser implements User{
         }
         System.out.println("Thank you for using the messaging system!");
     }
+
+    /**
+     * Export message data as csv file
+     * @param recipient person whom the message is with
+     * @param path where the csv file will end up
+     */
+
+    public void writeCSV(String recipient, String path) {
+        if (!path.endsWith("/")) {
+            path += "/";
+        }
+        String filepath;
+        File f = new File(path + username + ".csv");
+        if (isUserStore) {
+            filepath = FileManager.getStoreDirectory(storeNameMap.get(username),username);
+        } else if (isSeller) {
+            filepath = "data/sellers/" + username + "/";
+        } else {
+            filepath = "data/buyers/" + username + "/";
+        }
+        try {
+            f.createNewFile();
+            PrintWriter pw = new PrintWriter(new FileWriter(f,false));
+            pw.println("Name:,Date:,Time:,Message:");
+            BufferedReader bfr = new BufferedReader(new FileReader(filepath + username + recipient + ".txt"));
+            String line = bfr.readLine();
+            while (line != null) {
+                String name = line.substring(0,line.indexOf(" "));
+                line = line.substring(line.indexOf(" ") + 1);
+                String date = line.substring(0,line.indexOf(" "));
+                line = line.substring(line.indexOf(" ") + 1);
+                String time = line.substring(0,line.indexOf(" ") - 1);
+                String message = line.substring(line.indexOf(" ") + 1);
+                pw.println(name + "," + date + "," + time + "," + message);
+                line = bfr.readLine();
+            }
+            pw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * Get a list of users that this user can message
