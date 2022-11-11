@@ -14,19 +14,17 @@ public class MarketUser implements User{
     public LinkedHashMap<String,String> storeNameMap;
 
     public static void main(String[] args) {
-        MarketUser mu = new MarketUser("storeTest",true, true);
+        MarketUser mu = new MarketUser("destin",true);
         mu.message();
-        MarketUser.changeStoreName("Walmart","Target");
     }
 
     /** Constructor creates new object with a username and tells object if it is a seller or not.
      * @param username The username associated with the user directory you wish to find
      * @param isSeller Tells class whether this instance is a seller or not
      */
-    public MarketUser(String username, boolean isSeller, boolean isUserStore) {
+    public MarketUser(String username, boolean isSeller) {
         this.username = username;
         this.isSeller = isSeller;
-        this.isUserStore = isUserStore;
     }
 
     /** A static method that will change the names of files and directories to match username
@@ -538,7 +536,7 @@ public class MarketUser implements User{
             File buyersDir = new File("data/buyers");
             String[] buyers = buyersDir.list();
             for(String buyer: buyers) {
-                File invisibleFilePath = new File("data/buyers/" + buyer + "/isInvisible");
+                File invisibleFilePath = new File("data/buyers/" + buyer + "/isInvisible.txt");
                 BufferedReader bfr = new BufferedReader(new FileReader(invisibleFilePath));
                 String line;
                 boolean invisible = false;
@@ -1385,3 +1383,5 @@ public class MarketUser implements User{
         }
     }
 }
+//TODO allow sellers to access specific stores
+//TODO fix display message
