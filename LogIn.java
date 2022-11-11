@@ -198,8 +198,8 @@ public class LogIn {
         }
     }
 
-    /**
-     * Allows user to log in to an individual store account
+    /** Allows user to log in to an individual store account
+     * Is not currently in use because Kevin is handling this
      *
      * @param user user logging in to their store
      * @param scan Scanner to capture input
@@ -529,7 +529,6 @@ public class LogIn {
                         System.out.println("Passwords did not match! Please try again.");
                     }
                 }
-                //TODO spaces in passwords?
                 done = false;
                 System.out.println("Are you a seller? Please enter 'yes' or 'no.'");
                 String isSeller = scan.nextLine();
