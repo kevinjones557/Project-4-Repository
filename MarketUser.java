@@ -756,7 +756,7 @@ public class MarketUser implements User{
                 display.close();
                 messageSenderWriter.close();
                 messageReceiveWriter.close();
-                if (isSeller) {
+                if (!isSeller) {
                     MetricManager.addDeleteMessageData(username, fileSender, message, false);
                 }
             } catch (IOException e) {
@@ -905,7 +905,7 @@ public class MarketUser implements User{
                     buffReceiver.close();
                     messageSenderWriter.close();
                     messageReceiveWriter.close();
-                    if (isSeller) {
+                    if (!isSeller) {
                         messageToChange = messageToChange.substring(messageToChange.indexOf("-") + 1);
                         MetricManager.editMessageData(username, fileSender, messageToChange, edit);
                     }
@@ -1016,7 +1016,7 @@ public class MarketUser implements User{
                     }
                     display.close();
                     messageSenderWriter.close();
-                    if (isSeller) {
+                    if (!isSeller) {
                         MetricManager.addDeleteMessageData(username, fileSender, message, true);
                     }
                 } else
