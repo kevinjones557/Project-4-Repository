@@ -15,8 +15,6 @@ import java.nio.file.Paths;
 
 public class LogIn {
 
-    private String userLocation;
-
     /** Writes user's username to a file
      *
      * @param user String of the user's username
@@ -151,6 +149,7 @@ public class LogIn {
                         }
                     }
                     removeRenamedStore(storeToChange, newName);
+                    MarketUser.changeStoreName(storeToChange, newName);
                     System.out.println("Name change successful!");
                 } catch (Exception e) {
                     System.out.println("Name change was not successful!");
