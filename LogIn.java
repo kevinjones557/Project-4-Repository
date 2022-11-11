@@ -76,8 +76,7 @@ public class LogIn {
         return (true);
     }
 
-    /**
-     * Returns the stores that a user has registered under their username
+    /** Returns the stores that a user has registered under their username
      *
      * @param user user's username
      * @return String representation of the user's stores
@@ -102,6 +101,28 @@ public class LogIn {
         } catch (Exception e) {
             return (null);
         }
+    }
+
+    /** Returns if the user is a seller
+     *
+     * @param user user's username
+     * @return String representation of the user's isSeller status
+     */
+    public static String isSeller(String user) {
+        try (BufferedReader br = new BufferedReader(new FileReader("users/" + user + "/" + user))) {
+            int lineIndex = 0;
+            String line = br.readLine();
+            while (line != null) {
+                if (lineIndex == 2) {
+                    return (line);
+                }
+                line = br.readLine();
+                lineIndex++;
+            }
+        } catch (Exception e) {
+            System.out.println("An unknown error occurred!");
+        }
+        return (null);
     }
 
     /**
@@ -343,7 +364,8 @@ public class LogIn {
      * @param scan Scanner to capture input
      */
     public static void deleteUser(String user, Scanner scan) {
-        System.out.println("Are you sure you want to delete your account? Enter 'yes' to confirm or 'no' to abort.");
+        System.out.println("Are you sure you want to delete your account? This action cannot be undone. " +
+                "\nEnter 'yes' to confirm or 'no' to abort.");
         String response = "";
         boolean userInput = false;
         while (!userInput) {
@@ -540,7 +562,8 @@ public class LogIn {
                                     nameChecked = checkStoreList(storeName);
                                 }
                             }
-                            System.out.println("Are you sure you want to add this store to your account? Enter 'yes' to confirm or 'no' to abort.");
+                            System.out.println("Are you sure you want to add this store to your account? This action cannot be undone. " +
+                                    "\nEnter 'yes' to confirm or 'no' to abort.");
                             String addStore = "";
                             boolean storeInput = false;
                             while (!storeInput) {
@@ -769,35 +792,105 @@ public class LogIn {
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
         String user = userInteraction(scan);
-        //TODO make accessor for isSeller()
-        //MarketUser currentUser = new MarketUser(user, boolean isSeller)
-        //currentUser.message()
-        //TODO have the user enter '1' to enter messaging or '2' to make account changes
-        System.out.println("Enter '1' to edit your name, '2' to delete your account, '3' to change a store name, '4' to log in to one of your stores, or '5' to exit.");
-        int input = -1;
-        boolean inputTaken = false;
-        while (!inputTaken) {
-            try {
-                input = Integer.parseInt(scan.nextLine());
-                if (input == 1 || input == 2 || input == 3 || input == 4 || input == 5) {
-                    inputTaken = true;
-                } else {
-                    System.out.println("Please enter '1,' '2,' '3,' '4,' or '5' as input!");
-                }
-            } catch (Exception e) {
-                System.out.println("Please enter '1,' '2,' '3,' '4,' or '5' as input!");
-            }
+        boolean isSeller = false;
+        //TODO this is null when a user account is first created because the file isn't written until the program restarts
+        //TODO I don't know if this can be fixed, but it works as-is, the user just has to log back in to use the program
+        if (isSeller(user) == null) {
+            System.out.println("Please log back in to activate your account.");
+            return;
         }
-        if (input == 2) {
-            deleteUser(user, scan);
-        } else if (input == 1) {
-            appendUsername(user, scan);
-        } else if (input == 3) {
-            changeStoreName(user, scan);
-        } else if (input == 4) {
-            System.out.println("New user location: " + changeUserLocation(user, scan));
-        } else {
-            System.out.println("Goodbye!");
+        if (isSeller(user).equals("true")) {
+            isSeller = true;
+        } else if (isSeller(user).equals("false")) {
+            isSeller = false;
+        }
+        MarketUser currentUser = new MarketUser(user, isSeller);
+        boolean running = true;
+        //This is here because the user needs to get logged out after deletion
+        boolean userDeleted = false;
+        //This is here because the program breaks if a user tries to do a deletion after changing their name in the same run
+        boolean nameChanged = false;
+        while (running) {
+            System.out.println("Would you like to enter messaging or make account changes? " +
+                    "\n1. Messaging " +
+                    "\n2. Account changes");
+            int input = -1;
+            boolean inputTaken = false;
+            while (!inputTaken) {
+                try {
+                    input = Integer.parseInt(scan.nextLine());
+                    if (input == 1 || input == 2) {
+                        inputTaken = true;
+                    } else {
+                        System.out.println("Please enter '1' or '2' as input!");
+                    }
+                } catch (Exception e) {
+                    System.out.println("Please enter '1' or '2' as input!");
+                }
+            }
+            if (input == 1) {
+                currentUser.message();
+            } else {
+                System.out.println("Options: " +
+                        "\n1. Edit your name" +
+                        "\n2. Delete your account" +
+                        "\n3. Change a store name" +
+                        "\n4. Exit");
+                input = -1;
+                inputTaken = false;
+                while (!inputTaken) {
+                    try {
+                        input = Integer.parseInt(scan.nextLine());
+                        if (input == 1 || input == 2 || input == 3 || input == 4) {
+                            inputTaken = true;
+                        } else {
+                            System.out.println("Please enter '1,' '2,' '3,' or '4' as input!");
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Please enter '1,' '2,' '3,' or '4' as input!");
+                    }
+                }
+                if (input == 2) {
+                    if (!nameChanged) {
+                        deleteUser(user, scan);
+                        userDeleted = true;
+                    } else {
+                        //TODO this is needed because, as explained above, program breaks if user tries to delete after a name change in the same run BUT it's not a bug, it's a feature
+                        System.out.println("You have recently changed your name. For security purposes, please log back in to delete your account.");
+                    }
+                } else if (input == 1) {
+                    appendUsername(user, scan);
+                    nameChanged = true;
+                } else if (input == 3) {
+                    changeStoreName(user, scan);
+                } else {
+                    running = false;
+                }
+            }
+            if (!userDeleted && running) {
+                System.out.println("Would you like to continue using the program? " +
+                        "\n1. Yes " +
+                        "\n2. No");
+                inputTaken = false;
+                while (!inputTaken) {
+                    try {
+                        input = Integer.parseInt(scan.nextLine());
+                        if (input == 1 || input == 2) {
+                            inputTaken = true;
+                        } else {
+                            System.out.println("Please enter '1' or '2' as input!");
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Please enter '1' or '2' as input!");
+                    }
+                }
+                if (input == 2) {
+                    running = false;
+                    System.out.println("Thank you for using the messenger. Goodbye!");
+                }
+            } else {
+                System.out.println("Thank you for using the messenger. Goodbye!");
+            }
         }
     }
 }

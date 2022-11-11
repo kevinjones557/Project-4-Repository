@@ -459,7 +459,8 @@ public class MarketUser implements User{
                 keepGoing = (scan.nextLine()).equalsIgnoreCase("yes");
             } while (keepGoing);
         }
-        System.out.println("Thank you for using the messaging system!");
+        //I (Aden) commented this out because I have the same messages in my UI
+        //System.out.println("Thank you for using the messaging system!");
     }
 
     /**
