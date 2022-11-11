@@ -59,7 +59,7 @@ public class FileManager {
         try {
             Path filePath;
             if (isSeller) {
-                filePath = Files.createDirectory(Paths.get("data/sellers/" + username));
+                filePath = Files.createDirectories(Paths.get("data/sellers/" + username));
             } else {
                 filePath = Files.createDirectory(Paths.get("data/buyers/" + username));
             }
