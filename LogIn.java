@@ -7,15 +7,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-/** A class to create accounts for users, log them in, and perform any necessary interaction with said accounts.
- *
+/**
+ * A class to create accounts for users, log them in, and perform any necessary interaction with said accounts.
+ * <p>
  * author @Adenr4615
  * version 11/9/22
- * */
+ */
 
 public class LogIn {
 
-    /** Writes user's username to a file
+    /**
+     * Writes user's username to a file
      *
      * @param user String of the user's username
      * @return boolean of if file was successfully written or not
@@ -30,7 +32,8 @@ public class LogIn {
         }
     }
 
-    /** Appends an additional line to a given user's file
+    /**
+     * Appends an additional line to a given user's file
      *
      * @param user     the user whose file is being appended
      * @param toAppend the parameter that is being appended to the file
@@ -45,7 +48,8 @@ public class LogIn {
         }
     }
 
-    /** Checks to see if the given store name is already in use
+    /**
+     * Checks to see if the given store name is already in use
      *
      * @param storeName the name of the store being checked
      * @return boolean of if the store exists or not for handling in main
@@ -72,7 +76,8 @@ public class LogIn {
         return (true);
     }
 
-    /** Returns the stores that a user has registered under their username
+    /**
+     * Returns the stores that a user has registered under their username
      *
      * @param user user's username
      * @return String representation of the user's stores
@@ -84,7 +89,7 @@ public class LogIn {
             String line = br.readLine();
             while (line != null) {
                 if (lineIndex == 2 && line.equals("false")) {
-                    return(null);
+                    return (null);
                 }
                 if (lineIndex == 3) {
                     stores = line;
@@ -99,12 +104,13 @@ public class LogIn {
         }
     }
 
-    /** Allows users to change any given store name
+    /**
+     * Allows users to change any given store name
      *
      * @param user user's username
      * @param scan Scanner to capture input
      */
-    public static void changeStoreName (String user, Scanner scan) {
+    public static void changeStoreName(String user, Scanner scan) {
         if (getUsersStores(user) != null) {
             String stores = getUsersStores(user);
             List<String> storesArray = Arrays.asList(stores.split(", "));
@@ -128,14 +134,16 @@ public class LogIn {
                 System.out.println("Please enter the new store name.");
                 String newName = scan.nextLine();
                 boolean nameInUse = checkStoreList(newName);
-                boolean done = false;
                 if (newName.equals("") || !nameInUse || newName.length() < 4 || newName.length() > 16) {
                     while (newName.equals("") || !nameInUse || newName.length() < 4 || newName.length() > 16) {
-                        System.out.println("Store name constraints: " +
-                                "\n- Cannot be blank " +
-                                "\n- Cannot be in use" +
-                                "\n- Must be in between 4 and 16 characters inclusive " +
-                                "\nPlease enter a valid store name.");
+                        if (nameInUse) {
+                            System.out.println("Store name constraints: " +
+                                    "\n- Cannot be blank " +
+                                    "\n- Must be in between 4 and 16 characters inclusive " +
+                                    "\nPlease enter a valid store name.");
+                        } else {
+                            System.out.println("Name is already in use! Please pick a different name.");
+                        }
                         newName = scan.nextLine();
                         nameInUse = checkStoreList(newName);
                     }
@@ -169,13 +177,14 @@ public class LogIn {
         }
     }
 
-    /** Allows user to log in to an individual store account
+    /**
+     * Allows user to log in to an individual store account
      *
      * @param user user logging in to their store
      * @param scan Scanner to capture input
      * @return the new location of the user after they logged in to a store
      */
-    public static String changeUserLocation (String user, Scanner scan) {
+    public static String changeUserLocation(String user, Scanner scan) {
         if (getUsersStores(user) != null) {
             String stores = getUsersStores(user);
             List<String> storesArray = Arrays.asList(stores.split(", "));
@@ -207,7 +216,8 @@ public class LogIn {
         return (null);
     }
 
-    /** Changes the user's name to their new desired name
+    /**
+     * Changes the user's name to their new desired name
      *
      * @param user the user changing their name
      * @param scan Scanner to capture input
@@ -217,26 +227,27 @@ public class LogIn {
         String newUser = scan.nextLine();
         File dir = new File("users/" + newUser);
         try {
-            if (!dir.createNewFile()) {
-                while (!dir.createNewFile()) {
+            boolean done = false;
+            while (!done) {
+                if (!dir.createNewFile()) {
                     System.out.println("Username already exists! Please enter another username.");
-                    newUser = scan.nextLine();
-                    dir = new File("users/" + newUser);
+                    user = scan.nextLine();
+                    dir.delete();
+                } else if (user.equals("") || user.length() < 6 || user.length() > 16 || user.contains(" ")) {
+                    System.out.println("Username constraints: " +
+                            "\n- Cannot be blank " +
+                            "\n- Must be in between 6 and 16 characters inclusive " +
+                            "\n- Cannot contain spaces " +
+                            "\nPlease enter a valid username.");
+                    user = scan.nextLine();
+                    dir.delete();
+                } else {
+                    done = true;
+                    dir.delete();
                 }
             }
         } catch (Exception e) {
             System.out.println("An unknown error occurred!");
-        }
-        dir.delete();
-        if (newUser.equals("")) {
-            while (newUser.equals("")) {
-                System.out.println("New username cannot be blank! Please enter your new username.");
-                newUser = scan.nextLine();
-                if (newUser.length() > 16 || newUser.length() < 6) {
-                    newUser = "";
-                    System.out.println("That name is not in between 6 and 16 characters inclusive! Please enter a name of proper length.");
-                }
-            }
         }
         try {
             //this method was retrieved with help from StackOverflow user @kr37
@@ -267,7 +278,8 @@ public class LogIn {
         }
     }
 
-    /** Removes a deleted user's stores from the store list
+    /**
+     * Removes a deleted user's stores from the store list
      *
      * @param storesString String representation of the user's stores
      */
@@ -297,9 +309,10 @@ public class LogIn {
         }
     }
 
-    /** Removes the name of a store that gets renamed
+    /**
+     * Removes the name of a store that gets renamed
      *
-     * @param store the store being deleted
+     * @param store    the store being deleted
      * @param newStore the new store name overwriting the old store name
      */
     public static void removeRenamedStore(String store, String newStore) {
@@ -323,7 +336,8 @@ public class LogIn {
         }
     }
 
-    /** Deletes user's account from both central database and local account information database
+    /**
+     * Deletes user's account from both central database and local account information database
      *
      * @param user user's username
      * @param scan Scanner to capture input
@@ -358,7 +372,8 @@ public class LogIn {
         }
     }
 
-    /** Updates the store list by adding a store name that has been confirmed to not be in use already
+    /**
+     * Updates the store list by adding a store name that has been confirmed to not be in use already
      *
      * @param storeName the store name being appended to the file
      */
@@ -370,7 +385,8 @@ public class LogIn {
         }
     }
 
-    /** Encrypts the password of the user file when an account is created
+    /**
+     * Encrypts the password of the user file when an account is created
      *
      * @param user the user whose password is being encrypted
      */
@@ -406,7 +422,8 @@ public class LogIn {
         }
     }
 
-    /** Takes a password input by a user attempting to log in and uses the key to encrypt it for comparison
+    /**
+     * Takes a password input by a user attempting to log in and uses the key to encrypt it for comparison
      *
      * @param input the password being encrypted
      * @return String of the encrypted password
@@ -427,7 +444,8 @@ public class LogIn {
         return (finalInput);
     }
 
-    /** Creates the file and directory for a user only if the account doesn't already exist
+    /**
+     * Creates the file and directory for a user only if the account doesn't already exist
      *
      * @param user the user whose file is being created
      * @param scan scanner object to capture input
@@ -435,32 +453,33 @@ public class LogIn {
     public static void createUser(String user, Scanner scan) {
         File f;
         File dir = new File("users/" + user);
-        if (!dir.exists()) {
-            dir.mkdirs();
-            f = new File("users/" + user + "/" + user);
-        } else {
-            try {
-                boolean done = false;
-                while (!done) {
-                    if (!dir.createNewFile()) {
-                        while (!dir.createNewFile()) {
-                            System.out.println("Username already exists! Please enter another username.");
-                            user = scan.nextLine();
-                            dir = new File("users/" + user);
-                        }
-                    }
-                    if (user.length() > 16 || user.length() < 6) {
-                        System.out.println("That name is not in between 6 and 16 characters inclusive! Please enter a name of proper length.");
-                    } else {
-                        done = true;
-                    }
+        try {
+            boolean done = false;
+            while (!done) {
+                if (!dir.createNewFile()) {
+                    dir.delete();
+                    System.out.println("Username already exists! Please enter another username.");
+                    user = scan.nextLine();
+                    dir = new File("users/" + user);
+                } else if (user.equals("") || user.length() < 6 || user.length() > 16 || user.contains(" ")) {
+                    dir.delete();
+                    System.out.println("Username constraints: " +
+                            "\n- Cannot be blank " +
+                            "\n- Must be in between 6 and 16 characters inclusive " +
+                            "\n- Cannot contain spaces " +
+                            "\nPlease enter a valid username.");
+                    user = scan.nextLine();
+                    dir = new File("users/" + user);
+                } else {
+                    done = true;
                 }
-                dir.mkdirs();
-                f = new File("users/" + user + "/" + user);
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("An unknown error occurred!");
             }
+            dir.delete();
+            Files.createDirectory(Paths.get("users/" + user));
+            f = new File("users/" + user + "/" + user);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("An unknown error occurred!");
         }
         boolean fileStatus = writeFile(user);
         boolean done = false;
@@ -488,6 +507,7 @@ public class LogIn {
                         System.out.println("Passwords did not match! Please try again.");
                     }
                 }
+                //TODO spaces in passwords?
                 done = false;
                 System.out.println("Are you a seller? Please enter 'yes' or 'no.'");
                 String isSeller = scan.nextLine();
@@ -506,14 +526,16 @@ public class LogIn {
                             System.out.println("Please enter your store name.");
                             String storeName = scan.nextLine();
                             boolean nameChecked = checkStoreList(storeName);
-                            //skips line underneath
                             if (storeName.equals("") || !nameChecked || storeName.length() < 4 || storeName.length() > 16) {
                                 while (storeName.equals("") || !nameChecked || storeName.length() < 4 || storeName.length() > 16) {
-                                    System.out.println("Store name constraints: " +
-                                            "\n- Cannot be blank " +
-                                            "\n- Cannot be in use" +
-                                            "\n- Must be in between 4 and 16 characters inclusive " +
-                                            "\nPlease enter a valid store name.");
+                                    if (nameChecked) {
+                                        System.out.println("Store name constraints: " +
+                                                "\n- Cannot be blank " +
+                                                "\n- Must be in between 4 and 16 characters inclusive " +
+                                                "\nPlease enter a valid store name.");
+                                    } else {
+                                        System.out.println("Name is already in use! Please pick a different name.");
+                                    }
                                     storeName = scan.nextLine();
                                     nameChecked = checkStoreList(storeName);
                                 }
@@ -591,7 +613,8 @@ public class LogIn {
         System.out.printf("Account created! Welcome, %s!%n", user);
     }
 
-    /** Reads the password of the file for comparison
+    /**
+     * Reads the password of the file for comparison
      *
      * @param user the user whose password is being read
      * @return String of the encrypted password
@@ -615,8 +638,9 @@ public class LogIn {
         return (null);
     }
 
-    /** Allows users to log in OR calls methods above and builds a file of the following format for a new user:
-     *
+    /**
+     * Allows users to log in OR calls methods above and builds a file of the following format for a new user:
+     * <p>
      * username
      * password (encrypted)
      * isSeller (true or false)
@@ -726,16 +750,6 @@ public class LogIn {
             while (!done) {
                 try {
                     String user = scan.nextLine();
-                    if (user.equals("") || user.length() < 6 || user.length() > 16 || user.contains(" ")) {
-                        while (user.equals("") || user.length() < 6 || user.length() > 16 || user.contains(" ")) {
-                            System.out.println("Username constraints: " +
-                                    "\n- Cannot be blank " +
-                                    "\n- Must be in between 6 and 16 characters inclusive " +
-                                    "\n- Cannot contain spaces " +
-                                    "\nPlease enter a valid username.");
-                            user = scan.nextLine();
-                        }
-                    }
                     createUser(user, scan);
                     done = true;
                     return (user);
@@ -747,31 +761,14 @@ public class LogIn {
         return (null);
     }
 
-    /** Runs all LogIn methods to either create a user or log one in; afterwards, creates String ArrayList of user information
+    /**
+     * Runs all LogIn methods to either create a user or log one in; afterwards, creates String ArrayList of user information
      *
      * @param args
      */
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
         String user = userInteraction(scan);
-        if (user != null) {
-            ArrayList<String> fileContents = new ArrayList();
-            try (BufferedReader bfr = new BufferedReader(new FileReader("users/" + user + "/" + user))) {
-                int index = 0;
-                String line = bfr.readLine();
-                while (line != null) {
-                    index++;
-                    if (index != 2) {
-                        fileContents.add(line);
-                    }
-                    line = bfr.readLine();
-                }
-            } catch (Exception e) {
-                System.out.println("An unknown error occurred!");
-            }
-        } else {
-            System.out.println("Goodbye!");
-        }
         //TODO make accessor for isSeller()
         //MarketUser currentUser = new MarketUser(user, boolean isSeller)
         //currentUser.message()
