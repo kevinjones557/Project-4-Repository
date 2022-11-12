@@ -11,7 +11,7 @@ import java.nio.file.Paths;
  *
  * author @Adenr4615
  * version 11/9/22
- * */
+ */
 
 public class LogIn {
 
@@ -84,7 +84,7 @@ public class LogIn {
             String line = br.readLine();
             while (line != null) {
                 if (lineIndex == 2 && line.equals("false")) {
-                    return(null);
+                    return (null);
                 }
                 if (lineIndex == 3) {
                     stores = line;
@@ -95,16 +95,40 @@ public class LogIn {
             stores = stores.substring(1, stores.length() - 1);
             return (stores);
         } catch (Exception e) {
+            //TODO returning null
             return (null);
         }
     }
 
-    /** Allows users to change any given store name
+    /** Returns if the user is a seller
+     *
+     * @param user user's username
+     * @return String representation of the user's isSeller status
+     */
+    public static String isSeller(String user) {
+        try (BufferedReader br = new BufferedReader(new FileReader("users/" + user + "/" + user))) {
+            int lineIndex = 0;
+            String line = br.readLine();
+            while (line != null) {
+                if (lineIndex == 2) {
+                    return (line);
+                }
+                line = br.readLine();
+                lineIndex++;
+            }
+        } catch (Exception e) {
+            System.out.println("An unknown error occurred!");
+        }
+        return (null);
+    }
+
+    /**
+     * Allows users to change any given store name
      *
      * @param user user's username
      * @param scan Scanner to capture input
      */
-    public static void changeStoreName (String user, Scanner scan) {
+    public static void changeStoreName(String user, Scanner scan) {
         if (getUsersStores(user) != null) {
             String stores = getUsersStores(user);
             List<String> storesArray = Arrays.asList(stores.split(", "));
@@ -128,14 +152,16 @@ public class LogIn {
                 System.out.println("Please enter the new store name.");
                 String newName = scan.nextLine();
                 boolean nameInUse = checkStoreList(newName);
-                boolean done = false;
                 if (newName.equals("") || !nameInUse || newName.length() < 4 || newName.length() > 16) {
                     while (newName.equals("") || !nameInUse || newName.length() < 4 || newName.length() > 16) {
-                        System.out.println("Store name constraints: " +
-                                "\n- Cannot be blank " +
-                                "\n- Cannot be in use" +
-                                "\n- Must be in between 4 and 16 characters inclusive " +
-                                "\nPlease enter a valid store name.");
+                        if (nameInUse) {
+                            System.out.println("Store name constraints: " +
+                                    "\n- Cannot be blank " +
+                                    "\n- Must be in between 4 and 16 characters inclusive " +
+                                    "\nPlease enter a valid store name.");
+                        } else {
+                            System.out.println("Name is already in use! Please pick a different name.");
+                        }
                         newName = scan.nextLine();
                         nameInUse = checkStoreList(newName);
                     }
@@ -170,12 +196,13 @@ public class LogIn {
     }
 
     /** Allows user to log in to an individual store account
+     * Is not currently in use because Kevin is handling this
      *
      * @param user user logging in to their store
      * @param scan Scanner to capture input
      * @return the new location of the user after they logged in to a store
      */
-    public static String changeUserLocation (String user, Scanner scan) {
+    public static String changeUserLocation(String user, Scanner scan) {
         if (getUsersStores(user) != null) {
             String stores = getUsersStores(user);
             List<String> storesArray = Arrays.asList(stores.split(", "));
@@ -207,7 +234,8 @@ public class LogIn {
         return (null);
     }
 
-    /** Changes the user's name to their new desired name
+    /**
+     * Changes the user's name to their new desired name
      *
      * @param user the user changing their name
      * @param scan Scanner to capture input
@@ -217,26 +245,27 @@ public class LogIn {
         String newUser = scan.nextLine();
         File dir = new File("users/" + newUser);
         try {
-            if (!dir.createNewFile()) {
-                while (!dir.createNewFile()) {
+            boolean done = false;
+            while (!done) {
+                if (!dir.createNewFile()) {
                     System.out.println("Username already exists! Please enter another username.");
-                    newUser = scan.nextLine();
-                    dir = new File("users/" + newUser);
+                    user = scan.nextLine();
+                    dir.delete();
+                } else if (user.equals("") || user.length() < 6 || user.length() > 16 || user.contains(" ")) {
+                    System.out.println("Username constraints: " +
+                            "\n- Cannot be blank " +
+                            "\n- Must be in between 6 and 16 characters inclusive " +
+                            "\n- Cannot contain spaces " +
+                            "\nPlease enter a valid username.");
+                    user = scan.nextLine();
+                    dir.delete();
+                } else {
+                    done = true;
+                    dir.delete();
                 }
             }
         } catch (Exception e) {
             System.out.println("An unknown error occurred!");
-        }
-        dir.delete();
-        if (newUser.equals("")) {
-            while (newUser.equals("")) {
-                System.out.println("New username cannot be blank! Please enter your new username.");
-                newUser = scan.nextLine();
-                if (newUser.length() > 16 || newUser.length() < 6) {
-                    newUser = "";
-                    System.out.println("That name is not in between 6 and 16 characters inclusive! Please enter a name of proper length.");
-                }
-            }
         }
         try {
             //this method was retrieved with help from StackOverflow user @kr37
@@ -267,7 +296,8 @@ public class LogIn {
         }
     }
 
-    /** Removes a deleted user's stores from the store list
+    /**
+     * Removes a deleted user's stores from the store list
      *
      * @param storesString String representation of the user's stores
      */
@@ -297,9 +327,10 @@ public class LogIn {
         }
     }
 
-    /** Removes the name of a store that gets renamed
+    /**
+     * Removes the name of a store that gets renamed
      *
-     * @param store the store being deleted
+     * @param store    the store being deleted
      * @param newStore the new store name overwriting the old store name
      */
     public static void removeRenamedStore(String store, String newStore) {
@@ -323,13 +354,15 @@ public class LogIn {
         }
     }
 
-    /** Deletes user's account from both central database and local account information database
+    /**
+     * Deletes user's account from both central database and local account information database
      *
      * @param user user's username
      * @param scan Scanner to capture input
      */
     public static void deleteUser(String user, Scanner scan) {
-        System.out.println("Are you sure you want to delete your account? Enter 'yes' to confirm or 'no' to abort.");
+        System.out.println("Are you sure you want to delete your account? This action cannot be undone. " +
+                "\nEnter 'yes' to confirm or 'no' to abort.");
         String response = "";
         boolean userInput = false;
         while (!userInput) {
@@ -352,7 +385,6 @@ public class LogIn {
             userInfo.delete();
             File userDirectory = new File("users/" + user);
             userDirectory.delete();
-            System.out.println("Thank you for your business, " + user + "!");
         } else {
             System.out.println("We're glad you decided to stay!");
         }
@@ -435,32 +467,33 @@ public class LogIn {
     public static void createUser(String user, Scanner scan) {
         File f;
         File dir = new File("users/" + user);
-        if (!dir.exists()) {
-            dir.mkdirs();
-            f = new File("users/" + user + "/" + user);
-        } else {
-            try {
-                boolean done = false;
-                while (!done) {
-                    if (!dir.createNewFile()) {
-                        while (!dir.createNewFile()) {
-                            System.out.println("Username already exists! Please enter another username.");
-                            user = scan.nextLine();
-                            dir = new File("users/" + user);
-                        }
-                    }
-                    if (user.length() > 16 || user.length() < 6) {
-                        System.out.println("That name is not in between 6 and 16 characters inclusive! Please enter a name of proper length.");
-                    } else {
-                        done = true;
-                    }
+        try {
+            boolean done = false;
+            while (!done) {
+                if (!dir.createNewFile()) {
+                    dir.delete();
+                    System.out.println("Username already exists! Please enter another username.");
+                    user = scan.nextLine();
+                    dir = new File("users/" + user);
+                } else if (user.equals("") || user.length() < 6 || user.length() > 16 || user.contains(" ")) {
+                    dir.delete();
+                    System.out.println("Username constraints: " +
+                            "\n- Cannot be blank " +
+                            "\n- Must be in between 6 and 16 characters inclusive " +
+                            "\n- Cannot contain spaces " +
+                            "\nPlease enter a valid username.");
+                    user = scan.nextLine();
+                    dir = new File("users/" + user);
+                } else {
+                    done = true;
                 }
-                dir.mkdirs();
-                f = new File("users/" + user + "/" + user);
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("An unknown error occurred!");
             }
+            dir.delete();
+            Files.createDirectory(Paths.get("users/" + user));
+            f = new File("users/" + user + "/" + user);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("An unknown error occurred!");
         }
         boolean fileStatus = writeFile(user);
         boolean done = false;
@@ -506,19 +539,22 @@ public class LogIn {
                             System.out.println("Please enter your store name.");
                             String storeName = scan.nextLine();
                             boolean nameChecked = checkStoreList(storeName);
-                            //skips line underneath
                             if (storeName.equals("") || !nameChecked || storeName.length() < 4 || storeName.length() > 16) {
                                 while (storeName.equals("") || !nameChecked || storeName.length() < 4 || storeName.length() > 16) {
-                                    System.out.println("Store name constraints: " +
-                                            "\n- Cannot be blank " +
-                                            "\n- Cannot be in use" +
-                                            "\n- Must be in between 4 and 16 characters inclusive " +
-                                            "\nPlease enter a valid store name.");
+                                    if (nameChecked) {
+                                        System.out.println("Store name constraints: " +
+                                                "\n- Cannot be blank " +
+                                                "\n- Must be in between 4 and 16 characters inclusive " +
+                                                "\nPlease enter a valid store name.");
+                                    } else {
+                                        System.out.println("Name is already in use! Please pick a different name.");
+                                    }
                                     storeName = scan.nextLine();
                                     nameChecked = checkStoreList(storeName);
                                 }
                             }
-                            System.out.println("Are you sure you want to add this store to your account? Enter 'yes' to confirm or 'no' to abort.");
+                            System.out.println("Are you sure you want to add this store to your account? This action cannot be undone. " +
+                                    "\nEnter 'yes' to confirm or 'no' to abort.");
                             String addStore = "";
                             boolean storeInput = false;
                             while (!storeInput) {
@@ -726,16 +762,6 @@ public class LogIn {
             while (!done) {
                 try {
                     String user = scan.nextLine();
-                    if (user.equals("") || user.length() < 6 || user.length() > 16 || user.contains(" ")) {
-                        while (user.equals("") || user.length() < 6 || user.length() > 16 || user.contains(" ")) {
-                            System.out.println("Username constraints: " +
-                                    "\n- Cannot be blank " +
-                                    "\n- Must be in between 6 and 16 characters inclusive " +
-                                    "\n- Cannot contain spaces " +
-                                    "\nPlease enter a valid username.");
-                            user = scan.nextLine();
-                        }
-                    }
                     createUser(user, scan);
                     done = true;
                     return (user);
@@ -754,53 +780,105 @@ public class LogIn {
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
         String user = userInteraction(scan);
-        if (user != null) {
-            ArrayList<String> fileContents = new ArrayList();
-            try (BufferedReader bfr = new BufferedReader(new FileReader("users/" + user + "/" + user))) {
-                int index = 0;
-                String line = bfr.readLine();
-                while (line != null) {
-                    index++;
-                    if (index != 2) {
-                        fileContents.add(line);
+        boolean isSeller = false;
+        if (isSeller(user).equals("true")) {
+            isSeller = true;
+        } else if (isSeller(user).equals("false")) {
+            isSeller = false;
+        }
+        MarketUser currentUser = new MarketUser(user, isSeller);
+        boolean running = true;
+        //This is here because the user needs to get logged out after deletion
+        boolean userDeleted = false;
+        //This is here because the program breaks if a user tries to do a deletion after changing their name in the same run
+        boolean nameChanged = false;
+        while (running) {
+            System.out.println("Would you like to enter messaging or make account changes? " +
+                    "\n1. Messaging " +
+                    "\n2. Account changes");
+            int input = -1;
+            boolean inputTaken = false;
+            while (!inputTaken) {
+                try {
+                    input = Integer.parseInt(scan.nextLine());
+                    if (input == 1 || input == 2) {
+                        inputTaken = true;
+                    } else {
+                        System.out.println("Please enter '1' or '2' as input!");
                     }
-                    line = bfr.readLine();
+                } catch (Exception e) {
+                    System.out.println("Please enter '1' or '2' as input!");
                 }
-            } catch (Exception e) {
-                System.out.println("An unknown error occurred!");
             }
-        } else {
-            System.out.println("Goodbye!");
-        }
-        //TODO make accessor for isSeller()
-        //MarketUser currentUser = new MarketUser(user, boolean isSeller)
-        //currentUser.message()
-        //TODO have the user enter '1' to enter messaging or '2' to make account changes
-        System.out.println("Enter '1' to edit your name, '2' to delete your account, '3' to change a store name, '4' to log in to one of your stores, or '5' to exit.");
-        int input = -1;
-        boolean inputTaken = false;
-        while (!inputTaken) {
-            try {
-                input = Integer.parseInt(scan.nextLine());
-                if (input == 1 || input == 2 || input == 3 || input == 4 || input == 5) {
-                    inputTaken = true;
+            if (input == 1) {
+                currentUser.message();
+            } else {
+                System.out.println("Options: " +
+                        "\n1. Edit your name" +
+                        "\n2. Delete your account" +
+                        "\n3. Change a store name" +
+                        "\n4. Exit");
+                input = -1;
+                inputTaken = false;
+                while (!inputTaken) {
+                    try {
+                        input = Integer.parseInt(scan.nextLine());
+                        if (input == 1 || input == 2 || input == 3 || input == 4) {
+                            inputTaken = true;
+                        } else {
+                            System.out.println("Please enter '1,' '2,' '3,' or '4' as input!");
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Please enter '1,' '2,' '3,' or '4' as input!");
+                    }
+                }
+                if (input == 2) {
+                    if (!nameChanged) {
+                        deleteUser(user, scan);
+                        userDeleted = true;
+                        running = false;
+                    } else {
+                        //TODO this is needed because program breaks if user tries to delete after a name change in the same run BUT it's not a bug, it's a feature
+                        System.out.println("You have recently changed your name. For security purposes, please log back in to delete your account.");
+                    }
+                } else if (input == 1) {
+                    appendUsername(user, scan);
+                    nameChanged = true;
+                } else if (input == 3) {
+                    //TODO this is needed because of same reason as above
+                    if (!nameChanged) {
+                        changeStoreName(user, scan);
+                    } else {
+                        System.out.println("You have recently changed your name. For security purposes, please log back in to change store names.");
+                    }
                 } else {
-                    System.out.println("Please enter '1,' '2,' '3,' '4,' or '5' as input!");
+                    running = false;
                 }
-            } catch (Exception e) {
-                System.out.println("Please enter '1,' '2,' '3,' '4,' or '5' as input!");
             }
-        }
-        if (input == 2) {
-            deleteUser(user, scan);
-        } else if (input == 1) {
-            appendUsername(user, scan);
-        } else if (input == 3) {
-            changeStoreName(user, scan);
-        } else if (input == 4) {
-            System.out.println("New user location: " + changeUserLocation(user, scan));
-        } else {
-            System.out.println("Goodbye!");
+            if (!userDeleted && running) {
+                System.out.println("Would you like to continue using the program? " +
+                        "\n1. Yes " +
+                        "\n2. No");
+                inputTaken = false;
+                while (!inputTaken) {
+                    try {
+                        input = Integer.parseInt(scan.nextLine());
+                        if (input == 1 || input == 2) {
+                            inputTaken = true;
+                        } else {
+                            System.out.println("Please enter '1' or '2' as input!");
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Please enter '1' or '2' as input!");
+                    }
+                }
+                if (input == 2) {
+                    running = false;
+                    System.out.println("Thank you for using the messenger. Goodbye!");
+                }
+            } else {
+                System.out.println("Thank you for using the messenger. Goodbye!");
+            }
         }
     }
 }
