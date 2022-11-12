@@ -4,8 +4,18 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.text.SimpleDateFormat;
 
-
 public class MarketUser implements User{
+    // Output messages
+    public final String SELECT_OPTION = "Please select an option below:";
+    public final String BLOCK_INVISIBLE_OPTION = "1. Block a user\n2. Unblock a user\n3. Become invisible to a user\n" +
+            "4. Become visible to a user\n5. Continue to messaging\n6. Exit Messaging System";
+    public final String SEARCH_LIST_BUYER = "1. Search for a buyer\n2. View a list of buyers\n3. Cancel";
+    public final String SEARCH_LIST_SELLER = "1. Search for a seller\n2. View a list of stores\n" +
+            "3. Continue to statistics\n4. Exit Messaging System";
+    public final String MESSAGE_OPTIONS = "1. View Message Contents\n2. Send a message\n3. Edit a message\n" +
+            "4. Delete a message\n5. Import a .txt file\n6. Export message history as a CSV file\n7.Cancel";
+    public final String METRICS_PROMPT = "1. View statistics for stores\n2. Exit Messaging System";
+
     private String username;
     private boolean isSeller;
 
@@ -13,22 +23,237 @@ public class MarketUser implements User{
 
     public LinkedHashMap<String,String> storeNameMap;
 
-    public static void main(String[] args) {
-        MarketUser mu = new MarketUser("destin",true);
-        mu.message();
-    }
+    /*
+    Buyer:
+    Ask if they want to block, unblock, Become invisible to a user, become visible to a user or continue to messaging
+    IF YES:
+        Select user to block, unblock, Become invisible, become visible
+        Search for user or see list of users
+        Ask if they would like to continue blocking users or continue to messaging
+    Ask if they want to view message, add message, edit message, delete message, import txt file, export csv, or continue to metrics
+    IF YES:
+        Select user to message
+        Search for user or see list
+        Ask if they want to message again of if they would like to message a different user or continue to metrics
+    Ask if they want to view metrics or log out
+
+    Seller:
+    Ask if they would like to continue with their personal profile or log into a store profile
+    IF IN PERSONAL:
+    Ask if they want to block, unblock, Become invisible to a user, become visible to a user or continue to messaging
+    IF IN STORE OR PERSONAL
+    Ask if they want to view message, add message, edit message, delete message, import txt file, export csv, or log out of store and continue in personal
+    IF IN PERSONAL
+    Ask if they want to view metrics for stores or log out
+     */
 
     /** Constructor creates new object with a username and tells object if it is a seller or not.
      * @param username The username associated with the user directory you wish to find
      * @param isSeller Tells class whether this instance is a seller or not
+     * @author Kevin Jones
      */
     public MarketUser(String username, boolean isSeller) {
+        storeNameMap = FileManager.mapStoresToSellers();
         this.username = username;
         this.isSeller = isSeller;
+        isUserStore = false;
+    }
+    public static void main(String[] args) {
+        MarketUser mu = new MarketUser("john",false);
+        mu.mainForBuyer();
+    }
+
+    /** Function that waits until valid prompt
+     * @param lowestValidValue the lowest valid value
+     * @param highestValidValue highest valid value
+     * @return returns the chosen index
+     * @author Kevin Jones
+     */
+
+    public int waitForValidInput(int lowestValidValue, int highestValidValue) {
+        int selection = Integer.MAX_VALUE;
+        Scanner localScan = new Scanner(System.in);
+        do {
+            try {
+                if (selection != Integer.MAX_VALUE) {
+                    System.out.println("Please enter a valid number:");
+                }
+                selection = localScan.nextInt();
+                localScan.nextLine();
+            } catch (InputMismatchException e) {
+                System.out.println("Please enter a valid number:");
+                localScan.nextLine();
+            }
+        } while ((selection < lowestValidValue || selection > highestValidValue));
+        return selection;
+    }
+
+    public void mainForSeller() {
+
+    }
+
+    /** A function to handle user input for buyers
+     * @author Kevin Jones
+     */
+    public void mainForBuyer() {
+        Scanner buyerScan = new Scanner(System.in);
+        boolean isRecipientStore = false;
+        do {
+            System.out.println(SELECT_OPTION);
+            System.out.println(BLOCK_INVISIBLE_OPTION);
+            int selection = waitForValidInput(1, 6);
+            if (selection == 6) {
+                return;
+            }
+            if (selection == 5) {
+                break; // this will continue to messaging
+            }
+            // at this point they want to block/unblock/visible/invisible a user so ask for user
+            System.out.println(SELECT_OPTION);
+            System.out.println("1. Search for a seller\n2. Cancel");
+            int searchOrCancel = waitForValidInput(1, 2);
+            if (searchOrCancel == 1) {
+                System.out.println("Please enter the name of a seller:");
+                String sellerName = buyerScan.nextLine();
+                if (!FileManager.checkSellerExists(sellerName)) {
+                    System.out.println("Sorry, this seller does not exist!");
+                } /*TODO else if (sellerHasMadeThemselvesInvisible)
+                    TODO Vinh, check if the seller who was searched for is invisible to this buyer or not
+                    TODO if so, enter this if statement and print:
+                    System.out.println("This user has made themselves invisible to you!)
+                */
+                else { // at this point we know the seller searched for exists and wants to be reached
+                    if (selection == 1) {
+                        System.out.println("Blocking"); //TODO only for testing, vinh remove
+                        //TODO vinh block this user
+                    } else if (selection == 2) {
+                        System.out.println("Unblocking"); //TODO only for testing, vinh remove
+                        //TODO vinh unblock our user
+                    } else if (selection == 3) {
+                        System.out.println("Invisible"); //TODO only for testing, vinh remove
+                        //TODO vinh make buyer invisible to seller
+                    } else {
+                        System.out.println("Visible"); //TODO only for testing, vinh remove
+                        //TODO vinh make buyer visible to seller
+                    }
+                }
+            }
+        } while (true);
+        // at this point past blocking/visible stage, onto messaging
+        do {
+            System.out.println(SELECT_OPTION);
+            System.out.println(SEARCH_LIST_SELLER);
+            int searchOrCancel = waitForValidInput(1, 4);
+            if (searchOrCancel == 4) {
+                return;
+            }
+            if (searchOrCancel == 3) {
+                break; // this will continue to metrics
+            }
+            String recipient = null;
+            if (searchOrCancel == 1) {
+                System.out.println("Please enter the name of a seller:");
+                String sellerName = buyerScan.nextLine();
+                if (!FileManager.checkSellerExists(sellerName)) {
+                    System.out.println("Sorry, this seller does not exist!");
+                } /*TODO else if (sellerHasMadeThemselvesInvisible)
+                TODO Vinh, check if the seller who was searched for is invisible to this buyer or not
+                TODO if so, enter this if statement and print:
+                System.out.println("This user has made themselves invisible to you!)
+            */ else { // at this point we know the seller searched for exists and wants to be reached
+                    recipient = sellerName;
+                }
+            } else if (searchOrCancel == 2) {
+                try {
+                    String[] allAvailableStores = getAvailableStores();
+                    for (int i = 0; i < allAvailableStores.length; i++) {
+                        System.out.println((i + 1) + ". " + allAvailableStores[i]);
+                    }
+                    System.out.println(allAvailableStores.length + 1 + ": Cancel");
+                    System.out.println(SELECT_OPTION);
+                    int storeOption = waitForValidInput(1, allAvailableStores.length + 1);
+                    if (storeOption != allAvailableStores.length + 1) {
+                        recipient = allAvailableStores[storeOption - 1];
+                        isRecipientStore = true;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    System.out.println("Sorry, there was an error reading the users, please try again!");
+                }
+            }
+            // at this point they want to interact with a user so ask for user
+            // at this point if recipient != null it contains either a valid store or seller name
+            if (recipient != null) {
+                checkIfMessageExists(recipient, isRecipientStore); // this will check if message has already been created and create if not
+                do {
+                    System.out.printf("Connected with %s!\n", recipient);
+                    System.out.println(SELECT_OPTION);
+                    System.out.println(MESSAGE_OPTIONS);
+                    int selection = waitForValidInput(1, 7);
+                    if (selection == 7) {
+                        break;
+                    }
+                    switch (selection) {
+                        case 1:
+                            displayMessage(recipient);
+                            break;
+                        case 2:
+                            if (!isRecipientStore) {
+                                appendMessage(recipient);
+                            } else {
+                                appendMessage(storeNameMap.get(recipient), recipient);
+                            }
+                            break;
+                        case 3:
+                            if (!isRecipientStore) {
+                                editMessage(recipient);
+                            } else {
+                                editMessage(storeNameMap.get(recipient), recipient);
+                            }
+                            break;
+                        case 4:
+                            if (!isRecipientStore) {
+                                deleteMessage(recipient);
+                            } else {
+                                deleteMessage(storeNameMap.get(recipient), recipient);
+                            }
+                            break;
+                        case 5:
+                            String path;
+                            System.out.println("Please enter the path to the text file you would like to import or " +
+                                    "type 'cancel' to Cancel.");
+                            do {
+                                path = buyerScan.nextLine();
+                                if (path.equalsIgnoreCase("cancel")) {
+                                    break;
+                                }
+                                if (path.endsWith(".txt")) {
+                                    break;
+                                }
+                                System.out.println("Please enter a valid path");
+                            } while (!path.endsWith(".txt"));
+                            if (!path.equalsIgnoreCase("cancel")) {
+                                importFile(path, recipient, isRecipientStore);
+                            }
+                        case 6:
+                            System.out.println("Enter the path where you would like the csv file to be stored:");
+                            String csvPath = buyerScan.nextLine();
+                            writeCSV(recipient, csvPath);
+                    }
+                    System.out.println("Would you like to continue interacting with this user?\n1. Yes\n2. No");
+                    int stayWithUser = waitForValidInput(1, 2);
+                    if (stayWithUser == 2) {
+                        break;
+                    }
+                } while (true);
+            }
+        } while (true);
+        //TODO call MetricsManager for metrics input
     }
 
     /** A static method that will change the names of files and directories to match username
      * @param username the username that is currently stored everywhere
+     * @author Kevin Jones
      */
     public static void deleteUsername(String username) {
         try {
@@ -48,6 +273,7 @@ public class MarketUser implements User{
     /** A static method that will change the names of files and directories to match username
      * @param oldUsername the username that is currently stored everywhere
      * @param newUsername the new username that everything will be changed to
+     * @author Kevin Jones
      */
     public static void changeUsername(String oldUsername, String newUsername) {
         File sellerDirectories = new File("data/sellers/");
@@ -200,6 +426,7 @@ public class MarketUser implements User{
      * @param oldUsername the username that is currently stored everywhere
      * @param newUsername the new username that everything will be changed to
      * @param filepath the file path of the file being modified
+     * @author Kevin Jones
      */
 
     public static void changeNameInFile(String oldUsername, String newUsername, String filepath) {
@@ -228,8 +455,6 @@ public class MarketUser implements User{
      */
 
     public void message() {
-        storeNameMap = FileManager.mapStoresToSellers();
-
         Integer selection;
         String recipient = "";
         String proceed;
@@ -699,13 +924,16 @@ public class MarketUser implements User{
             path = FileManager.getStoreDirectory(storeNameMap.get(username),username) + "/";
         } else {
             try {
-                path = FileManager.getDirectoryFromUsername(recipient);
+                path = FileManager.getDirectoryFromUsername(username);
             } catch (UserNotFoundException u) {
-                System.out.println("Unable to load message1");
+                System.out.println("Unable to load message");
             }
         }
         try (BufferedReader bfr = new BufferedReader(new FileReader(path + username + recipient + ".txt"))) {
             String line = bfr.readLine();
+            if (line == null) {
+                System.out.println("No message content to display!");
+            }
             while (line != null) {
                 System.out.println(line);
                 line = bfr.readLine();
