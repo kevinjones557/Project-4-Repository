@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 /** Handles various file management methods for the program
@@ -45,6 +46,24 @@ public class FileManager {
         return (Files.exists(Paths.get("data/buyers/" + username)));
     }
 
+    /**
+     *
+     * @param seller name of the seller whose stores we are returning
+     * @return an arraylist of Stores that the seller has
+     * @author Kevin Jones
+     */
+    public static ArrayList<String> getStoresFromSeller(String seller) {
+        File sellerDirectory = new File("data/sellers/" + seller);
+        String[] possibleStores = sellerDirectory.list();
+        ArrayList<String> sellerStores = new ArrayList<>();
+        for (String store : possibleStores) {
+            File storeFile = new File ("data/sellers/" + seller +"/" + store);
+            if (storeFile.isDirectory()) {
+                sellerStores.add(store);
+            }
+        }
+        return sellerStores;
+    }
     public static String getStoreDirectory(String username, String storeName) {
         return String.format("data/sellers/%s/%s/", username, storeName);
     }
