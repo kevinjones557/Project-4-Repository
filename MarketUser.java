@@ -89,7 +89,7 @@ public class MarketUser implements User{
     }
 
     public void mainForSeller() {
-
+        //TODO add seller
     }
 
     /** A function to handle user input for buyers
