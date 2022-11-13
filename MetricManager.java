@@ -83,7 +83,7 @@ public class MetricManager {
             bfr.write(String.format("Message Count: %d\n", messageCount));
             fileData.forEach((word, count) -> {
                 try {
-                    bfr.write(String.format("%d %s", count, word));
+                    bfr.write(String.format("%d %s\n", count, word));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -180,7 +180,7 @@ public class MetricManager {
             bfr.write(String.format("Message Count: %d\n", messageCount));
             fileData.forEach((word, count) -> {
                 try {
-                    bfr.write(String.format("%d %s", count, word));
+                    bfr.write(String.format("%d %s\n", count, word));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
