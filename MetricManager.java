@@ -90,6 +90,11 @@ public class MetricManager {
                     String line = bfr2.readLine();
                     int messageCount2 = Integer.parseInt(line.substring(15));
                     try (BufferedWriter bfw2 = new BufferedWriter(new FileWriter(storePath + "/" + username + "metrics.txt", false))) {
+                        if (delete) {
+                            messageCount2 -= 1;
+                        } else {
+                            messageCount2 += 1;
+                        }
                         bfw2.write(String.format("Message Count: %d\n", messageCount2));
                     }
 
