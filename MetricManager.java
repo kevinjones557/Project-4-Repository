@@ -320,7 +320,7 @@ public class MetricManager {
                     SortedMap<Integer, String> sortedUserStores = new TreeMap<>();
                     storeData.forEach((store, owner) -> {
                         int storeMessageCount = 0;
-                        try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(username) + "/" + store + "/" + username + "metrics.txt"))) {
+                        try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(owner) + "/" + store + "/" + username + "metrics.txt"))) {
                             String line = bfr.readLine();
                             storeMessageCount = Integer.parseInt(line.substring(15));
                         } catch (FileNotFoundException e) {
@@ -344,7 +344,7 @@ public class MetricManager {
                     SortedMap<Integer, String> sortedStores = new TreeMap<>();
                     storeData.forEach((store, owner) -> {
                         int storeMessageCount = 0;
-                        try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(username) + "/" + store + "/metrics.txt"))) {
+                        try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(owner) + "/" + store + "/metrics.txt"))) {
                             String line = bfr.readLine();
                             storeMessageCount = Integer.parseInt(line.substring(15));
                         } catch (IOException e) {
