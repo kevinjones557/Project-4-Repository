@@ -129,7 +129,7 @@ public class FileManager {
         for (String seller : sellerList) {
             String[] storesOwned = new File("data/sellers/"+seller).list();
             for (String store : storesOwned) {
-                if (Files.isDirectory(Paths.get(store))) {
+                if (Files.isDirectory(Paths.get("data/sellers/" + seller + "/" + store))) {
                     storesMapped.put(store, seller);
                 }
 
