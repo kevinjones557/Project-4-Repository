@@ -378,7 +378,7 @@ public class LogIn {
      * @param user user's username
      * @param scan Scanner to capture input
      */
-    public static void deleteUser(String user, Scanner scan) {
+    public static boolean deleteUser(String user, Scanner scan) {
         System.out.println("Are you sure you want to delete your account? This action cannot be undone. " +
                 "\nEnter 'yes' to confirm or 'no' to abort.");
         String response = "";
@@ -405,8 +405,10 @@ public class LogIn {
             userInfo.delete();
             File userDirectory = new File("users/" + user);
             userDirectory.delete();
+            return (true);
         } else {
             System.out.println("We're glad you decided to stay!");
+            return (false);
         }
     }
 
@@ -871,9 +873,10 @@ public class LogIn {
                         }
                     }
                     if (input == 2) {
-                        deleteUser(user, scan);
-                        userDeleted = true;
-                        running = false;
+                        userDeleted = deleteUser(user, scan);
+                        if (userDeleted) {
+                            running = false;
+                        }
                     } else if (input == 1) {
                         user = appendUsername(user, scan);
                     } else if (input == 3) {
