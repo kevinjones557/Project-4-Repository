@@ -40,7 +40,7 @@ public class MetricManager {
 
         try (BufferedReader bfr = new BufferedReader(new FileReader(filePath))) {
             String line = bfr.readLine();
-            messageCount = Integer.parseInt(line.substring(15)) + 1;
+            messageCount = Integer.parseInt(line.substring(15));
             line = bfr.readLine();
             while (line != null) {
                 String[] unmapped = line.split(" ");
@@ -79,11 +79,25 @@ public class MetricManager {
             }
         });
 
-        try (BufferedWriter bfr = new BufferedWriter(new FileWriter(filePath, false))){
-            bfr.write(String.format("Message Count: %d\n", messageCount));
+        try (BufferedWriter bfw1 = new BufferedWriter(new FileWriter(filePath, false))){
+            if (delete) {
+                bfw1.write(String.format("Message Count: %d\n", messageCount - 1));
+            } else {
+                bfw1.write(String.format("Message Count: %d\n", messageCount + 1));
+            }
+            if (storePath != null) {
+                try (BufferedReader bfr2 = new BufferedReader(new FileReader(storePath + "/" + username + "metrics.txt"))) {
+                    String line = bfr2.readLine();
+                    int messageCount2 = Integer.parseInt(line.substring(15));
+                    try (BufferedWriter bfw2 = new BufferedWriter(new FileWriter(storePath + "/" + username + "metrics.txt", false))) {
+                        bfw2.write(String.format("Message Count: %d\n", messageCount2));
+                    }
+
+                }
+            }
             fileData.forEach((word, count) -> {
                 try {
-                    bfr.write(String.format("%d %s\n", count, word));
+                    bfw1.write(String.format("%d %s\n", count, word));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
