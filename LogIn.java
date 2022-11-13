@@ -832,7 +832,7 @@ public class LogIn {
             //This is here because the program breaks if a user tries to do a deletion after changing their name in the same run
             while (running) {
                 System.out.println("Would you like to enter messaging or make account changes? " +
-                        "\n1. Messaging " +
+                        "\n1. User Interactions " +
                         "\n2. Account changes");
                 int input = -1;
                 boolean inputTaken = false;
