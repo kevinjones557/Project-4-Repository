@@ -7,8 +7,7 @@ import java.text.SimpleDateFormat;
 public class MarketUser implements User{
     // Output messages
     public final String SELECT_OPTION = "Please select an option below:";
-    public final String BLOCK_INVISIBLE_OPTION = "1. Block a user\n2. Unblock a user\n3. Become invisible to a user\n" +
-            "4. Become visible to a user\n5. Continue to messaging\n6. Exit Messaging System";
+    public final String BLOCK_INVISIBLE_OPTION = "1. Use block/invisible features\n2. Continue to messaging\n3. Exit Messaging System";
     public final String SEARCH_LIST_BUYER = "1. Search for a buyer\n2. View a list of buyers\n3. Cancel";
     public final String SEARCH_LIST_SELLER = "1. Search for a seller\n2. View a list of stores\n" +
             "3. Continue to statistics\n4. Exit Messaging System";
@@ -101,61 +100,217 @@ public class MarketUser implements User{
             System.out.println(SELECT_OPTION);
             System.out.println(BLOCK_INVISIBLE_OPTION);
             int selection = waitForValidInput(1, 6);
-            if (selection == 6) {
+            if (selection == 3) {
                 return;
             }
-            if (selection == 5) {
+            if (selection == 2) {
                 break; // this will continue to messaging
             }
             // at this point they want to block/unblock/visible/invisible a user so ask for user
             System.out.println(SELECT_OPTION);
-            System.out.println(SEARCH_LIST_BUYER);
-            int searchOrCancel = waitForValidInput(1, 3);
-            String buyerName = null;
-            if (searchOrCancel == 1) {
-                System.out.println("Please enter the name of a buyer:");
-                buyerName = sellerScan.nextLine().trim();
-                if (!FileManager.checkBuyerExists(buyerName)) {
-                    buyerName = null;
-                    System.out.println("Sorry, this buyer does not exist!");
-                } /*TODO else if (buyerHasMadeThemselvesInvisible)
-                    TODO Vinh, check if the buyer who was searched for is invisible to this seller or not
-                    TODO if so, enter this if statement and print:
-                    TODO set buyerName = null
-                    System.out.println("This user has made themselves invisible to you!)
-                */
-            } else if (searchOrCancel == 2) {
+            System.out.println("1. Block a user \n2. Unblock a user \n3. Become invisible to a user \n" +
+                    "4. Become visible again");
+            int option;
+            while (true) {
                 try {
-                    String[] allAvailableBuyers = getAvailableUsers();
-                    for (int i = 0; i < allAvailableBuyers.length; i++) {
-                        System.out.println((i + 1) + ". " + allAvailableBuyers[i]);
+                    option = sellerScan.nextInt();
+                    sellerScan.nextLine();
+                    if (option >= 1 && option <= 4) {
+                        break;
+                    } else {
+                        System.out.println("Option number must be between 1 and 4 inclusively!");
                     }
-                    System.out.println(allAvailableBuyers.length + 1 + ": Cancel");
-                    System.out.println(SELECT_OPTION);
-                    int storeOption = waitForValidInput(1, allAvailableBuyers.length + 1);
-                    if (storeOption != allAvailableBuyers.length + 1) {
-                        buyerName = allAvailableBuyers[storeOption - 1];
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    System.out.println("Sorry, there was an error reading the users, please try again!");
+                } catch (NumberFormatException e) {
+                    System.out.println("Please enter a valid option number!");
                 }
+
             }
-            if (buyerName != null) { // at this point we know the buyer searched for exists and wants to be reached
-                if (selection == 1) {
-                    System.out.println("Blocking"); //TODO only for testing, vinh remove
-                    //TODO vinh block this user
-                } else if (selection == 2) {
-                    System.out.println("Unblocking"); //TODO only for testing, vinh remove
-                    //TODO vinh unblock our user
-                } else if (selection == 3) {
-                    System.out.println("Invisible"); //TODO only for testing, vinh remove
-                    //TODO vinh make buyer invisible to seller
-                } else {
-                    System.out.println("Visible"); //TODO only for testing, vinh remove
-                    //TODO vinh make buyer visible to seller
+            try {
+                switch (option) {
+                    case 1:
+                        while (true) {
+                            String[] userList = getAvailableUsers();
+                            String[] blockedList = blockedList();
+                            if(Arrays.equals(userList, blockedList)) {
+                                System.out.println("You have blocked all available user!");
+                                break;
+                            }
+                            boolean inBlockedList = false;
+                            System.out.println("Please select a user to block");
+                            for (int i = 0; i < userList.length; i++) {
+                                for(String blockedUser: blockedList) {
+                                    if(blockedUser.equals(userList[i])) {
+                                        inBlockedList = true;
+                                    }
+                                }
+                                System.out.printf("%d. %s" + ((inBlockedList)?"(blocked)":"") +"\n", i + 1, userList[i]);
+                                inBlockedList = false;
+                            }
+                            int victim;
+                            while (true) {
+                                try {
+                                    victim = sellerScan.nextInt();
+                                    sellerScan.nextLine();
+                                    if (victim >= 1 && victim <= userList.length) {
+                                        break;
+                                    } else {
+                                        System.out.printf("Option number must be between 1 and %d inclusively!\n", userList.length);
+                                    }
+                                } catch (NumberFormatException e) {
+                                    System.out.println("Please enter a valid option number!");
+                                }
+                            }
+                            victim-=1;
+                            boolean blocked = blockUser(userList[victim]);
+                            if (blocked) {
+                                System.out.printf("%s is already blocked\n", userList[victim]);
+                            } else {
+                                System.out.printf("Successfully block %s\n", userList[victim]);
+                            }
+                            System.out.println("Do you want to continue? (Yes/No)");
+                            if ((sellerScan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
+                                break;
+                            }
+                        }
+                        break;
+
+                    case 2:
+                        if (blockedList().length == 0) {
+                            System.out.println("You haven't blocked any user");
+                        } else {
+                            while (blockedList().length != 0) {
+                                String[] userList = blockedList();
+                                System.out.println("Please select a user to unblock");
+                                for (int i = 0; i < userList.length; i++) {
+                                    System.out.printf("%d. %s\n", i + 1, userList[i]);
+                                }
+                                int victim;
+                                while (true) {
+                                    try {
+                                        victim = sellerScan.nextInt();
+                                        sellerScan.nextLine();
+                                        if (victim >= 1 && victim <= userList.length) {
+                                            break;
+                                        } else {
+                                            System.out.printf("Option number must be between 1 and %d inclusively!\n", userList.length);
+                                        }
+                                    } catch (NumberFormatException e) {
+                                        System.out.println("Please enter a valid option number!");
+                                    }
+                                }
+                                victim -=1;
+                                unblockUser(userList[victim]);
+                                System.out.printf("Successfully unblock %s\n", userList[victim]);
+                                if (blockedList().length == 0) {
+                                    System.out.println("Your blocked list is now empty");
+                                    break;
+                                } else {
+                                    System.out.println("Do you want to continue? (Yes/No)");
+                                    if ((sellerScan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
+                                        break;
+                                    }
+                                }
+                            }
+
+                        }
+                        break;
+
+                    case 3:
+                        while (true) {
+                            String[] userList = getAvailableUsers();
+                            String[] invisibleList = invisibleList();
+                            if(Arrays.equals(userList, invisibleList)) {
+                                System.out.println("You have become invisible to all available user");
+                                break;
+                            }
+                            boolean inInvisibleList = false;
+                            for (int i = 0; i < userList.length; i++) {
+                                for(String blockedUser: invisibleList) {
+                                    if(blockedUser.equals(userList[i])) {
+                                        inInvisibleList = true;
+                                    }
+                                }
+                                System.out.printf("%d. %s" + ((inInvisibleList)?"(can't see you)":"") +"\n", i + 1, userList[i]);
+                                inInvisibleList = false;
+                            }
+                            int victim;
+                            while (true) {
+                                try {
+                                    victim = sellerScan.nextInt();
+                                    sellerScan.nextLine();
+                                    if (victim >= 1 && victim <= userList.length) {
+                                        break;
+                                    } else {
+                                        System.out.printf("Option number must be between 1 and %d inclusively!\n", userList.length);
+                                    }
+                                } catch (NumberFormatException e) {
+                                    System.out.println("Please enter a valid option number!");
+                                }
+                            }
+                            victim-=1;
+                            boolean invisible = becomeInvisibleToUser(userList[victim]);
+                            if (invisible) {
+                                System.out.printf("You are already invisible to %s\n", userList[victim]);
+                            } else {
+                                System.out.printf("Successfully become invisible to %s\n", userList[victim]);
+                            }
+                            System.out.println("Do you want to continue? (Yes/No)");
+                            if ((sellerScan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
+                                break;
+                            }
+                        }
+                        break;
+
+                    case 4:
+                        if (invisibleList().length == 0) {
+                            System.out.println("You haven't become invisible to any user");
+                        } else {
+                            while (invisibleList().length != 0) {
+                                String[] userList = invisibleList();
+                                System.out.println("Please select a user to become visible to");
+                                for (int i = 0; i < userList.length; i++) {
+                                    System.out.printf("%d. %s\n", i + 1, userList[i]);
+                                }
+                                int victim;
+                                while (true) {
+                                    try {
+                                        victim = sellerScan.nextInt();
+                                        sellerScan.nextLine();
+                                        if (victim >= 1 && victim <= userList.length) {
+                                            break;
+                                        } else {
+                                            System.out.printf("Option number must be between 1 and %d inclusively!\n", userList.length);
+                                        }
+                                    } catch (NumberFormatException e) {
+                                        System.out.println("Please enter a valid option number!");
+                                    }
+                                }
+                                victim -=1;
+                                unblockUser(userList[victim]);
+                                System.out.printf("Successfully become visible again to %s\n", userList[victim]);
+                                if (blockedList().length == 0) {
+                                    System.out.println("Your invisible list is now empty");
+                                    break;
+                                } else {
+                                    System.out.println("Do you want to continue? (Yes/No)");
+                                    if ((sellerScan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
+                                        break;
+                                    }
+                                }
+                            }
+
+                        }
+                        break;
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("An unknown error occurred");
             }
+            System.out.println("Do you want to keep using block/invisible features?(Yes/No)");
+            if ((sellerScan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
+                break;
+            }
+
         } while (true);
         // at this point past blocking/visible stage, onto messaging, and we need to prompt if they want to use store
         messaging: do {
@@ -322,41 +477,215 @@ public class MarketUser implements User{
             System.out.println(SELECT_OPTION);
             System.out.println(BLOCK_INVISIBLE_OPTION);
             int selection = waitForValidInput(1, 6);
-            if (selection == 6) {
+            if (selection == 3) {
                 return;
             }
-            if (selection == 5) {
+            if (selection == 2) {
                 break; // this will continue to messaging
             }
-            // at this point they want to block/unblock/visible/invisible a user so ask for user
+            //start of blocking 
             System.out.println(SELECT_OPTION);
-            System.out.println("1. Search for a seller\n2. Cancel");
-            int searchOrCancel = waitForValidInput(1, 2);
-            if (searchOrCancel == 1) {
-                System.out.println("Please enter the name of a seller:");
-                String sellerName = buyerScan.nextLine().trim();
-                if (!FileManager.checkSellerExists(sellerName)) {
-                    System.out.println("Sorry, this seller does not exist!");
-                } /*TODO else if (sellerHasMadeThemselvesInvisible)
-                    TODO Vinh, check if the seller who was searched for is invisible to this buyer or not
-                    TODO if so, enter this if statement and print:
-                    System.out.println("This user has made themselves invisible to you!)
-                */
-                else { // at this point we know the seller searched for exists and wants to be reached
-                    if (selection == 1) {
-                        System.out.println("Blocking"); //TODO only for testing, vinh remove
-                        //TODO vinh block this user
-                    } else if (selection == 2) {
-                        System.out.println("Unblocking"); //TODO only for testing, vinh remove
-                        //TODO vinh unblock our user
-                    } else if (selection == 3) {
-                        System.out.println("Invisible"); //TODO only for testing, vinh remove
-                        //TODO vinh make buyer invisible to seller
+            System.out.println("1. Block a user \n2. Unblock a user \n3. Become invisible to a user \n" +
+                    "4. Become visible again");
+            int option;
+            while (true) {
+                try {
+                    option = buyerScan.nextInt();
+                    buyerScan.nextLine();
+                    if (option >= 1 && option <= 4) {
+                        break;
                     } else {
-                        System.out.println("Visible"); //TODO only for testing, vinh remove
-                        //TODO vinh make buyer visible to seller
+                        System.out.println("Option number must be between 1 and 4 inclusively!");
                     }
+                } catch (NumberFormatException e) {
+                    System.out.println("Please enter a valid option number!");
                 }
+
+            }
+            try {
+                switch (option) {
+                    case 1:
+                        while (true) {
+                            String[] userList = getAvailableUsers();
+                            String[] blockedList = blockedList();
+                            if(Arrays.equals(userList, blockedList)) {
+                                System.out.println("You have blocked all available user!");
+                                break;
+                            }
+                            boolean inBlockedList = false;
+                            System.out.println("Please select a user to block");
+                            for (int i = 0; i < userList.length; i++) {
+                                for(String blockedUser: blockedList) {
+                                    if(blockedUser.equals(userList[i])) {
+                                        inBlockedList = true;
+                                    }
+                                }
+                                System.out.printf("%d. %s" + ((inBlockedList)?"(blocked)":"") +"\n", i + 1, userList[i]);
+                                inBlockedList = false;
+                            }
+                            int victim;
+                            while (true) {
+                                try {
+                                    victim = buyerScan.nextInt();
+                                    buyerScan.nextLine();
+                                    if (victim >= 1 && victim <= userList.length) {
+                                        break;
+                                    } else {
+                                        System.out.printf("Option number must be between 1 and %d inclusively!\n", userList.length);
+                                    }
+                                } catch (NumberFormatException e) {
+                                    System.out.println("Please enter a valid option number!");
+                                }
+                            }
+                            victim-=1;
+                            boolean blocked = blockUser(userList[victim]);
+                            if (blocked) {
+                                System.out.printf("%s is already blocked\n", userList[victim]);
+                            } else {
+                                System.out.printf("Successfully block %s\n", userList[victim]);
+                            }
+                            System.out.println("Do you want to continue? (Yes/No)");
+                            if ((buyerScan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
+                                break;
+                            }
+                        }
+                        break;
+
+                    case 2:
+                        if (blockedList().length == 0) {
+                            System.out.println("You haven't blocked any user");
+                        } else {
+                            while (blockedList().length != 0) {
+                                String[] userList = blockedList();
+                                System.out.println("Please select a user to unblock");
+                                for (int i = 0; i < userList.length; i++) {
+                                    System.out.printf("%d. %s\n", i + 1, userList[i]);
+                                }
+                                int victim;
+                                while (true) {
+                                    try {
+                                        victim = buyerScan.nextInt();
+                                        buyerScan.nextLine();
+                                        if (victim >= 1 && victim <= userList.length) {
+                                            break;
+                                        } else {
+                                            System.out.printf("Option number must be between 1 and %d inclusively!\n", userList.length);
+                                        }
+                                    } catch (NumberFormatException e) {
+                                        System.out.println("Please enter a valid option number!");
+                                    }
+                                }
+                                victim -=1;
+                                unblockUser(userList[victim]);
+                                System.out.printf("Successfully unblock %s\n", userList[victim]);
+                                if (blockedList().length == 0) {
+                                    System.out.println("Your blocked list is now empty");
+                                    break;
+                                } else {
+                                    System.out.println("Do you want to continue? (Yes/No)");
+                                    if ((buyerScan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
+                                        break;
+                                    }
+                                }
+                            }
+
+                        }
+                        break;
+
+                    case 3:
+                        while (true) {
+                            String[] userList = getAvailableUsers();
+                            String[] invisibleList = invisibleList();
+                            if(Arrays.equals(userList, invisibleList)) {
+                                System.out.println("You have become invisible to all available user");
+                                break;
+                            }
+                            boolean inInvisibleList = false;
+                            for (int i = 0; i < userList.length; i++) {
+                                for(String blockedUser: invisibleList) {
+                                    if(blockedUser.equals(userList[i])) {
+                                        inInvisibleList = true;
+                                    }
+                                }
+                                System.out.printf("%d. %s" + ((inInvisibleList)?"(can't see you)":"") +"\n", i + 1, userList[i]);
+                                inInvisibleList = false;
+                            }
+                            int victim;
+                            while (true) {
+                                try {
+                                    victim = buyerScan.nextInt();
+                                    buyerScan.nextLine();
+                                    if (victim >= 1 && victim <= userList.length) {
+                                        break;
+                                    } else {
+                                        System.out.printf("Option number must be between 1 and %d inclusively!\n", userList.length);
+                                    }
+                                } catch (NumberFormatException e) {
+                                    System.out.println("Please enter a valid option number!");
+                                }
+                            }
+                            victim-=1;
+                            boolean invisible = becomeInvisibleToUser(userList[victim]);
+                            if (invisible) {
+                                System.out.printf("You are already invisible to %s\n", userList[victim]);
+                            } else {
+                                System.out.printf("Successfully become invisible to %s\n", userList[victim]);
+                            }
+                            System.out.println("Do you want to continue? (Yes/No)");
+                            if ((buyerScan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
+                                break;
+                            }
+                        }
+                        break;
+
+                    case 4:
+                        if (invisibleList().length == 0) {
+                            System.out.println("You haven't become invisible to any user");
+                        } else {
+                            while (invisibleList().length != 0) {
+                                String[] userList = invisibleList();
+                                System.out.println("Please select a user to become visible to");
+                                for (int i = 0; i < userList.length; i++) {
+                                    System.out.printf("%d. %s\n", i + 1, userList[i]);
+                                }
+                                int victim;
+                                while (true) {
+                                    try {
+                                        victim = buyerScan.nextInt();
+                                        buyerScan.nextLine();
+                                        if (victim >= 1 && victim <= userList.length) {
+                                            break;
+                                        } else {
+                                            System.out.printf("Option number must be between 1 and %d inclusively!\n", userList.length);
+                                        }
+                                    } catch (NumberFormatException e) {
+                                        System.out.println("Please enter a valid option number!");
+                                    }
+                                }
+                                victim -=1;
+                                unblockUser(userList[victim]);
+                                System.out.printf("Successfully become visible again to %s\n", userList[victim]);
+                                if (blockedList().length == 0) {
+                                    System.out.println("Your invisible list is now empty");
+                                    break;
+                                } else {
+                                    System.out.println("Do you want to continue? (Yes/No)");
+                                    if ((buyerScan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
+                                        break;
+                                    }
+                                }
+                            }
+
+                        }
+                        break;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("An unknown error occurred");
+            }
+            System.out.println("Do you want to keep using block/invisible features?(Yes/No)");
+            if ((buyerScan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
+                break;
             }
         } while (true);
         // at this point past blocking/visible stage, onto messaging
@@ -734,8 +1063,8 @@ public class MarketUser implements User{
 
 
     /**
-     * Get a list of users that this user can message
-     * @return an array of available people for messaging
+     * Get a list of users that this user can see
+     * @return an array of available people
      * @throws IOException if error
      */
     public String[] getAvailableUsers() throws IOException {
@@ -791,6 +1120,62 @@ public class MarketUser implements User{
     /**
      * Get a list of users that this user can message
      * @return an array of available people for messaging
+     * @throws IOException if error
+     */
+    public String[] getMessage_ableUser() throws IOException {
+        ArrayList<String> available = new ArrayList<>();
+        if(!isSeller){
+            File sellersDir = new File("data/sellers");
+            String[] sellers = sellersDir.list();
+            for(String seller: sellers) {
+                File sellerFolder = new File("data/sellers/" + seller);
+                File invisibleFilePath = new File("data/sellers/" + seller + "/hasBlocked.txt");
+                BufferedReader bfr = new BufferedReader(new FileReader(invisibleFilePath));
+                String line;
+                boolean invisible = false;
+                while((line = bfr.readLine())!= null) {
+                    if(line.equals(this.username)) {
+                        invisible = true;
+                        break;
+                    }
+                }
+                bfr.close();
+                if(!invisible) {
+                    available.add(seller);
+                }
+            }
+        } else {
+            File buyersDir = new File("data/buyers");
+            String[] buyers = buyersDir.list();
+            for(String buyer: buyers) {
+                File invisibleFilePath = new File("data/buyers/" + buyer + "/hasBlocked.txt");
+                BufferedReader bfr = new BufferedReader(new FileReader(invisibleFilePath));
+                String line;
+                boolean invisible = false;
+                while((line = bfr.readLine())!= null) {
+                    if(line.equals(this.username)) {
+                        invisible = true;
+                        break;
+                    }
+                }
+                bfr.close();
+                if(!invisible) {
+                    available.add(buyer);
+                }
+            }
+        }
+        //Just turn ArrayList into array classic 180 stuff
+        String[] message_able = new String[available.size()];
+        for(int i = 0; i < message_able.length; i++) {
+            message_able[i] = available.get(i);
+        }
+        return message_able;
+    }
+
+
+    /**
+     * Get a list of stores this user can see
+     * @return an array of available stores
      * @throws IOException in case of error
      */
     public String[] getAvailableStores() throws IOException {
@@ -821,6 +1206,42 @@ public class MarketUser implements User{
         availableStores = possibleStores.toArray(availableStores);
         return availableStores;
     }
+
+    /**
+     * Get a list of stores this user can see
+     * @return an array of available stores
+     * @throws IOException in case of error
+     */
+    public String[] getMessage_ableStores() throws IOException {
+        boolean invisible = true;
+        String[] possibleSellers = getMessage_ableUser();
+        File sellers = new File("data/sellers");
+        ArrayList<String> possibleStores = new ArrayList<>();
+        String[] sellerNames = sellers.list();
+        for (String name : sellerNames) {
+            for (String seller : possibleSellers) {
+                if (seller.equals(name)) {
+                    invisible = false;
+                    break;
+                }
+            }
+            if (!invisible) {
+                File stores = new File("data/sellers/" + name);
+                String[] storeNames = stores.list();
+                for (String store : storeNames) {
+                    File storeFile = new File("data/sellers/" + name + "/" + store);
+                    if (storeFile.isDirectory()) {
+                        possibleStores.add(store);
+                    }
+                }
+            }
+        }
+        String[] message_ableStores = new String[possibleStores.size()];
+        message_ableStores = possibleStores.toArray(message_ableStores);
+        return message_ableStores;
+    }
+
+
 
     /** Method to see if conversation has started
      * Check if <username><recipient>.txt exists because if it exists then <recipient><username>.txt also exists
@@ -1316,56 +1737,30 @@ public class MarketUser implements User{
      */
     public boolean becomeInvisibleToUser(String username) {
         try {
-            if(!isSeller) {
-                String invisibleFilePath = "data/buyers/" + this.username + "/isInvisible.txt";
-                File invisibleFile = new File(invisibleFilePath);
-                BufferedReader bfr = new BufferedReader(new FileReader(invisibleFile));
-                String line;
-                while ((line = bfr.readLine()) != null) {
-                    if (line.equals(username)) {
-                        //Already blocked this user
-                        return true;
-                    }
-                }
-                bfr.close();
-                //Write the name of the victim to hasBlocked file
-                PrintWriter pw = new PrintWriter(new FileWriter(invisibleFile, true));
-                pw.write(username);
-                pw.println();
-                pw.flush();
-                pw.close();
-                return false;
-            } else {
-                File seller = new File("data/sellers/" + this.username);
-                String[] sellerFile = seller.list();
-                for(String fileName: sellerFile) {
-                    File file = new File("data/sellers/" + this.username +"/" + fileName);
-                    if(file.isDirectory()) {
-                        File invisibleFile = new File("data/sellers/" + this.username +"/" + fileName + "/isInvisible.txt");
-                        BufferedReader bfr = new BufferedReader(new FileReader(invisibleFile));
-                        String line;
-                        while ((line = bfr.readLine()) != null) {
-                            if (line.equals(username)) {
-                                //Store already blocked this user
-                                return true;
-                            }
-                        }
-                        bfr.close();
-                        //Write the name of the victim to hasBlocked file
-                        PrintWriter pw = new PrintWriter(new FileWriter(invisibleFile, true));
-                        pw.write(username);
-                        pw.println();
-                        pw.flush();
-                        pw.close();
-                        return false;
-                    }
+            String invisibleFilePath = "data/" + ((isSeller) ? "sellers/" : "buyers/") + this.username + "/isInvisible.txt";
+            File invisibleFile = new File(invisibleFilePath);
+            BufferedReader bfr = new BufferedReader(new FileReader(invisibleFile));
+            String line;
+            while ((line = bfr.readLine()) != null) {
+                if (line.equals(username)) {
+                    //Already blocked this user
+                    return true;
                 }
             }
+            bfr.close();
+            //Write the name of the victim to hasBlocked file
+            PrintWriter pw = new PrintWriter(new FileWriter(invisibleFile, true));
+            pw.write(username);
+            pw.println();
+            pw.flush();
+            pw.close();
+            return false;
+
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
-        return false;
+
     }
 
     /**
@@ -1375,34 +1770,20 @@ public class MarketUser implements User{
      */
     public String[] blockedList() throws IOException{
         ArrayList<String> victims = new ArrayList<>();
-        if(!isSeller) {
-            String blockedFilePath = "data/buyers/" + this.username + "hasBlocked.txt";
-            File blockedFile = new File(blockedFilePath);
-            BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
-            String line;
-            while ((line = bfr.readLine()) != null) {
+        String blockedFilePath = "data/" + ((isSeller) ? "sellers/" : "buyers/") + this.username + "/hasBlocked.txt";
+        File blockedFile = new File(blockedFilePath);
+        BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
+        String line;
+        while ((line = bfr.readLine()) != null) {
+            if (!line.isEmpty()) {
                 victims.add(line);
             }
-            String[] blockedList = new String[victims.size()];
-            for (int i = 0; i < victims.size(); i++) {
-                blockedList[i] = victims.get(i);
-            }
-            return blockedList;
-        } else {
-            File seller = new File("data/sellers/" + this.username);
-            String[] sellerFile = seller.list();
-            File blockedFile = new File("data/sellers/" + this.username + "/" + sellerFile[0] + "/hasBlocked.txt");
-            BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
-            String line;
-            while ((line = bfr.readLine()) != null) {
-                victims.add(line);
-            }
-            String[] blockedList = new String[victims.size()];
-            for (int i = 0; i < victims.size(); i++) {
-                blockedList[i] = victims.get(i);
-            }
-            return blockedList;
         }
+        String[] blockedList = new String[victims.size()];
+        for (int i = 0; i < victims.size(); i++) {
+            blockedList[i] = victims.get(i);
+        }
+        return blockedList;
     }
 
     /**
@@ -1412,51 +1793,24 @@ public class MarketUser implements User{
      */
     public void becomeVisibleAgain(String username) {
         try {
-            if(!isSeller) {
-                ArrayList<String> lines = new ArrayList<>();
-                String invisibleFilePath = "data/buyers/" + this.username + "/isInvisible.txt";
-                File invisibleFile = new File(invisibleFilePath);
-                BufferedReader bfr = new BufferedReader(new FileReader(invisibleFile));
-                String line;
-                while ((line = bfr.readLine()) != null) {
-                    if (!line.equals(username)) {
-                        lines.add(line);
-                    }
-                }
-                bfr.close();
-                PrintWriter pw = new PrintWriter(new FileWriter(invisibleFile, false));
-                for (String l : lines) {
-                    pw.write(l);
-                    pw.println();
-                }
-                pw.flush();
-                pw.close();
-            } else {
-                File seller = new File("data/sellers/" + this.username);
-                String[] sellerFile = seller.list();
-                for(String fileName: sellerFile) {
-                    File file = new File("data/sellers/" + this.username + "/" + fileName);
-                    if (file.isDirectory()) {
-                        ArrayList<String> lines = new ArrayList<>();
-                        File invisibleFile = new File("data/sellers/" + this.username +"/" + fileName + "/isInvisible.txt");
-                        BufferedReader bfr = new BufferedReader(new FileReader(invisibleFile));
-                        String line;
-                        while ((line = bfr.readLine()) != null) {
-                            if (!line.equals(username)) {
-                                lines.add(line);
-                            }
-                        }
-                        bfr.close();
-                        PrintWriter pw = new PrintWriter(new FileWriter(invisibleFile, false));
-                        for (String l : lines) {
-                            pw.write(l);
-                            pw.println();
-                        }
-                        pw.flush();
-                        pw.close();
-                    }
+            ArrayList<String> lines = new ArrayList<>();
+            String invisibleFilePath = "data/" + ((isSeller) ? "sellers/" : "buyers/") + this.username + "/isInvisible.txt";
+            File invisibleFile = new File(invisibleFilePath);
+            BufferedReader bfr = new BufferedReader(new FileReader(invisibleFile));
+            String line;
+            while ((line = bfr.readLine()) != null) {
+                if (!line.equals(username) && !line.isEmpty()) {
+                    lines.add(line);
                 }
             }
+            bfr.close();
+            PrintWriter pw = new PrintWriter(new FileWriter(invisibleFile, false));
+            for (String l : lines) {
+                pw.write(l);
+                pw.println();
+            }
+            pw.flush();
+            pw.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1469,34 +1823,20 @@ public class MarketUser implements User{
      */
     public String[] invisibleList() throws IOException{
         ArrayList<String> victims = new ArrayList<>();
-        if(!isSeller) {
-            String invisibleFilePath = "data/buyers/" + this.username + "isInvisible.txt";
-            File invisibleFile = new File(invisibleFilePath);
-            BufferedReader bfr = new BufferedReader(new FileReader(invisibleFile));
-            String line;
-            while ((line = bfr.readLine()) != null) {
+        String invisibleFilePath = "data/" + ((isSeller) ? "sellers/" : "buyers/") + this.username + "/isInvisible.txt";
+        File invisibleFile = new File(invisibleFilePath);
+        BufferedReader bfr = new BufferedReader(new FileReader(invisibleFile));
+        String line;
+        while ((line = bfr.readLine()) != null) {
+            if (!line.isEmpty()) {
                 victims.add(line);
             }
-            String[] invisibleList = new String[victims.size()];
-            for (int i = 0; i < victims.size(); i++) {
-                invisibleList[i] = victims.get(i);
-            }
-            return invisibleList;
-        } else {
-            File seller = new File("data/sellers/" + this.username);
-            String[] sellerFile = seller.list();
-            File invisibleFile = new File("data/sellers/" + this.username + "/" + sellerFile[0] + "/isInvisible.txt");
-            BufferedReader bfr = new BufferedReader(new FileReader(invisibleFile));
-            String line;
-            while ((line = bfr.readLine()) != null) {
-                victims.add(line);
-            }
-            String[] invisibleList = new String[victims.size()];
-            for (int i = 0; i < victims.size(); i++) {
-                invisibleList[i] = victims.get(i);
-            }
-            return invisibleList;
         }
+        String[] invisibleList = new String[victims.size()];
+        for (int i = 0; i < victims.size(); i++) {
+            invisibleList[i] = victims.get(i);
+        }
+        return invisibleList;
     }
 
     /**
@@ -1506,56 +1846,29 @@ public class MarketUser implements User{
      */
     public boolean blockUser(String username) {
         try {
-            if(!isSeller) {
-                String blockedFilePath = "data/buyers/" + this.username + "/hasBlocked.txt";
-                File blockedFile = new File(blockedFilePath);
-                BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
-                String line;
-                while ((line = bfr.readLine()) != null) {
-                    if (line.equals(username)) {
-                        //Already blocked this user
-                        return true;
-                    }
-                }
-                bfr.close();
-                //Write the name of the victim to hasBlocked file
-                PrintWriter pw = new PrintWriter(new FileWriter(blockedFile, true));
-                pw.write(username);
-                pw.println();
-                pw.flush();
-                pw.close();
-                return false;
-            } else {
-                File seller = new File("data/sellers/" + this.username);
-                String[] sellerFile = seller.list();
-                for(String fileName: sellerFile) {
-                    File file = new File("data/sellers/" + this.username +"/" + fileName);
-                    if(file.isDirectory()) {
-                        File blockedFile = new File("data/sellers/" + this.username +"/" + fileName + "/hasBlocked.txt");
-                        BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
-                        String line;
-                        while ((line = bfr.readLine()) != null) {
-                            if (line.equals(username)) {
-                                //Store already blocked this user
-                                return true;
-                            }
-                        }
-                        bfr.close();
-                        //Write the name of the victim to hasBlocked file
-                        PrintWriter pw = new PrintWriter(new FileWriter(blockedFile, true));
-                        pw.write(username);
-                        pw.println();
-                        pw.flush();
-                        pw.close();
-                        return false;
-                    }
+            String blockedFilePath = "data/" + ((isSeller) ? "sellers/" : "buyers/") + this.username + "/hasBlocked.txt";
+            File blockedFile = new File(blockedFilePath);
+            BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
+            String line;
+            while ((line = bfr.readLine()) != null) {
+                if (line.equals(username)) {
+                    //Already blocked this user
+                    return true;
                 }
             }
+            bfr.close();
+            //Write the name of the victim to hasBlocked file
+            PrintWriter pw = new PrintWriter(new FileWriter(blockedFile, true));
+            pw.write(username);
+            pw.println();
+            pw.flush();
+            pw.close();
+            return false;
+
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
-        return false;
     }
 
     /**
@@ -1564,51 +1877,25 @@ public class MarketUser implements User{
      */
     public void unblockUser(String username) {
         try {
-            if(!isSeller) {
-                ArrayList<String> lines = new ArrayList<>();
-                String blockedFilePath = "data/buyers/" + this.username + "/hasBlocked.txt";
-                File blockedFile = new File(blockedFilePath);
-                BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
-                String line;
-                while ((line = bfr.readLine()) != null) {
-                    if (!line.equals(username)) {
-                        lines.add(line);
-                    }
-                }
-                bfr.close();
-                PrintWriter pw = new PrintWriter(new FileWriter(blockedFile, false));
-                for (String l : lines) {
-                    pw.write(l);
-                    pw.println();
-                }
-                pw.flush();
-                pw.close();
-            } else {
-                File seller = new File("data/sellers/" + this.username);
-                String[] sellerFile = seller.list();
-                for(String fileName: sellerFile) {
-                    File file = new File("data/sellers/" + this.username + "/" + fileName);
-                    if (file.isDirectory()) {
-                        ArrayList<String> lines = new ArrayList<>();
-                        File blockedFile = new File("data/sellers/" + this.username +"/" + fileName + "/hasBlocked.txt");
-                        BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
-                        String line;
-                        while ((line = bfr.readLine()) != null) {
-                            if (!line.equals(username)) {
-                                lines.add(line);
-                            }
-                        }
-                        bfr.close();
-                        PrintWriter pw = new PrintWriter(new FileWriter(blockedFile, false));
-                        for (String l : lines) {
-                            pw.write(l);
-                            pw.println();
-                        }
-                        pw.flush();
-                        pw.close();
-                    }
+            ArrayList<String> lines = new ArrayList<>();
+            String blockedFilePath = "data/" + ((isSeller) ? "sellers/" : "buyers/") + this.username + "/hasBlocked.txt";
+            File blockedFile = new File(blockedFilePath);
+            BufferedReader bfr = new BufferedReader(new FileReader(blockedFile));
+            String line;
+            while ((line = bfr.readLine()) != null) {
+                if (!line.equals(username) && !line.isEmpty()) {
+                    lines.add(line);
                 }
             }
+            bfr.close();
+            PrintWriter pw = new PrintWriter(new FileWriter(blockedFile, false));
+            for (String l : lines) {
+                pw.write(l);
+                pw.println();
+            }
+            pw.flush();
+            pw.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
