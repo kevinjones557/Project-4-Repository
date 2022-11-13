@@ -801,7 +801,7 @@ public class MarketUser implements User{
         if (goToMetrics == 2) {
             return;
         } else {
-            MetricManager.sellerMetricsUI(this.username, buyerScan, storeNameMap);
+            MetricManager.buyerMetricsUI(this.username, buyerScan, storeNameMap);
         }
 
     }
@@ -1271,6 +1271,8 @@ public class MarketUser implements User{
                 e.printStackTrace();
             }
         } else {
+            FileManager.generateMetricsAboutUser(this.username,"data/sellers/" + storeNameMap.get(recipient)
+                    + "/" + recipient +"/");
             try {
                 File fUser = new File(FileManager.getDirectoryFromUsername(username)
                         + "/" + username + recipient + ".txt");
@@ -1899,5 +1901,3 @@ public class MarketUser implements User{
         }
     }
 }
-//TODO allow sellers to access specific stores
-//TODO fix display message
