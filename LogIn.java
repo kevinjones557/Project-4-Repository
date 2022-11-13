@@ -7,15 +7,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-/** A class to create accounts for users, log them in, and perform any necessary interaction with said accounts.
- *
+/**
+ * A class to create accounts for users, log them in, and perform any necessary interaction with said accounts.
+ * <p>
  * author @Adenr4615
  * version 11/9/22
  */
 
 public class LogIn {
 
-    /** Writes user's username to a file
+    /**
+     * Writes user's username to a file
      *
      * @param user String of the user's username
      * @return boolean of if file was successfully written or not
@@ -30,7 +32,8 @@ public class LogIn {
         }
     }
 
-    /** Appends an additional line to a given user's file
+    /**
+     * Appends an additional line to a given user's file
      *
      * @param user     the user whose file is being appended
      * @param toAppend the parameter that is being appended to the file
@@ -45,7 +48,8 @@ public class LogIn {
         }
     }
 
-    /** Checks to see if the given store name is already in use
+    /**
+     * Checks to see if the given store name is already in use
      *
      * @param storeName the name of the store being checked
      * @return boolean of if the store exists or not for handling in main
@@ -67,12 +71,14 @@ public class LogIn {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("An unknown error occurred!");
         }
         return (true);
     }
 
-    /** Returns the stores that a user has registered under their username
+    /**
+     * Returns the stores that a user has registered under their username
      *
      * @param user user's username
      * @return String representation of the user's stores
@@ -100,7 +106,8 @@ public class LogIn {
         }
     }
 
-    /** Returns if the user is a seller
+    /**
+     * Returns if the user is a seller
      *
      * @param user user's username
      * @return String representation of the user's isSeller status
@@ -117,6 +124,7 @@ public class LogIn {
                 lineIndex++;
             }
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("An unknown error occurred!");
         }
         return (null);
@@ -188,6 +196,7 @@ public class LogIn {
                     System.out.println("Name change was not successful!");
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 System.out.println("An unknown error occurred!");
             }
         } else {
@@ -195,7 +204,8 @@ public class LogIn {
         }
     }
 
-    /** Allows user to log in to an individual store account
+    /**
+     * Allows user to log in to an individual store account
      * Is not currently in use because Kevin is handling this
      *
      * @param user user logging in to their store
@@ -265,6 +275,7 @@ public class LogIn {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("An unknown error occurred!");
         }
         try {
@@ -320,9 +331,11 @@ public class LogIn {
                     pw.println(s);
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 System.out.println("An unknown error occurred!");
             }
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("An unknown error occurred!");
         }
     }
@@ -347,9 +360,11 @@ public class LogIn {
                     pw.println(s);
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 System.out.println("An unknown error occurred!");
             }
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("An unknown error occurred!");
         }
     }
@@ -390,7 +405,8 @@ public class LogIn {
         }
     }
 
-    /** Updates the store list by adding a store name that has been confirmed to not be in use already
+    /**
+     * Updates the store list by adding a store name that has been confirmed to not be in use already
      *
      * @param storeName the store name being appended to the file
      */
@@ -398,11 +414,13 @@ public class LogIn {
         try (PrintWriter pw = new PrintWriter(new FileOutputStream("users/storeNames", true))) {
             pw.println(storeName);
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("An unknown error occurred!");
         }
     }
 
-    /** Encrypts the password of the user file when an account is created
+    /**
+     * Encrypts the password of the user file when an account is created
      *
      * @param user the user whose password is being encrypted
      */
@@ -434,11 +452,13 @@ public class LogIn {
             }
             writeFile(user, finalPassword);
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("An unknown error occurred!");
         }
     }
 
-    /** Takes a password input by a user attempting to log in and uses the key to encrypt it for comparison
+    /**
+     * Takes a password input by a user attempting to log in and uses the key to encrypt it for comparison
      *
      * @param input the password being encrypted
      * @return String of the encrypted password
@@ -459,12 +479,14 @@ public class LogIn {
         return (finalInput);
     }
 
-    /** Creates the file and directory for a user only if the account doesn't already exist
+    /**
+     * Creates the file and directory for a user only if the account doesn't already exist
      *
      * @param user the user whose file is being created
      * @param scan scanner object to capture input
      */
-    public static void createUser(String user, Scanner scan) {
+    //TODO user value is not updating in the main function userInteraction
+    public static String createUser(String user, Scanner scan) {
         File f;
         File dir = new File("users/" + user);
         try {
@@ -625,9 +647,11 @@ public class LogIn {
             System.out.println("An unknown error occurred!");
         }
         System.out.printf("Account created! Welcome, %s!%n", user);
+        return (user);
     }
 
-    /** Reads the password of the file for comparison
+    /**
+     * Reads the password of the file for comparison
      *
      * @param user the user whose password is being read
      * @return String of the encrypted password
@@ -646,13 +670,15 @@ public class LogIn {
             }
             return (password);
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("An unknown error occurred!");
         }
         return (null);
     }
 
-    /** Allows users to log in OR calls methods above and builds a file of the following format for a new user:
-     *
+    /**
+     * Allows users to log in OR calls methods above and builds a file of the following format for a new user:
+     * <p>
      * username
      * password (encrypted)
      * isSeller (true or false)
@@ -670,6 +696,8 @@ public class LogIn {
                 input = Integer.parseInt(scan.nextLine());
                 if (input == 1 || input == 2) {
                     done = true;
+                } else {
+                    System.out.println("That's not a valid input! Please enter 1 to log in or 2 to create a new account.");
                 }
             } catch (Exception e) {
                 System.out.println("That's not a valid input! Please enter 1 to log in or 2 to create a new account.");
@@ -749,6 +777,7 @@ public class LogIn {
                             }
                         }
                     } catch (Exception e) {
+                        e.printStackTrace();
                         System.out.println("An unknown error occurred!");
                     }
                 }
@@ -758,22 +787,24 @@ public class LogIn {
             }
         } else {
             done = false;
+            String user = null;
             System.out.println("Please enter a username in between 6 and 16 characters inclusive.");
             while (!done) {
                 try {
-                    String user = scan.nextLine();
-                    createUser(user, scan);
+                    user = scan.nextLine();
+                    user = createUser(user, scan);
                     done = true;
-                    return (user);
                 } catch (Exception e) {
                     System.out.println("Please enter a valid username!");
                 }
             }
+            return (user);
         }
         return (null);
     }
 
-    /** Runs all LogIn methods to either create a user or log one in; afterwards, creates String ArrayList of user information
+    /**
+     * Runs all LogIn methods to either create a user or log one in
      *
      * @param args
      */
@@ -838,8 +869,8 @@ public class LogIn {
                         userDeleted = true;
                         running = false;
                     } else {
-                        //TODO this is needed because program breaks if user tries to delete after a name change in the same run BUT it's not a bug, it's a feature
-                        System.out.println("You have recently changed your name. For security purposes, please log back in to delete your account.");
+                        //TODO this is needed because program breaks if user tries to delete after a name change in the same run
+                        System.out.println("You have recently changed your name. Please log back in to delete your account.");
                     }
                 } else if (input == 1) {
                     appendUsername(user, scan);
@@ -849,7 +880,7 @@ public class LogIn {
                     if (!nameChanged) {
                         changeStoreName(user, scan);
                     } else {
-                        System.out.println("You have recently changed your name. For security purposes, please log back in to change store names.");
+                        System.out.println("You have recently changed your name. Please log back in to change store names.");
                     }
                 } else {
                     running = false;
