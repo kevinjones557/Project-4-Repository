@@ -490,7 +490,6 @@ public class LogIn {
      * @param user the user whose file is being created
      * @param scan scanner object to capture input
      */
-    //TODO user value is not updating in the main function userInteraction
     public static String createUser(String user, Scanner scan) {
         File f;
         File dir = new File("users/" + user);
@@ -734,7 +733,7 @@ public class LogIn {
                                 input = Integer.parseInt(scan.nextLine());
                                 if (input == 2) {
                                     done = true;
-                                    break;
+                                    return (null);
                                 } else if (input == 1) {
                                     continueUser = true;
                                 } else {
@@ -818,74 +817,24 @@ public class LogIn {
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
         String user = userInteraction(scan);
-        boolean isSeller = false;
-        if (isSeller(user).equals("true")) {
-            isSeller = true;
-        } else if (isSeller(user).equals("false")) {
-            isSeller = false;
-        }
-        MarketUser currentUser = new MarketUser(user, isSeller);
-        boolean running = true;
-        //This is here because the user needs to get logged out after deletion
-        boolean userDeleted = false;
-        //This is here because the program breaks if a user tries to do a deletion after changing their name in the same run
-        while (running) {
-            System.out.println("Would you like to enter messaging or make account changes? " +
-                    "\n1. Messaging " +
-                    "\n2. Account changes");
-            int input = -1;
-            boolean inputTaken = false;
-            while (!inputTaken) {
-                try {
-                    input = Integer.parseInt(scan.nextLine());
-                    if (input == 1 || input == 2) {
-                        inputTaken = true;
-                    } else {
-                        System.out.println("Please enter '1' or '2' as input!");
-                    }
-                } catch (Exception e) {
-                    System.out.println("Please enter '1' or '2' as input!");
-                }
+        if (user != null) {
+            boolean isSeller = false;
+            if (isSeller(user).equals("true")) {
+                isSeller = true;
+            } else if (isSeller(user).equals("false")) {
+                isSeller = false;
             }
-            if (input == 1) {
-                currentUser.message();
-            } else {
-                System.out.println("Options: " +
-                        "\n1. Edit your name" +
-                        "\n2. Delete your account" +
-                        "\n3. Change a store name" +
-                        "\n4. Exit");
-                input = -1;
-                inputTaken = false;
-                while (!inputTaken) {
-                    try {
-                        input = Integer.parseInt(scan.nextLine());
-                        if (input == 1 || input == 2 || input == 3 || input == 4) {
-                            inputTaken = true;
-                        } else {
-                            System.out.println("Please enter '1,' '2,' '3,' or '4' as input!");
-                        }
-                    } catch (Exception e) {
-                        System.out.println("Please enter '1,' '2,' '3,' or '4' as input!");
-                    }
-                }
-                if (input == 2) {
-                    deleteUser(user, scan);
-                    userDeleted = true;
-                    running = false;
-                } else if (input == 1) {
-                    user = appendUsername(user, scan);
-                } else if (input == 3) {
-                    changeStoreName(user, scan);
-                } else {
-                    running = false;
-                }
-            }
-            if (!userDeleted && running) {
-                System.out.println("Would you like to continue using the program? " +
-                        "\n1. Yes " +
-                        "\n2. No");
-                inputTaken = false;
+            MarketUser currentUser = new MarketUser(user, isSeller);
+            boolean running = true;
+            //This is here because the user needs to get logged out after deletion
+            boolean userDeleted = false;
+            //This is here because the program breaks if a user tries to do a deletion after changing their name in the same run
+            while (running) {
+                System.out.println("Would you like to enter messaging or make account changes? " +
+                        "\n1. Messaging " +
+                        "\n2. Account changes");
+                int input = -1;
+                boolean inputTaken = false;
                 while (!inputTaken) {
                     try {
                         input = Integer.parseInt(scan.nextLine());
@@ -898,13 +847,67 @@ public class LogIn {
                         System.out.println("Please enter '1' or '2' as input!");
                     }
                 }
-                if (input == 2) {
-                    running = false;
+                if (input == 1) {
+                    currentUser.message();
+                } else {
+                    System.out.println("Options: " +
+                            "\n1. Edit your name" +
+                            "\n2. Delete your account" +
+                            "\n3. Change a store name" +
+                            "\n4. Exit");
+                    input = -1;
+                    inputTaken = false;
+                    while (!inputTaken) {
+                        try {
+                            input = Integer.parseInt(scan.nextLine());
+                            if (input == 1 || input == 2 || input == 3 || input == 4) {
+                                inputTaken = true;
+                            } else {
+                                System.out.println("Please enter '1,' '2,' '3,' or '4' as input!");
+                            }
+                        } catch (Exception e) {
+                            System.out.println("Please enter '1,' '2,' '3,' or '4' as input!");
+                        }
+                    }
+                    if (input == 2) {
+                        deleteUser(user, scan);
+                        userDeleted = true;
+                        running = false;
+                    } else if (input == 1) {
+                        user = appendUsername(user, scan);
+                    } else if (input == 3) {
+                        changeStoreName(user, scan);
+                    } else {
+                        running = false;
+                    }
+                }
+                if (!userDeleted && running) {
+                    System.out.println("Would you like to continue using the program? " +
+                            "\n1. Yes " +
+                            "\n2. No");
+                    inputTaken = false;
+                    while (!inputTaken) {
+                        try {
+                            input = Integer.parseInt(scan.nextLine());
+                            if (input == 1 || input == 2) {
+                                inputTaken = true;
+                            } else {
+                                System.out.println("Please enter '1' or '2' as input!");
+                            }
+                        } catch (Exception e) {
+                            System.out.println("Please enter '1' or '2' as input!");
+                        }
+                    }
+                    if (input == 2) {
+                        running = false;
+                        System.out.println("Thank you for using the messenger. Goodbye!");
+                    }
+                } else {
                     System.out.println("Thank you for using the messenger. Goodbye!");
                 }
-            } else {
-                System.out.println("Thank you for using the messenger. Goodbye!");
             }
+        } else {
+            System.out.println("Thank you for using the messenger. Goodbye!");
         }
     }
 }
