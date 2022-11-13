@@ -598,6 +598,7 @@ public class LogIn {
                             if (addStore.equalsIgnoreCase("yes")) {
                                 storeNames.add(storeName);
                                 updateStoreList(storeName);
+                                FileManager.generateStoreForSeller(user, storeName);
                             }
                             int input = -1;
                             System.out.println("Enter '1' to add a store or '2' to finish adding stores.");
