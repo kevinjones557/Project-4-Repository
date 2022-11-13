@@ -198,7 +198,7 @@ public class MetricManager {
             }
         });
         String[] choices = {"View Store Metrics", "View Stores Sorted"};
-        int choice = DisplayMenu("Metrics Dashboard", choices, scanner);
+        int choice = 1;
         while (choice != 0) {
         /* Metrics Dashboard
            1. View Store Metrics
@@ -206,6 +206,7 @@ public class MetricManager {
            3. View Personal Metrics
            0. Exit
          */
+            choice = DisplayMenu("Metrics Dashboard", choices, scanner);
             switch (choice) {
                 case 1:
                     choices = sellerStores.toArray(choices);
@@ -213,7 +214,7 @@ public class MetricManager {
                     if (choice2 == 0) { break; }
                     String chosenStore = choices[choice-1];
                     System.out.println(choices[choice-1] + "'s  metrics:");
-                    System.out.println("Press Enter to return to the main menu.");
+
                     try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(username) + "/" + chosenStore + "/metrics.txt"))) {
                         String line = bfr.readLine();
                         while (line != null) {
@@ -225,23 +226,51 @@ public class MetricManager {
                     } catch (UserNotFoundException e) {
                         System.out.println("An error occurred while finding the User's directory.");
                     }
+                    System.out.println("Press Enter to return to the main menu.");
                     scanner.nextLine();
-
-
+                    return;
                 case 2:
-                    System.out.println("This is unfinished.");
-                    break;
+                    SortedMap<Integer, String> sortedStores = new TreeMap<>();
+                    storeData.forEach((store, owner) -> {
+                        if (owner.equals(username)) {
+                            int storeMessageCount = 0;
+                            try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(username) + "/" + store + "/metrics.txt"))) {
+                                String line = bfr.readLine();
+                                storeMessageCount = Integer.parseInt(line.substring(15));
+                            } catch (IOException e) {
+                                System.out.println("An error occurred while reading the file.");
+                            } catch (UserNotFoundException e) {
+                                System.out.println("An error occurred while finding the User's directory.");
+                            }
+
+                            sortedStores.put(storeMessageCount, store);
+                        }
+                    });
+                    System.out.println("List of your Stores, sorted by messages received.");
+                    sortedStores.forEach((msgCount, store) -> {
+                        System.out.println(store + " received " + msgCount + " messages");
+                    });
+                    return;
                 case 3:
-                    System.out.println("This is unfinished.");
-                    break;
+                    System.out.println("Your Metrics:");
+                    try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(username) + "/metrics.txt"))) {
+                        String line = bfr.readLine();
+                        while (line != null) {
+                            System.out.println(line);
+                            line = bfr.readLine();
+                        }
+                    } catch (IOException e) {
+                        System.out.println("An error occurred while reading the file.");
+                    } catch (UserNotFoundException e) {
+                        System.out.println("An error occurred while finding the User's directory.");
+                    }
+                    System.out.println("Press Enter to return to the main menu.");
+                    scanner.nextLine();
+                    return;
+                case 0:
+                    return;
 
             }
-            /* Store Metrics
-            1. Store 1
-            N. Store N
-            0. Exit
-            */
-            System.out.println("Store Metrics");
         }
 
     }
