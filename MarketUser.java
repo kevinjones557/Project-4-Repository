@@ -781,7 +781,13 @@ public class MarketUser implements User{
                 try {
                     String[] messageableUsers = getMessage_ableUser();
                     for (String s : messageableUsers) {
-                        if (s.equalsIgnoreCase(recipient)) {
+                        String compareSeller = recipient;
+                        if (isRecipientStore) {
+                            compareSeller = storeNameMap.get(recipient);
+                        }
+                        System.out.println("temp" + compareSeller);
+                        System.out.println(recipient);
+                        if (s.equalsIgnoreCase(compareSeller)) {
                             canMessage = true;
                             break;
                         }
@@ -1192,7 +1198,6 @@ public class MarketUser implements User{
             File sellersDir = new File("data/sellers");
             String[] sellers = sellersDir.list();
             for(String seller: sellers) {
-                File sellerFolder = new File("data/sellers/" + seller);
                 File invisibleFilePath = new File("data/sellers/" + seller + "/hasBlocked.txt");
                 BufferedReader bfr = new BufferedReader(new FileReader(invisibleFilePath));
                 String line;
@@ -1477,7 +1482,13 @@ public class MarketUser implements User{
                 messageSenderWriter.close();
                 messageReceiveWriter.close();
                 if (!isSeller) {
-                    MetricManager.addDeleteMessageData(username, fileSender, message, false);
+                    String storePath;
+                     if (FileManager.checkSellerExists(recipient)) {
+                        storePath = null;
+                    } else {
+                        storePath = fileRecipient;
+                    }
+                    MetricManager.addDeleteMessageData(username, storePath, message, false);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -1626,8 +1637,14 @@ public class MarketUser implements User{
                     messageSenderWriter.close();
                     messageReceiveWriter.close();
                     if (!isSeller) {
+                        String storePath;
+                        if (FileManager.checkSellerExists(recipient)) {
+                            storePath = null;
+                        } else {
+                            storePath = fileRecipient;
+                        }
                         messageToChange = messageToChange.substring(messageToChange.indexOf("-") + 1);
-                        MetricManager.editMessageData(username, fileSender, messageToChange, edit);
+                        MetricManager.editMessageData(username, storePath, messageToChange, edit);
                     }
                 } else
                     System.out.println("There is nothing in this file to edit.");
@@ -1737,7 +1754,13 @@ public class MarketUser implements User{
                     display.close();
                     messageSenderWriter.close();
                     if (!isSeller) {
-                        MetricManager.addDeleteMessageData(username, fileSender, message, true);
+                        String storePath;
+                        if (FileManager.checkSellerExists(recipient)) {
+                            storePath = null;
+                        } else {
+                            storePath = fileRecipient;
+                        }
+                        MetricManager.addDeleteMessageData(username, storePath, message, true);
                     }
                 } else
                     System.out.println("There is nothing in this file to delete.");
