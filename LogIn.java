@@ -101,7 +101,7 @@ public class LogIn {
             stores = stores.substring(1, stores.length() - 1);
             return (stores);
         } catch (Exception e) {
-            //TODO returning null
+            e.printStackTrace();
             return (null);
         }
     }
@@ -249,8 +249,9 @@ public class LogIn {
      *
      * @param user the user changing their name
      * @param scan Scanner to capture input
+     * @return String representation of new username
      */
-    public static void appendUsername(String user, Scanner scan) {
+    public static String appendUsername(String user, Scanner scan) {
         System.out.println("Please enter your new username!");
         String newUser = scan.nextLine();
         File dir = new File("users/" + newUser);
@@ -259,15 +260,15 @@ public class LogIn {
             while (!done) {
                 if (!dir.createNewFile()) {
                     System.out.println("Username already exists! Please enter another username.");
-                    user = scan.nextLine();
+                    newUser = scan.nextLine();
                     dir.delete();
-                } else if (user.equals("") || user.length() < 6 || user.length() > 16 || user.contains(" ")) {
+                } else if (newUser.equals("") || newUser.length() < 6 || newUser.length() > 16 || newUser.contains(" ")) {
                     System.out.println("Username constraints: " +
                             "\n- Cannot be blank " +
                             "\n- Must be in between 6 and 16 characters inclusive " +
                             "\n- Cannot contain spaces " +
                             "\nPlease enter a valid username.");
-                    user = scan.nextLine();
+                    newUser = scan.nextLine();
                     dir.delete();
                 } else {
                     done = true;
@@ -302,9 +303,11 @@ public class LogIn {
                 writeFile(newUser, s);
             }
             System.out.println("Name change successful! Enjoy your new username, " + newUser + "!");
+            return (newUser);
         } catch (Exception e) {
             System.out.println("Name change was not successful!");
         }
+        return(null);
     }
 
     /**
@@ -385,6 +388,8 @@ public class LogIn {
                 response = scan.nextLine();
                 if (response.equals("yes") || response.equals("no")) {
                     userInput = true;
+                } else {
+                    System.out.println("Please enter 'yes' or 'no'!");
                 }
             } catch (Exception e) {
                 System.out.println("Please enter valid input!");
@@ -584,6 +589,8 @@ public class LogIn {
                                     addStore = scan.nextLine();
                                     if (addStore.equals("yes") || addStore.equals("no")) {
                                         storeInput = true;
+                                    } else {
+                                        System.out.println("Please enter 'yes' or 'no'!");
                                     }
                                 } catch (Exception e) {
                                     System.out.println("Please enter valid input!");
@@ -822,7 +829,6 @@ public class LogIn {
         //This is here because the user needs to get logged out after deletion
         boolean userDeleted = false;
         //This is here because the program breaks if a user tries to do a deletion after changing their name in the same run
-        boolean nameChanged = false;
         while (running) {
             System.out.println("Would you like to enter messaging or make account changes? " +
                     "\n1. Messaging " +
@@ -864,24 +870,13 @@ public class LogIn {
                     }
                 }
                 if (input == 2) {
-                    if (!nameChanged) {
-                        deleteUser(user, scan);
-                        userDeleted = true;
-                        running = false;
-                    } else {
-                        //TODO this is needed because program breaks if user tries to delete after a name change in the same run
-                        System.out.println("You have recently changed your name. Please log back in to delete your account.");
-                    }
+                    deleteUser(user, scan);
+                    userDeleted = true;
+                    running = false;
                 } else if (input == 1) {
-                    appendUsername(user, scan);
-                    nameChanged = true;
+                    user = appendUsername(user, scan);
                 } else if (input == 3) {
-                    //TODO this is needed because of same reason as above
-                    if (!nameChanged) {
-                        changeStoreName(user, scan);
-                    } else {
-                        System.out.println("You have recently changed your name. Please log back in to change store names.");
-                    }
+                    changeStoreName(user, scan);
                 } else {
                     running = false;
                 }
