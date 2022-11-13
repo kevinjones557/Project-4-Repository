@@ -453,13 +453,14 @@ public class MarketUser implements User{
                 }
             } while (true);
         } while (true);
+        this.username = sellerName;
         System.out.println(SELECT_OPTION);
         System.out.println(METRICS_PROMPT);
         int goToMetrics = waitForValidInput(1, 2);
         if (goToMetrics == 2) {
             return;
         } else {
-            //TODO call MetricsManager for metrics input
+            MetricManager.sellerMetricsUI(this.username, sellerScan, storeNameMap);
         }
     }
 
@@ -686,6 +687,7 @@ public class MarketUser implements User{
         } while (true);
         // at this point past blocking/visible stage, onto messaging
         do {
+            isRecipientStore = false;
             System.out.println(SELECT_OPTION);
             System.out.println(SEARCH_LIST_SELLER);
             int searchOrCancel = waitForValidInput(1, 4);
@@ -799,7 +801,7 @@ public class MarketUser implements User{
         if (goToMetrics == 2) {
             return;
         } else {
-            //TODO call MetricsManager for metrics input
+            MetricManager.sellerMetricsUI(this.username, buyerScan, storeNameMap);
         }
 
     }
