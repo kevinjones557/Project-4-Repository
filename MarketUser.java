@@ -1,6 +1,7 @@
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.SQLOutput;
 import java.util.*;
 import java.text.SimpleDateFormat;
 
@@ -285,9 +286,9 @@ public class MarketUser implements User{
                                     }
                                 }
                                 victim -= 1;
-                                unblockUser(userList[victim]);
+                                becomeVisibleAgain(userList[victim]);
                                 System.out.printf("Successfully become visible again to %s\n", userList[victim]);
-                                if (blockedList().length == 0) {
+                                if (invisibleList().length == 0) {
                                     System.out.println("Your invisible list is now empty");
                                     break;
                                 } else {
@@ -349,13 +350,24 @@ public class MarketUser implements User{
                 if (searchOrCancel == 1) {
                     System.out.println("Please enter the name of a buyer:");
                     buyerName = sellerScan.nextLine().trim();
+                    String[] availableUsers;
+                    boolean isRecipientInvisible = true;
+                    try {
+                        availableUsers = getAvailableUsers();
+                        for (String s : availableUsers) {
+                            if (s.equalsIgnoreCase(buyerName)) {
+                                isRecipientInvisible = false;
+                                break;
+                            }
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Unable to retrieve information.");
+                    }
                     if (!FileManager.checkBuyerExists(buyerName)) {
                         System.out.println("Sorry, this buyer does not exist!");
-                    } /*TODO else if (sellerHasMadeThemselvesInvisible)
-                    TODO Vinh, check if the buyer who was searched for is invisible to this seller or not
-                    TODO if so, enter this if statement and print:
-                    System.out.println("This user has made themselves invisible to you!)
-                    */
+                    } else if (isRecipientInvisible) {
+                        System.out.println("This user has made themselves invisible to you!");
+                    }
                     else { // at this point we know the seller searched for exists and wants to be reached
                         recipient = buyerName;
                     }
@@ -380,6 +392,19 @@ public class MarketUser implements User{
                 if (recipient != null) {
                     checkIfMessageExists(recipient, false); // this will check if message has already been created and create if not
                     System.out.printf("Connected with %s!\n", recipient);
+                    // this checks to see if buyer has blocked this.username could be store or seller, recipient is buyer
+                    boolean canMessage = false;
+                    String[] messageableUsers;
+                    try {
+                        messageableUsers = getMessage_ableUser();
+                        for (String s : messageableUsers) {
+                            if (s.equalsIgnoreCase(recipient)) {
+                                canMessage = true;
+                            }
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Sorry, unexpected error, please try again!");
+                    }
                     do {
                         System.out.println(SELECT_OPTION);
                         System.out.println(MESSAGE_OPTIONS);
@@ -392,17 +417,25 @@ public class MarketUser implements User{
                                 displayMessage(recipient);
                                 break;
                             case 2:
-                                if (!isUserStore) {
-                                    appendMessage(recipient);
+                                if (canMessage) {
+                                    if (!isUserStore) {
+                                        appendMessage(recipient);
+                                    } else {
+                                        appendMessage(storeNameMap.get(this.username), recipient);
+                                    }
                                 } else {
-                                    appendMessage(storeNameMap.get(this.username), recipient);
+                                    System.out.println("You cannot message this user because they have blocked you!");
                                 }
                                 break;
                             case 3:
-                                if (!isUserStore) {
-                                    editMessage(recipient);
+                                if (canMessage) {
+                                    if (!isUserStore) {
+                                        editMessage(recipient);
+                                    } else {
+                                        editMessage(storeNameMap.get(username), recipient);
+                                    }
                                 } else {
-                                    editMessage(storeNameMap.get(username), recipient);
+                                    System.out.println("You cannot edit messages because this user has blocked you!");
                                 }
                                 break;
                             case 4:
@@ -413,26 +446,32 @@ public class MarketUser implements User{
                                 }
                                 break;
                             case 5:
-                                String path;
-                                System.out.println("Please enter the path to the text file you would like to import or " +
-                                        "type 'cancel' to Cancel.");
-                                do {
-                                    path = sellerScan.nextLine();
-                                    if (path.equalsIgnoreCase("cancel")) {
-                                        break;
+                                if (canMessage) {
+                                    String path;
+                                    System.out.println("Please enter the path to the text file you would like to import or " +
+                                            "type 'cancel' to Cancel.");
+                                    do {
+                                        path = sellerScan.nextLine();
+                                        if (path.equalsIgnoreCase("cancel")) {
+                                            break;
+                                        }
+                                        if (path.endsWith(".txt")) {
+                                            break;
+                                        }
+                                        System.out.println("Please enter a valid path");
+                                    } while (!path.endsWith(".txt"));
+                                    if (!path.equalsIgnoreCase("cancel")) {
+                                        importFile(path, recipient, false);
                                     }
-                                    if (path.endsWith(".txt")) {
-                                        break;
-                                    }
-                                    System.out.println("Please enter a valid path");
-                                } while (!path.endsWith(".txt"));
-                                if (!path.equalsIgnoreCase("cancel")) {
-                                    importFile(path, recipient, false);
+                                } else {
+                                    System.out.println("Cannot import file because this user has blocked you!");
                                 }
-                            case 8:
+                                break;
+                            case 6:
                                 System.out.println("Enter the path where you would like the csv file to be stored:");
                                 String csvPath = sellerScan.nextLine();
                                 writeCSV(recipient, csvPath);
+                                break;
                         }
                         System.out.println("Would you like to continue interacting with this user?\n1. Yes\n2. No");
                         int stayWithUser = waitForValidInput(1, 2);
@@ -454,14 +493,8 @@ public class MarketUser implements User{
             } while (true);
         } while (true);
         this.username = sellerName;
-        System.out.println(SELECT_OPTION);
-        System.out.println(METRICS_PROMPT);
-        int goToMetrics = waitForValidInput(1, 2);
-        if (goToMetrics == 2) {
-            return;
-        } else {
-            MetricManager.sellerMetricsUI(this.username, sellerScan, storeNameMap);
-        }
+        MetricManager.sellerMetricsUI(this.username, sellerScan, storeNameMap);
+
     }
 
     /** A function to handle user input for buyers
@@ -660,9 +693,9 @@ public class MarketUser implements User{
                                     }
                                 }
                                 victim -=1;
-                                unblockUser(userList[victim]);
+                                becomeVisibleAgain(userList[victim]);
                                 System.out.printf("Successfully become visible again to %s\n", userList[victim]);
-                                if (blockedList().length == 0) {
+                                if (invisibleList().length == 0) {
                                     System.out.println("Your invisible list is now empty");
                                     break;
                                 } else {
@@ -701,13 +734,24 @@ public class MarketUser implements User{
             if (searchOrCancel == 1) {
                 System.out.println("Please enter the name of a seller:");
                 String sellerName = buyerScan.nextLine().trim();
+                String[] availableUsers;
+                boolean isRecipientInvisible = true;
+                try {
+                    availableUsers = getAvailableUsers();
+                    for (String s : availableUsers) {
+                        if (s.equalsIgnoreCase(sellerName)) {
+                            isRecipientInvisible = false;
+                            break;
+                        }
+                    }
+                } catch (Exception e) {
+                    System.out.println("Unable to retrieve information.");
+                }
                 if (!FileManager.checkSellerExists(sellerName)) {
                     System.out.println("Sorry, this seller does not exist!");
-                } /*TODO else if (sellerHasMadeThemselvesInvisible)
-                TODO Vinh, check if the seller who was searched for is invisible to this buyer or not
-                TODO if so, enter this if statement and print:
-                System.out.println("This user has made themselves invisible to you!)
-            */ else { // at this point we know the seller searched for exists and wants to be reached
+                } else if (isRecipientInvisible) {
+                    System.out.println("This user has made themselves invisible to you!");
+                }else { // at this point we know the seller searched for exists and wants to be reached
                     recipient = sellerName;
                 }
             } else if (searchOrCancel == 2) {
@@ -733,6 +777,18 @@ public class MarketUser implements User{
             if (recipient != null) {
                 checkIfMessageExists(recipient, isRecipientStore); // this will check if message has already been created and create if not
                 System.out.printf("Connected with %s!\n", recipient);
+                boolean canMessage = false;
+                try {
+                    String[] messageableUsers = getMessage_ableUser();
+                    for (String s : messageableUsers) {
+                        if (s.equalsIgnoreCase(recipient)) {
+                            canMessage = true;
+                            break;
+                        }
+                    }
+                } catch (Exception e) {
+                    System.out.println("Sorry, unexpected error occurred, please try again later");
+                }
                 do {
                     System.out.println(SELECT_OPTION);
                     System.out.println(MESSAGE_OPTIONS);
@@ -745,17 +801,25 @@ public class MarketUser implements User{
                             displayMessage(recipient);
                             break;
                         case 2:
-                            if (!isRecipientStore) {
-                                appendMessage(recipient);
+                            if (canMessage) {
+                                if (!isRecipientStore) {
+                                    appendMessage(recipient);
+                                } else {
+                                    appendMessage(storeNameMap.get(recipient), recipient);
+                                }
                             } else {
-                                appendMessage(storeNameMap.get(recipient), recipient);
+                                System.out.println("Cannot send message, this user has blocked you!");
                             }
                             break;
                         case 3:
-                            if (!isRecipientStore) {
-                                editMessage(recipient);
+                            if (canMessage) {
+                                if (!isRecipientStore) {
+                                    editMessage(recipient);
+                                } else {
+                                    editMessage(storeNameMap.get(recipient), recipient);
+                                }
                             } else {
-                                editMessage(storeNameMap.get(recipient), recipient);
+                                System.out.println("Cannot edit message, this user has blocked you!");
                             }
                             break;
                         case 4:
@@ -766,26 +830,32 @@ public class MarketUser implements User{
                             }
                             break;
                         case 5:
-                            String path;
-                            System.out.println("Please enter the path to the text file you would like to import or " +
-                                    "type 'cancel' to Cancel.");
-                            do {
-                                path = buyerScan.nextLine();
-                                if (path.equalsIgnoreCase("cancel")) {
-                                    break;
+                            if (canMessage) {
+                                String path;
+                                System.out.println("Please enter the path to the text file you would like to import or " +
+                                        "type 'cancel' to Cancel.");
+                                do {
+                                    path = buyerScan.nextLine();
+                                    if (path.equalsIgnoreCase("cancel")) {
+                                        break;
+                                    }
+                                    if (path.endsWith(".txt")) {
+                                        break;
+                                    }
+                                    System.out.println("Please enter a valid path");
+                                } while (!path.endsWith(".txt"));
+                                if (!path.equalsIgnoreCase("cancel")) {
+                                    importFile(path, recipient, isRecipientStore);
                                 }
-                                if (path.endsWith(".txt")) {
-                                    break;
-                                }
-                                System.out.println("Please enter a valid path");
-                            } while (!path.endsWith(".txt"));
-                            if (!path.equalsIgnoreCase("cancel")) {
-                                importFile(path, recipient, isRecipientStore);
+                            } else {
+                                System.out.println("Cannot import file, this user has blocked you!");
                             }
+                            break;
                         case 6:
                             System.out.println("Enter the path where you would like the csv file to be stored:");
                             String csvPath = buyerScan.nextLine();
                             writeCSV(recipient, csvPath);
+                            break;
                     }
                     System.out.println("Would you like to continue interacting with this user?\n1. Yes\n2. No");
                     int stayWithUser = waitForValidInput(1, 2);
@@ -795,15 +865,7 @@ public class MarketUser implements User{
                 } while (true);
             }
         } while (true);
-        System.out.println(SELECT_OPTION);
-        System.out.println(METRICS_PROMPT);
-        int goToMetrics = waitForValidInput(1, 2);
-        if (goToMetrics == 2) {
-            return;
-        } else {
-            MetricManager.buyerMetricsUI(this.username, buyerScan, storeNameMap);
-        }
-
+        MetricManager.buyerMetricsUI(this.username, buyerScan, storeNameMap);
     }
 
     /** A static method that will change the names of files and directories to match username
@@ -1096,7 +1158,11 @@ public class MarketUser implements User{
                 String line;
                 boolean invisible = false;
                 while((line = bfr.readLine())!= null) {
-                    if(line.equals(this.username)) {
+                    String currentUser = this.username;
+                    if (isUserStore) {
+                        currentUser = storeNameMap.get(this.username);
+                    }
+                    if(line.equals(currentUser)) {
                         invisible = true;
                         break;
                     }
@@ -1151,7 +1217,11 @@ public class MarketUser implements User{
                 String line;
                 boolean invisible = false;
                 while((line = bfr.readLine())!= null) {
-                    if(line.equals(this.username)) {
+                    String currentUsername = this.username;
+                    if (isUserStore) {
+                        currentUsername = storeNameMap.get(this.username);
+                    }
+                    if(line.equals(currentUsername)) {
                         invisible = true;
                         break;
                     }
