@@ -197,7 +197,7 @@ public class MetricManager {
                 sellerStores.add(store);
             }
         });
-        String[] choices = {"View Store Metrics", "View Stores Sorted"};
+        String[] choices = {"View Store Metrics", "View Stores Sorted", "View Personal Metrics"};
         int choice = 1;
         while (choice != 0) {
         /* Metrics Dashboard
@@ -250,6 +250,8 @@ public class MetricManager {
                     sortedStores.forEach((msgCount, store) -> {
                         System.out.println(store + " received " + msgCount + " messages");
                     });
+                    System.out.println("Press Enter to return to the main menu.");
+                    scanner.nextLine();
                     return;
                 case 3:
                     System.out.println("Your Metrics:");
@@ -276,7 +278,74 @@ public class MetricManager {
     }
 
     public static void buyerMetricsUI(String username, Scanner scanner, LinkedHashMap<String, String> storeData) {
+        ArrayList<String> sellerStores = new ArrayList<>();
+        storeData.forEach((store, seller) -> {
+            if (seller.equals(username)) {
+                sellerStores.add(store);
+            }
+        });
+        String[] choices = {"View Your Store Conversation Data", "View All Stores Sorted"};
+        int choice = 1;
+        while (choice != 0) {
+        /* Metrics Dashboard
+           1. View Store Metrics
+           2. View Stores Sorted
+           3. View Personal Metrics
+           0. Exit
+         */
+            choice = DisplayMenu("Metrics Dashboard", choices, scanner);
+            switch (choice) {
+                case 1:
+                    SortedMap<Integer, String> sortedUserStores = new TreeMap<>();
+                    storeData.forEach((store, owner) -> {
+                        int storeMessageCount = 0;
+                        try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(username) + "/" + store + "/" + username + "metrics.txt"))) {
+                            String line = bfr.readLine();
+                            storeMessageCount = Integer.parseInt(line.substring(15));
+                        } catch (FileNotFoundException e) {
+                            // do nothing lol
+                        } catch (IOException e) {
+                            System.out.println("An error occurred while reading the file.");
+                        } catch (UserNotFoundException e) {
+                            System.out.println("An error occurred while finding the User's directory.");
+                        }
 
+                        sortedUserStores.put(storeMessageCount, store);
+                    });
+                    System.out.println("List Stores you've messaged, sorted by your messages sent them.");
+                    sortedUserStores.forEach((msgCount, store) -> {
+                        System.out.println(store + " received " + msgCount + " messages");
+                    });
+                    System.out.println("Press Enter to return to the main menu.");
+                    scanner.nextLine();
+                    return;
+                case 2:
+                    SortedMap<Integer, String> sortedStores = new TreeMap<>();
+                    storeData.forEach((store, owner) -> {
+                        int storeMessageCount = 0;
+                        try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(username) + "/" + store + "/metrics.txt"))) {
+                            String line = bfr.readLine();
+                            storeMessageCount = Integer.parseInt(line.substring(15));
+                        } catch (IOException e) {
+                            System.out.println("An error occurred while reading the file.");
+                        } catch (UserNotFoundException e) {
+                            System.out.println("An error occurred while finding the User's directory.");
+                        }
+
+                        sortedStores.put(storeMessageCount, store);
+                    });
+                    System.out.println("List all Stores, sorted by messages received.");
+                    sortedStores.forEach((msgCount, store) -> {
+                        System.out.println(store + " received " + msgCount + " messages");
+                    });
+                    System.out.println("Press Enter to return to the main menu.");
+                    scanner.nextLine();
+                    return;
+                case 0:
+                    return;
+
+            }
+        }
     }
     public static int DisplayMenu(String MenuHeader, String[] options, Scanner scanner) {
         while (true) {

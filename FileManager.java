@@ -2,6 +2,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -113,6 +114,21 @@ public class FileManager {
         } catch (UserNotFoundException e) {
             System.out.println("Seller not found.");
             return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public static boolean generateMetricsAboutUser(String buyer, String storePath) {
+        try {
+            Path filePath = Paths.get(storePath);
+            Path metrics = Files.createFile(Paths.get(filePath + "/" + buyer + "metrics.txt"));
+            try (BufferedWriter bfr = new BufferedWriter(new FileWriter(metrics.toFile()))) {
+                bfr.write("Message Count: 0");
+            }
+            return true;
+        } catch (FileAlreadyExistsException e) {
+            return false; // don't print stacktrace because this is supposed to happen
         } catch (IOException e) {
             e.printStackTrace();
             return false;
