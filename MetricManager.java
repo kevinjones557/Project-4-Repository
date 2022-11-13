@@ -40,7 +40,7 @@ public class MetricManager {
 
         try (BufferedReader bfr = new BufferedReader(new FileReader(filePath))) {
             String line = bfr.readLine();
-            messageCount = Integer.parseInt(line.substring(15)) + 1;
+            messageCount = Integer.parseInt(line.substring(15));
             line = bfr.readLine();
             while (line != null) {
                 String[] unmapped = line.split(" ");
@@ -79,11 +79,32 @@ public class MetricManager {
             }
         });
 
-        try (BufferedWriter bfr = new BufferedWriter(new FileWriter(filePath, false))){
-            bfr.write(String.format("Message Count: %d\n", messageCount));
+        try (BufferedWriter bfw1 = new BufferedWriter(new FileWriter(filePath, false))){
+            if (delete) {
+                bfw1.write(String.format("Message Count: %d\n", messageCount - 1));
+            } else {
+                bfw1.write(String.format("Message Count: %d\n", messageCount + 1));
+            }
+            if (storePath != null) {
+                try (BufferedReader bfr2 = new BufferedReader(new FileReader(storePath + "/" + username + "metrics.txt"))) {
+                    String line = bfr2.readLine();
+                    int messageCount2 = Integer.parseInt(line.substring(15));
+                    bfr2.close();
+                    try (BufferedWriter bfw2 = new BufferedWriter(new FileWriter(storePath + "/" + username + "metrics.txt", false))) {
+                        if (delete) {
+                            messageCount2 -= 1;
+                        } else {
+                            messageCount2 += 1;
+                        }
+                        bfw2.write(String.format("Message Count: %d\n", messageCount2));
+                        bfw2.flush();
+                    }
+                }
+            }
             fileData.forEach((word, count) -> {
                 try {
-                    bfr.write(String.format("%d %s\n", count, word));
+                    bfw1.write(String.format("%d %s\n", count, word));
+                    bfw1.flush();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -299,7 +320,7 @@ public class MetricManager {
                     SortedMap<Integer, String> sortedUserStores = new TreeMap<>();
                     storeData.forEach((store, owner) -> {
                         int storeMessageCount = 0;
-                        try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(username) + "/" + store + "/" + username + "metrics.txt"))) {
+                        try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(owner) + "/" + store + "/" + username + "metrics.txt"))) {
                             String line = bfr.readLine();
                             storeMessageCount = Integer.parseInt(line.substring(15));
                         } catch (FileNotFoundException e) {
@@ -323,7 +344,7 @@ public class MetricManager {
                     SortedMap<Integer, String> sortedStores = new TreeMap<>();
                     storeData.forEach((store, owner) -> {
                         int storeMessageCount = 0;
-                        try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(username) + "/" + store + "/metrics.txt"))) {
+                        try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(owner) + "/" + store + "/metrics.txt"))) {
                             String line = bfr.readLine();
                             storeMessageCount = Integer.parseInt(line.substring(15));
                         } catch (IOException e) {
