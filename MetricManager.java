@@ -89,6 +89,7 @@ public class MetricManager {
                 try (BufferedReader bfr2 = new BufferedReader(new FileReader(storePath + "/" + username + "metrics.txt"))) {
                     String line = bfr2.readLine();
                     int messageCount2 = Integer.parseInt(line.substring(15));
+                    bfr2.close();
                     try (BufferedWriter bfw2 = new BufferedWriter(new FileWriter(storePath + "/" + username + "metrics.txt", false))) {
                         if (delete) {
                             messageCount2 -= 1;
@@ -96,13 +97,14 @@ public class MetricManager {
                             messageCount2 += 1;
                         }
                         bfw2.write(String.format("Message Count: %d\n", messageCount2));
+                        bfw2.flush();
                     }
-
                 }
             }
             fileData.forEach((word, count) -> {
                 try {
                     bfw1.write(String.format("%d %s\n", count, word));
+                    bfw1.flush();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

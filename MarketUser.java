@@ -1346,6 +1346,7 @@ public class MarketUser implements User{
                 e.printStackTrace();
             }
         } else {
+            System.out.println("making metrics for user");
             FileManager.generateMetricsAboutUser(this.username,"data/sellers/" + storeNameMap.get(recipient)
                     + "/" + recipient +"/");
             try {
