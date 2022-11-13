@@ -1,4 +1,6 @@
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -82,7 +84,10 @@ public class FileManager {
             } else {
                 filePath = Files.createDirectory(Paths.get("data/buyers/" + username));
             }
-            Files.createFile(Paths.get(filePath+"/metrics.txt"));
+            Path metrics = Files.createFile(Paths.get(filePath+"/metrics.txt"));
+            try (BufferedWriter bfr = new BufferedWriter(new FileWriter(metrics.toFile()))) {
+                bfr.write("Message Count: 0");
+            }
             Files.createFile(Paths.get(filePath+"/hasBlocked.txt"));
             Files.createFile(Paths.get(filePath+"/isInvisible.txt"));
             return true;
@@ -100,7 +105,10 @@ public class FileManager {
     public static boolean generateStoreForSeller(String username, String storeName) {
         try {
             Path filePath = Files.createDirectory(Paths.get(getDirectoryFromUsername(username) + storeName));
-            Files.createFile(Paths.get(filePath+"/metrics.txt"));
+            Path metrics = Files.createFile(Paths.get(filePath+"/metrics.txt"));
+            try (BufferedWriter bfr = new BufferedWriter(new FileWriter(metrics.toFile()))) {
+                bfr.write("Message Count: 0");
+            }
             return true;
         } catch (UserNotFoundException e) {
             System.out.println("Seller not found.");
