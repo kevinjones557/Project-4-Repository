@@ -1,7 +1,5 @@
 import java.io.*;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /** Handles various metric data for Sellers
  *
@@ -85,7 +83,7 @@ public class MetricManager {
             bfr.write(String.format("Message Count: %d\n", messageCount));
             fileData.forEach((word, count) -> {
                 try {
-                    bfr.write(String.format("%d %s", count, word));
+                    bfr.write(String.format("%d %s\n", count, word));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -182,7 +180,7 @@ public class MetricManager {
             bfr.write(String.format("Message Count: %d\n", messageCount));
             fileData.forEach((word, count) -> {
                 try {
-                    bfr.write(String.format("%d %s", count, word));
+                    bfr.write(String.format("%d %s\n", count, word));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -190,6 +188,82 @@ public class MetricManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void sellerMetricsUI(String username, Scanner scanner, LinkedHashMap<String, String> storeData) {
+        ArrayList<String> sellerStores = new ArrayList<>();
+        storeData.forEach((store, seller) -> {
+            if (seller.equals(username)) {
+                sellerStores.add(store);
+            }
+        });
+        String[] choices = {"View Store Metrics", "View Stores Sorted"};
+        int choice = DisplayMenu("Metrics Dashboard", choices, scanner);
+        while (choice != 0) {
+        /* Metrics Dashboard
+           1. View Store Metrics
+           2. View Stores Sorted
+           3. View Personal Metrics
+           0. Exit
+         */
+            switch (choice) {
+                case 1:
+                    choices = sellerStores.toArray(choices);
+                    int choice2 = DisplayMenu("Store Metrics", choices, scanner);
+                    if (choice2 == 0) { break; }
+                    String chosenStore = choices[choice-1];
+                    System.out.println(choices[choice-1] + "'s  metrics:");
+                    System.out.println("Press Enter to return to the main menu.");
+                    try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(username) + "/" + chosenStore + "/metrics.txt"))) {
+                        String line = bfr.readLine();
+                        while (line != null) {
+                            System.out.println(line);
+                            line = bfr.readLine();
+                        }
+                    } catch (IOException e) {
+                        System.out.println("An error occurred while reading the file.");
+                    } catch (UserNotFoundException e) {
+                        System.out.println("An error occurred while finding the User's directory.");
+                    }
+                    scanner.nextLine();
+
+
+                case 2:
+                    System.out.println("This is unfinished.");
+                    break;
+                case 3:
+                    System.out.println("This is unfinished.");
+                    break;
+
+            }
+            /* Store Metrics
+            1. Store 1
+            N. Store N
+            0. Exit
+            */
+            System.out.println("Store Metrics");
+        }
+
+    }
+
+    public static void buyerMetricsUI(String username, Scanner scanner, LinkedHashMap<String, String> storeData) {
+
+    }
+    public static int DisplayMenu(String MenuHeader, String[] options, Scanner scanner) {
+        while (true) {
+            System.out.println(MenuHeader);
+            for (int i = 0; i < options.length; i++) {
+                System.out.println((i + 1) + ". " + options[i]);
+            }
+            System.out.println("0. Exit");
+            try {
+                int choice = Integer.parseInt(scanner.nextLine());
+                return choice;
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid choice!");
+            }
+        }
+
     }
 
 }
