@@ -99,7 +99,7 @@ public class MarketUser implements User{
         do {
             System.out.println(SELECT_OPTION);
             System.out.println(BLOCK_INVISIBLE_OPTION);
-            int selection = waitForValidInput(1, 6);
+            int selection = waitForValidInput(1, 3);
             if (selection == 3) {
                 return;
             }
@@ -173,7 +173,6 @@ public class MarketUser implements User{
                             }
                         }
                         break;
-
                     case 2:
                         if (blockedList().length == 0) {
                             System.out.println("You haven't blocked any user");
@@ -263,7 +262,7 @@ public class MarketUser implements User{
 
                     case 4:
                         if (invisibleList().length == 0) {
-                            System.out.println("You haven't become invisible to any user");
+                            System.out.println("You haven't made yourself invisible to any user");
                         } else {
                             while (invisibleList().length != 0) {
                                 String[] userList = invisibleList();
@@ -285,7 +284,7 @@ public class MarketUser implements User{
                                         System.out.println("Please enter a valid option number!");
                                     }
                                 }
-                                victim -=1;
+                                victim -= 1;
                                 unblockUser(userList[victim]);
                                 System.out.printf("Successfully become visible again to %s\n", userList[victim]);
                                 if (blockedList().length == 0) {
@@ -293,7 +292,7 @@ public class MarketUser implements User{
                                     break;
                                 } else {
                                     System.out.println("Do you want to continue? (Yes/No)");
-                                    if ((sellerScan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
+                                    if ((sellerScan.nextLine().equalsIgnoreCase("yes"))) {
                                         break;
                                     }
                                 }
@@ -307,7 +306,7 @@ public class MarketUser implements User{
                 System.out.println("An unknown error occurred");
             }
             System.out.println("Do you want to keep using block/invisible features?(Yes/No)");
-            if ((sellerScan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
+            if (!sellerScan.nextLine().equalsIgnoreCase("yes")) {
                 break;
             }
 
@@ -331,13 +330,10 @@ public class MarketUser implements User{
                     for (int i = 0; i < sellerStores.size(); i++) {
                         System.out.println((i + 1) + ". " + sellerStores.get(i));
                     }
-                    System.out.println(sellerStores.size() + 1 + ": Cancel");
                     System.out.println(SELECT_OPTION);
-                    int storeOption = waitForValidInput(1, sellerStores.size() + 1);
-                    if (storeOption != sellerStores.size() + 1) {
-                        this.username = sellerStores.get(storeOption - 1);
-                        isUserStore = true;
-                    }
+                    int storeOption = waitForValidInput(1, sellerStores.size());
+                    this.username = sellerStores.get(storeOption - 1);
+                    isUserStore = true;
                 }
             }
             // at this point username is either personal username or store name now we get recipient
