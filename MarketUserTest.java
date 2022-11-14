@@ -291,6 +291,14 @@ class MarketUserTest {
             System.out.println("Files did not exist.");
         }
         assertEquals(contents1, contents2);
+        File f1 = new File("data/buyers/TempUser/TempUserOtherUser.txt");
+        File f2 = new File("data/sellers/OtherUser/OtherUserTempUser.txt");
+        f1.delete();
+        f2.delete();
+        File f3 = new File("data/buyers/TempUser/");
+        File f4 = new File("data/sellers/OtherUser/");
+        f3.delete();
+        f4.delete();
     }
 
     @Test
