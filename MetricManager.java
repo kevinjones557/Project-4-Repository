@@ -144,7 +144,7 @@ public class MetricManager {
 
         try (BufferedReader bfr = new BufferedReader(new FileReader(filePath))) {
             String line = bfr.readLine();
-            messageCount = Integer.parseInt(line.substring(15)) + 1;
+            messageCount = Integer.parseInt(line.substring(15));
             line = bfr.readLine();
             while (line != null) {
                 String[] unmapped = line.split(" ");
@@ -192,6 +192,9 @@ public class MetricManager {
         fileData.forEach((word, count) -> {
             if (messageDelta.containsKey(word)) {
                 fileData.put(word, fileData.get(word) + messageDelta.get(word));
+                if (fileData.get(word) == 0) {
+                    fileData.remove(word);
+                }
             }
         });
 
