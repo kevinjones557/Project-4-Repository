@@ -116,11 +116,15 @@ class MetricManagerTest {
         Path testUserStore = null;
         Path testUserMetrics = null;
         Path testStoreMetrics = null;
+        Path testBuyer1Metrics = null;
+        Path testBuyer2Metrics = null;
         try {
             testUserFolder = Files.createDirectory(Paths.get("data/sellers/TempUser"));
             testUserStore = Files.createDirectory(Paths.get("data/sellers/TempUser/TempStore"));
             testUserMetrics = Files.createFile(Path.of(testUserFolder + "/metrics.txt"));
             testStoreMetrics = Files.createFile(Path.of(testUserStore + "/metrics.txt"));
+            testBuyer1Metrics = Files.createFile(Path.of(testUserStore + "/Buyer1metrics.txt"));
+            testBuyer2Metrics = Files.createFile(Path.of(testUserStore + "/Buyer2metrics.txt"));
 
         } catch (IOException e) {
             System.out.println("Could not create folders");
@@ -129,12 +133,20 @@ class MetricManagerTest {
         String[] fileContents = {"Message Count: 1" + System.lineSeparator(),
                 "1 Word" + System.lineSeparator()};
 
-        String[] fileContents2 = {"Message Count: 2" + System.lineSeparator(),
-                "2 Word" + System.lineSeparator(),
+        String[] fileContents2 = {"Message Count: 4" + System.lineSeparator(),
+                "6 Word" + System.lineSeparator(),
+                "2 The" + System.lineSeparator()};
+
+        String[] fileContents3 = {"Message Count: 2" + System.lineSeparator(),
+                "3 Word" + System.lineSeparator(),
                 "1 The" + System.lineSeparator()};
+
+
 
         writeToFile(testUserMetrics.toFile(), fileContents);
         writeToFile(testStoreMetrics.toFile(), fileContents2);
+        writeToFile(testBuyer1Metrics.toFile(), fileContents3);
+        writeToFile(testBuyer2Metrics.toFile(), fileContents3);
 
         String input = "1\n1\n\n";
 
@@ -147,9 +159,11 @@ class MetricManagerTest {
                 "1. TempStore" + System.lineSeparator() +
                 "0. Exit" + System.lineSeparator() +
                 "TempStore's Metrics:" + System.lineSeparator() +
-                "Message Count: 2" + System.lineSeparator() +
-                "2 Word" + System.lineSeparator() +
-                "1 The" + System.lineSeparator() +
+                "Message Count: 4" + System.lineSeparator() +
+                "6 Word" + System.lineSeparator() +
+                "2 The" + System.lineSeparator() +
+                "Buyer1 sent 2 messages" + System.lineSeparator() +
+                "Buyer2 sent 2 messages" + System.lineSeparator() +
                 "Press Enter to return to the main menu." + System.lineSeparator();
 
         InputStream userInput = new ByteArrayInputStream(input.getBytes());
@@ -162,6 +176,8 @@ class MetricManagerTest {
         String output = out.toString();
         assertEquals(testResult.trim(), output.trim());
 
+        testBuyer1Metrics.toFile().delete();
+        testBuyer2Metrics.toFile().delete();
         testStoreMetrics.toFile().delete();
         testUserMetrics.toFile().delete();
         testUserStore.toFile().delete();

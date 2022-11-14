@@ -1,4 +1,6 @@
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 /** Handles various metric data for Sellers
@@ -248,6 +250,28 @@ public class MetricManager {
                     } catch (UserNotFoundException e) {
                         System.out.println("An error occurred while finding the User's directory.");
                     }
+                    // the following feature is being bodged together at 1 am
+                    try {
+                        String[] subdir = Path.of(FileManager.getDirectoryFromUsername(username) + "/" + chosenStore).toFile().list();
+                        for (String filename : subdir) {
+                            if (filename.contains("metrics.txt") & !filename.equals("metrics.txt")) {
+                                String buyername = filename.substring(0, filename.indexOf("metrics.txt"));
+                                int messageCount = 0;
+                                try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(username) + "/" + chosenStore + "/" + filename))) {
+                                    String line = bfr.readLine();
+                                    messageCount = Integer.parseInt(line.substring(15));
+                                    System.out.println(buyername + " sent " + messageCount + " messages");
+                                } catch (IOException e) {
+                                    System.out.println("An error occurred while reading the file.");
+                                } catch (UserNotFoundException e) {
+                                    System.out.println("An error occurred while finding the User's directory.");
+                                }
+                            }
+                        }
+                    } catch (UserNotFoundException e) {
+                        System.out.println("User not found (how?)");
+                    }
+
                     System.out.println("Press Enter to return to the main menu.");
                     scanner.nextLine();
                     return;
