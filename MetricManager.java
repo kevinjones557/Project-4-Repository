@@ -1,4 +1,6 @@
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 /** Handles various metric data for Sellers
@@ -144,7 +146,7 @@ public class MetricManager {
 
         try (BufferedReader bfr = new BufferedReader(new FileReader(filePath))) {
             String line = bfr.readLine();
-            messageCount = Integer.parseInt(line.substring(15)) + 1;
+            messageCount = Integer.parseInt(line.substring(15));
             line = bfr.readLine();
             while (line != null) {
                 String[] unmapped = line.split(" ");
@@ -235,7 +237,7 @@ public class MetricManager {
                     int choice2 = DisplayMenu("Store Metrics", choices, scanner);
                     if (choice2 == 0) { break; }
                     String chosenStore = choices[choice2-1];
-                    System.out.println(choices[choice2-1] + "'s  metrics:");
+                    System.out.println(choices[choice2-1] + "'s Metrics:");
 
                     try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(username) + "/" + chosenStore + "/metrics.txt"))) {
                         String line = bfr.readLine();
@@ -248,6 +250,28 @@ public class MetricManager {
                     } catch (UserNotFoundException e) {
                         System.out.println("An error occurred while finding the User's directory.");
                     }
+                    // the following feature is being bodged together at 1 am
+                    try {
+                        String[] subdir = Path.of(FileManager.getDirectoryFromUsername(username) + "/" + chosenStore).toFile().list();
+                        for (String filename : subdir) {
+                            if (filename.contains("metrics.txt") & !filename.equals("metrics.txt")) {
+                                String buyername = filename.substring(0, filename.indexOf("metrics.txt"));
+                                int messageCount = 0;
+                                try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(username) + "/" + chosenStore + "/" + filename))) {
+                                    String line = bfr.readLine();
+                                    messageCount = Integer.parseInt(line.substring(15));
+                                    System.out.println(buyername + " sent " + messageCount + " messages");
+                                } catch (IOException e) {
+                                    System.out.println("An error occurred while reading the file.");
+                                } catch (UserNotFoundException e) {
+                                    System.out.println("An error occurred while finding the User's directory.");
+                                }
+                            }
+                        }
+                    } catch (UserNotFoundException e) {
+                        System.out.println("User not found (how?)");
+                    }
+
                     System.out.println("Press Enter to return to the main menu.");
                     scanner.nextLine();
                     return;
@@ -306,7 +330,7 @@ public class MetricManager {
                 sellerStores.add(store);
             }
         });
-        String[] choices = {"View Your Store Conversation Data", "View All Stores Sorted"};
+        String[] choices = {"View Your Store Conversation Data", "View Overall Store Data"};
         int choice = 1;
         while (choice != 0) {
         /* Metrics Dashboard
@@ -334,7 +358,7 @@ public class MetricManager {
                         }
 
                     });
-                    System.out.println("List Stores you've messaged, sorted by your messages sent them.");
+                    System.out.println("List Stores you've messaged, sorted by your messages sent to them.");
                     sortedUserStores.forEach((msgCount, store) -> {
                         System.out.println(store + " received " + msgCount + " messages");
                     });
@@ -356,7 +380,7 @@ public class MetricManager {
 
                         sortedStores.put(storeMessageCount, store);
                     });
-                    System.out.println("List all Stores, sorted by messages received.");
+                    System.out.println("List of all Stores, sorted by messages received from all users.");
                     sortedStores.forEach((msgCount, store) -> {
                         System.out.println(store + " received " + msgCount + " messages");
                     });
