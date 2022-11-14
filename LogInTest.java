@@ -331,7 +331,7 @@ public class LogInTest {
             output = output.replaceAll("\r\n", "\n");
             assertEquals(expected.trim(), output.trim());
         }
-       /*
+
         @Test
         public void testFour() {
             String input = "2" + System.lineSeparator() +
@@ -365,6 +365,8 @@ public class LogInTest {
 
             List<String> fileContents = new ArrayList<>();
             List<String> expectedContents = new ArrayList<>(Arrays.asList("testCaseRun", "u\\xn|jw_", "true", "[newStore, secondStore]", "email@domain.com"));
+            receiveInput(input);
+            LogIn.main(new String[0]);
             try (BufferedReader bfr = new BufferedReader(new FileReader("users/testCaseRun/testCaseRun"))) {
                 String line = bfr.readLine();
                 while (line != null) {
@@ -374,11 +376,16 @@ public class LogInTest {
             } catch (Exception e) {
                 System.out.println("Test 4 was not successful!");
             }
+            assertEquals(fileContents, expectedContents);
 
+            input = "1" + System.lineSeparator() +
+                    "testCaseRun" + System.lineSeparator() +
+                    "password" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "yes" + System.lineSeparator();
             receiveInput(input);
             LogIn.main(new String[0]);
-            assertEquals(fileContents, expectedContents);
         }
-        */
     }
 }
