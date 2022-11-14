@@ -792,8 +792,6 @@ public class MarketUser implements User{
                         if (isRecipientStore) {
                             compareSeller = storeNameMap.get(recipient);
                         }
-                        System.out.println("temp" + compareSeller);
-                        System.out.println(recipient);
                         if (s.equalsIgnoreCase(compareSeller)) {
                             canMessage = true;
                             break;
@@ -1829,6 +1827,15 @@ public class MarketUser implements User{
                 pwReceiver.println(line);
                 pwSender.println(line);
                 line = bfr.readLine();
+                if (!isSeller) {
+                    String storePath;
+                    if (FileManager.checkSellerExists(recipient)) {
+                        storePath = null;
+                    } else {
+                        storePath = FileManager.getStoreDirectory(storeNameMap.get(recipient),recipient);
+                    }
+                    MetricManager.addDeleteMessageData(username, storePath, line, false);
+                }
             }
             pwReceiver.close();
             pwSender.close();
