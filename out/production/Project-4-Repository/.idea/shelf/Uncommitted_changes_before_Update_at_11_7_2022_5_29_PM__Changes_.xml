@@ -1,0 +1,14 @@
+<changelist name="Uncommitted_changes_before_Update_at_11_7_2022_5_29_PM_[Changes]" date="1667860189217" recycled="true" deleted="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_11_7_2022_5_29_PM_[Changes]/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Update at 11/7/2022 5:29 PM [Changes]" />
+  <binary>
+    <option name="BEFORE_PATH" value="out/production/Project-4-Repository/LogIn.class" />
+    <option name="AFTER_PATH" value="out/production/Project-4-Repository/LogIn.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_11_7_2022_5_29_PM_[Changes]/LogIn.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="out/production/Project-4-Repository/MarketUser.class" />
+    <option name="AFTER_PATH" value="out/production/Project-4-Repository/MarketUser.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_11_7_2022_5_29_PM_[Changes]/MarketUser.class" />
+  </binary>
+</changelist>

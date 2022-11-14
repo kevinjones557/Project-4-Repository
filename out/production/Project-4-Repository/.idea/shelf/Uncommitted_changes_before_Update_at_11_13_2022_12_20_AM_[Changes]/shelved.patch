@@ -1,0 +1,16 @@
+Index: out/production/Project-4-Repository/users/storeNames
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>Walmart\r\nTarget\r\nHandbags\r\nHandbags2\r\nstore1\r\nnewStore\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/out/production/Project-4-Repository/users/storeNames b/out/production/Project-4-Repository/users/storeNames
+--- a/out/production/Project-4-Repository/users/storeNames	(revision a26904f847883069c39be76c3759779e6fe638f4)
++++ b/out/production/Project-4-Repository/users/storeNames	(date 1668145117845)
+@@ -4,3 +4,5 @@
+ Handbags2
+ store1
+ newStore
++store4
++store5

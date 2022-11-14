@@ -1,0 +1,20 @@
+Index: out/production/Project-4-Repository/users/newUsername/newUsername
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/out/production/Project-4-Repository/users/newUsername/newUsername b/out/production/Project-4-Repository/users/newUsername/newUsername
+new file mode 100644
+--- /dev/null	(date 1668031235872)
++++ b/out/production/Project-4-Repository/users/newUsername/newUsername	(date 1668031235872)
+@@ -0,0 +1,4 @@
++newUsername
++u\xn|jw_
++false
++email@domain.com
+diff --git a/out/production/Project-4-Repository/data/buyers/newUsername/isInvisible.txt b/out/production/Project-4-Repository/data/buyers/newUsername/isInvisible.txt
+new file mode 100644
+diff --git a/out/production/Project-4-Repository/data/buyers/newUsername/hasBlocked.txt b/out/production/Project-4-Repository/data/buyers/newUsername/hasBlocked.txt
+new file mode 100644
+diff --git a/out/production/Project-4-Repository/data/buyers/newUsername/metrics.txt b/out/production/Project-4-Repository/data/buyers/newUsername/metrics.txt
+new file mode 100644
