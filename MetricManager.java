@@ -306,7 +306,7 @@ public class MetricManager {
                 sellerStores.add(store);
             }
         });
-        String[] choices = {"View Your Store Conversation Data", "View All Stores Sorted"};
+        String[] choices = {"View Your Store Conversation Data", "View Overall Store Data"};
         int choice = 1;
         while (choice != 0) {
         /* Metrics Dashboard
@@ -334,7 +334,7 @@ public class MetricManager {
                         }
 
                     });
-                    System.out.println("List Stores you've messaged, sorted by your messages sent them.");
+                    System.out.println("List Stores you've messaged, sorted by your messages sent to them.");
                     sortedUserStores.forEach((msgCount, store) -> {
                         System.out.println(store + " received " + msgCount + " messages");
                     });
@@ -356,7 +356,7 @@ public class MetricManager {
 
                         sortedStores.put(storeMessageCount, store);
                     });
-                    System.out.println("List all Stores, sorted by messages received.");
+                    System.out.println("List of all Stores, sorted by messages received from all users.");
                     sortedStores.forEach((msgCount, store) -> {
                         System.out.println(store + " received " + msgCount + " messages");
                     });

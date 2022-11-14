@@ -365,9 +365,9 @@ class MetricManagerTest {
 
         String testResult = "Metrics Dashboard" + System.lineSeparator() +
                 "1. View Your Store Conversation Data" + System.lineSeparator() +
-                "2. View All Stores Sorted" + System.lineSeparator() +
+                "2. View Overall Store Data" + System.lineSeparator() +
                 "0. Exit" + System.lineSeparator() +
-                "List Stores you've messaged, sorted by your messages sent them." + System.lineSeparator() +
+                "List Stores you've messaged, sorted by your messages sent to them." + System.lineSeparator() +
                 "TempStore received 5 messages" + System.lineSeparator() +
                 "TempStore2 received 7 messages" + System.lineSeparator() +
                 "Press Enter to return to the main menu." + System.lineSeparator();
@@ -451,9 +451,9 @@ class MetricManagerTest {
 
         String testResult = "Metrics Dashboard" + System.lineSeparator() +
                 "1. View Your Store Conversation Data" + System.lineSeparator() +
-                "2. View All Stores Sorted" + System.lineSeparator() +
+                "2. View Overall Store Data" + System.lineSeparator() +
                 "0. Exit" + System.lineSeparator() +
-                "List all Stores, sorted by messages received." + System.lineSeparator() +
+                "List of all Stores, sorted by messages received from all users." + System.lineSeparator() +
                 "TempStore received 2 messages" + System.lineSeparator() +
                 "TempStore2 received 4 messages" + System.lineSeparator() +
                 "TempStore3 received 8 messages" + System.lineSeparator() +
