@@ -45,25 +45,25 @@ users
 
 The FileManager class consists of static methods related to file I/O. It is called in the other classes.
 
-Testing: Run this first. Ensure that the data folder exists with sellers and buyers empty.
+Testing: Run ```MetricManagerTest.java``` first. Ensure that the data folder exists with sellers and buyers empty.
 
 **MetricManager**
 
 The MetricManager class consists of static methods related to Store metrics. It is called in the other classes.
 
-Testing: Run this next. Ensure that the data folder exists with sellers and buyers empty.
+Testing: Run ```FileManagerTest.java```. Ensure that the data folder exists with sellers and buyers empty.
 
 **LogIn**
 
 The LogIn class handles the Log-in portion of the main program, along with user and store creation. It calls the MarketUser and continues from there.
 
-Testing: Run this next. Ensure that the users folder has no files other than storeNames, and that storeNames is empty.
+Testing: Run ```LogInTest.java```. Ensure that the users folder has no files other than storeNames, and that storeNames is empty.
 
 **MarketUser**
 
 The MarketUser class handles the messaging portion of the application. It is called from LogIn.
 
-Testing: Run this next.
+Testing: Run ```MarketUserTest.java```.
 
 **User**
 
