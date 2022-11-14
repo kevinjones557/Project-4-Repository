@@ -17,7 +17,7 @@ MetricManager.java
 User.java (interface)
 UserNotFoundException.java(Exception class)
 ```
-Compile all the above files and run the LogIn.java file to run the program. From there you can log in, create new accounts, add stores if you are sellers and access all the user interaction options(message, block/unblock, become invisible, search, view statistics, etc...). *If you exit the program without using the program's exit option, your changes will not be saved.
+Compile all the above files and run the LogIn.java file to run the program. From there you can log in, create new accounts, add stores if you are sellers and access all the user interaction options(message, block/unblock, become invisible, search, view statistics, etc...). *If you exit the program without using the program's exit option, your changes will not be saved.*
 
 
 **Files and Directories**
@@ -31,7 +31,7 @@ data
 
 users
 ```
-*Editing these data files and directories without running the program will likely result in unexpected behavior when running the program again. Please do not try to modify the files.
+*Editing these data files and directories without running the program will likely result in unexpected behavior when running the program again. Please do not try to modify the files.*
 
 
 ## 2. Submission
