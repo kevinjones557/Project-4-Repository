@@ -514,7 +514,7 @@ class MetricManagerTest {
                 "0. Exit" + System.lineSeparator();
 
         InputStream userInput = new ByteArrayInputStream(input.getBytes());
-        assertEquals(MetricManager.DisplayMenu(testHeader, testOptions, new Scanner(userInput)), 0);
+        assertEquals(MetricManager.displayMenu(testHeader, testOptions, new Scanner(userInput)), 0);
         String output = out.toString();
         assertEquals(output.trim(), testResult.trim());
     }
