@@ -192,9 +192,6 @@ public class MetricManager {
         fileData.forEach((word, count) -> {
             if (messageDelta.containsKey(word)) {
                 fileData.put(word, fileData.get(word) + messageDelta.get(word));
-                if (fileData.get(word) == 0) {
-                    fileData.remove(word);
-                }
             }
         });
 
