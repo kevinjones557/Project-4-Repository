@@ -1,38 +1,45 @@
-# Project-4-Repository
-This repository contains the code for Project 4
+# Project 4 Documentation
 
 
-Buyers -> Kevin -> KevinVinh.txt, hasBlocked.txt
+## 1. Instructions
 
 
-Sellers-> Vinh -> VinhKevin.txt, hasBlocked.txt, statistics.txt        
-        
-        
-*note: 
-- Sellers credential file: Username \n StoreName \n Password
-- Buyers credential file: Username \n Password
-- statistics.txt contains a list of usernames and their number of messages sent to the store followed by words and their frequencies.
+**Compile and Run**
 
-Sellers can create multiple stores.
 
-LogIn: Must prompt for username, email, and password. If it is a seller, give them the option to add stores (as many as they want) any additional log in they can add stores
-They must be able to change this info at any time
+In the list of files and directories, you should see the following java files:
+```
+FileMananger.java
+Filtering.java
+LogIn.java
+MarketUser.java
+MetricManager.java
+User.java (interface)
+UserNotFoundException.java(Exception class)
+```
+Compile all the above files and run the LogIn.java file to run the program. From there you can log in, create new accounts, add stores if you are sellers and access all the user interaction options(message, block/unblock, become invisible, search, view statistics, etc...). *If you exit the program without using the program's exit option, your changes will not be saved.*
 
-Seller can add stores at any time, can't get rid of stores
 
-create a file under data/(buyers or sellers)/(username)/credentials to store email, username, and password
+**Files and Directories**
 
-for sellers create a master file that has
-Store1 : Seller1
-Store2 : Seller1
-Store3 : Seller2
-Store4 : Seller3
-Store5 : Seller3
 
-all messaging will still be done through <buyername><sellername>.txt no direct communication through stores, just through seller
+You should also see directories which are used by the program to store all related data
+```
+data
+>buyers
+>sellers
 
-HUGE PROBLEM IF WE LET THEM EDIT USERNAME
+users
+```
+*Editing these data files and directories without running the program will likely result in unexpected behavior when running the program again. Please do not try to modify the files.*
 
-In Menu:
-Customers see a list of stores, then go throuhg file and find seller
-Customeres also search for seller username directly
+
+## 2. Submission
+- Kevin Jones submitted the Vocareum workplace
+- Vinh Pham Ngoc Thanh submitted Report on Brightspace
+
+
+## 3. Classes, their functionalities and testing
+
+
+

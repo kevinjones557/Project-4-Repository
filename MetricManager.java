@@ -230,11 +230,12 @@ public class MetricManager {
             choice = DisplayMenu("Metrics Dashboard", choices, scanner);
             switch (choice) {
                 case 1:
+                    choices = new String[sellerStores.size()]; // oopsie
                     choices = sellerStores.toArray(choices);
                     int choice2 = DisplayMenu("Store Metrics", choices, scanner);
                     if (choice2 == 0) { break; }
-                    String chosenStore = choices[choice-1];
-                    System.out.println(choices[choice-1] + "'s  metrics:");
+                    String chosenStore = choices[choice2-1];
+                    System.out.println(choices[choice2-1] + "'s  metrics:");
 
                     try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(username) + "/" + chosenStore + "/metrics.txt"))) {
                         String line = bfr.readLine();
@@ -258,13 +259,13 @@ public class MetricManager {
                             try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(username) + "/" + store + "/metrics.txt"))) {
                                 String line = bfr.readLine();
                                 storeMessageCount = Integer.parseInt(line.substring(15));
+                                sortedStores.put(storeMessageCount, store);
                             } catch (IOException e) {
                                 System.out.println("An error occurred while reading the file.");
                             } catch (UserNotFoundException e) {
                                 System.out.println("An error occurred while finding the User's directory.");
                             }
 
-                            sortedStores.put(storeMessageCount, store);
                         }
                     });
                     System.out.println("List of your Stores, sorted by messages received.");
@@ -323,6 +324,7 @@ public class MetricManager {
                         try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(owner) + "/" + store + "/" + username + "metrics.txt"))) {
                             String line = bfr.readLine();
                             storeMessageCount = Integer.parseInt(line.substring(15));
+                            sortedUserStores.put(storeMessageCount, store);
                         } catch (FileNotFoundException e) {
                             // do nothing lol
                         } catch (IOException e) {
@@ -331,7 +333,6 @@ public class MetricManager {
                             System.out.println("An error occurred while finding the User's directory.");
                         }
 
-                        sortedUserStores.put(storeMessageCount, store);
                     });
                     System.out.println("List Stores you've messaged, sorted by your messages sent them.");
                     sortedUserStores.forEach((msgCount, store) -> {
