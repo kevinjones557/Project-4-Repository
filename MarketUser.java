@@ -71,15 +71,6 @@ public class MarketUser {
         this.isSeller = isSeller;
         isUserStore = false;
     }
-    public static void main(String[] args) {
-    }
-
-    /** Function that waits until valid prompt
-     * @param lowestValidValue the lowest valid value
-     * @param highestValidValue highest valid value
-     * @return returns the chosen index
-     * @author Kevin Jones
-     */
 
     public int waitForValidInput(int lowestValidValue, int highestValidValue, Scanner scan) {
         int selection = Integer.MAX_VALUE;
