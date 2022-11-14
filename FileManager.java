@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 
 /** Handles various file management methods for the program
  * @author Destin Groves
+ * @version November 14th, 2022
  */
 public class FileManager {
     /** Used to find a file directory for a given User. Useful when writing or reading files.
