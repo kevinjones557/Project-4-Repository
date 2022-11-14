@@ -12,6 +12,13 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * A class to test every part of the LogIn class
+ * <p>
+ * author @Adenr4615
+ * version 11/13/22
+ */
+
 public class LogInTest {
     public static void main(String[] args) {
         Result result = JUnitCore.runClasses(TestCase.class);
@@ -26,7 +33,13 @@ public class LogInTest {
         }
     }
 
-    //the structure below for testing was taken partially from the RunLocalTest methods that appear in homeworks and projects
+    /**
+     * Runs the testing for the LogIn class - template code obtained from @PurdueCS
+     * <p>
+     * author @Adenr4615
+     * version 11/13/22
+     */
+
     public static class TestCase {
         private final PrintStream originalOutput = System.out;
         private final InputStream originalSysin = System.in;
