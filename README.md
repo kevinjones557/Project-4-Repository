@@ -1,7 +1,7 @@
 # Project 4 Documentation
 
 
-## 1. Instruction
+## 1. Instructions
 
 
 **Compile and Run**
