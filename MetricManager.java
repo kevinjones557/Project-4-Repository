@@ -4,6 +4,7 @@ import java.util.*;
 /** Handles various metric data for Sellers
  *
  * @author Destin Groves
+ * @version November 2022
  */
 
 public class MetricManager {

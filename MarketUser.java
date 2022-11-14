@@ -1,10 +1,17 @@
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.SQLOutput;
 import java.util.*;
 import java.text.SimpleDateFormat;
 
+/**
+ * A class that handles the messaging, blocking/unblocking, invisible/visible functionality between users
+ * @author Kevin Jones
+ * @author Vinh Pham
+ * @author John Brooks
+ *
+ * @version November 2022
+ */
 public class MarketUser implements User{
     // Output messages
     public final String SELECT_OPTION = "Please select an option below:";
