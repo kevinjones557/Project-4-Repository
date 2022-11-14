@@ -234,8 +234,8 @@ public class MetricManager {
                     choices = sellerStores.toArray(choices);
                     int choice2 = DisplayMenu("Store Metrics", choices, scanner);
                     if (choice2 == 0) { break; }
-                    String chosenStore = choices[choice-1];
-                    System.out.println(choices[choice-1] + "'s  metrics:");
+                    String chosenStore = choices[choice2-1];
+                    System.out.println(choices[choice2-1] + "'s  metrics:");
 
                     try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(username) + "/" + chosenStore + "/metrics.txt"))) {
                         String line = bfr.readLine();
