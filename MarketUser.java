@@ -51,9 +51,6 @@ public class MarketUser {
         isUserStore = false;
     }
 
-    public static void main(String[] args) {
-    }
-
     /**
      * Function that waits until valid prompt
      *
