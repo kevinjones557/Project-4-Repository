@@ -1,3 +1,4 @@
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
@@ -50,29 +51,52 @@ class MarketUserTest {
     @Test
     void writeCSV() {
         Path testUserFolder = null;
-        Path testUserMessage = null;
         Path testUserOutput = null;
 
-        MarketUser mu = new MarketUser("TempUser2", false);
+        MarketUser mu = new MarketUser("TempBuyer", false);
 
         try {
-            testUserFolder = Files.createDirectory(Paths.get("data/buyers/TempUser"));
-            testUserMessage = Files.createFile(Path.of("data/buyers/TempUser/.txt"));
+            testUserFolder = Files.createDirectory(Paths.get("data/buyers/TempBuyer"));
+            File buyerFile = new File(testUserFolder + "/TempBuyerTempSeller.txt");
+            buyerFile.createNewFile();
+            PrintWriter pw = new PrintWriter(new FileWriter(buyerFile, true));
+            pw.write("TempBuyer 11/14 08:52:56- hello there");
+            pw.close();
 
         } catch (IOException e) {
             System.out.println("Could not create folders");
         }
 
-        String[] testContents = {"Bingus 11/14 14:20:06- Hi!!!!!\n" + System.lineSeparator()};
+        mu.writeCSV("TempSeller", "data");
 
         ArrayList<String> expectedResult = new ArrayList<>();
-        expectedResult.add("Name:,Date:,Time:,Message:" + System.lineSeparator());
-        expectedResult.add("Bingus,11/14,14:20:06,Hi!!!!!" + System.lineSeparator());
+        expectedResult.add("Name:,Date:,Time:,Message:");
+        expectedResult.add("TempBuyer,11/14,08:52:56,hello there");
 
-        String filePath = "data/buyers";
+        File csvFile = new File("data/TempBuyer.csv");
+        ArrayList<String> actualResult = new ArrayList<>();
+        try (BufferedReader bfr = new BufferedReader(new FileReader(csvFile))) {
+            actualResult = new ArrayList<>();
+            String line = bfr.readLine();
+            while (line != null) {
+                actualResult.add(line);
+                line = bfr.readLine();
+            }
+        } catch (IOException e){
+            System.out.println("Could not read csv");
+        }
 
+        for (int i = 0; i < expectedResult.size(); i++) {
+            Assert.assertEquals(expectedResult.get(i), actualResult.get(i));
+        }
 
-
+        try {
+            Files.delete(Paths.get(testUserFolder + "/TempBuyerTempSeller.txt"));
+            Files.delete(Paths.get("data/buyers/TempBuyer"));
+            Files.delete(Paths.get("data/TempBuyer.csv"));
+        } catch (IOException e) {
+            System.out.println("Unable to delete file and folder");
+        }
     }
 
     @Test
