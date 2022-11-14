@@ -21,6 +21,8 @@ Compile all the above files and run the LogIn.java file to run the program. From
 
 
 **Files and Directories**
+
+
 You should also see directories which are used by the program to store all related data
 ```
 data
