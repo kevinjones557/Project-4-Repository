@@ -230,6 +230,7 @@ public class MetricManager {
             choice = DisplayMenu("Metrics Dashboard", choices, scanner);
             switch (choice) {
                 case 1:
+                    choices = new String[sellerStores.size()];
                     choices = sellerStores.toArray(choices);
                     int choice2 = DisplayMenu("Store Metrics", choices, scanner);
                     if (choice2 == 0) { break; }
