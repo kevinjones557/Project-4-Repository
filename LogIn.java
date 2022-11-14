@@ -10,8 +10,8 @@ import java.nio.file.Paths;
 /**
  * A class to create accounts for users, log them in, and perform any necessary interaction with said accounts.
  * <p>
- * @author @Adenr4615
- * @version 11/9/22
+ * author @Adenr4615
+ * version 11/13/22
  */
 
 public class LogIn {
@@ -162,7 +162,7 @@ public class LogIn {
                 boolean nameInUse = checkStoreList(newName);
                 if (newName.equals("") || !nameInUse || newName.length() < 4 || newName.length() > 16) {
                     while (newName.equals("") || !nameInUse || newName.length() < 4 || newName.length() > 16) {
-                        if (nameInUse) {
+                        if (nameInUse || newName.equals("")) {
                             System.out.println("Store name constraints: " +
                                     "\n- Cannot be blank " +
                                     "\n- Must be in between 4 and 16 characters inclusive " +
@@ -189,6 +189,7 @@ public class LogIn {
                             writeFile(user, fileContents.get(i));
                         }
                     }
+                    //TODO Kevin needs to change this to handle deleting a store that has been renamed
                     removeRenamedStore(storeToChange, newName);
                     MarketUser.changeStoreName(storeToChange, newName);
                     System.out.println("Name change successful!");
@@ -400,6 +401,7 @@ public class LogIn {
             if (stores != null) {
                 appendStoreList(stores);
             }
+            //TODO Kevin also needs to change this to delete the user
             MarketUser.deleteUsername(user);
             File userInfo = new File("users/" + user + "/" + user);
             userInfo.delete();
@@ -408,7 +410,7 @@ public class LogIn {
             return (true);
         } else {
             System.out.println("We're glad you decided to stay!");
-            return (false);
+            return(false);
         }
     }
 
@@ -569,7 +571,7 @@ public class LogIn {
                             boolean nameChecked = checkStoreList(storeName);
                             if (storeName.equals("") || !nameChecked || storeName.length() < 4 || storeName.length() > 16) {
                                 while (storeName.equals("") || !nameChecked || storeName.length() < 4 || storeName.length() > 16) {
-                                    if (nameChecked) {
+                                    if (nameChecked || storeName.equals("")) {
                                         System.out.println("Store name constraints: " +
                                                 "\n- Cannot be blank " +
                                                 "\n- Must be in between 4 and 16 characters inclusive " +
@@ -829,12 +831,10 @@ public class LogIn {
             }
             MarketUser currentUser = new MarketUser(user, isSeller);
             boolean running = true;
-            //This is here because the user needs to get logged out after deletion
             boolean userDeleted = false;
-            //This is here because the program breaks if a user tries to do a deletion after changing their name in the same run
             while (running) {
-                System.out.println("Would you like to enter messaging or make account changes? " +
-                        "\n1. User Interactions " +
+                System.out.println("Would you like to enter user interaction or make account changes? " +
+                        "\n1. User Interaction " +
                         "\n2. Account changes");
                 int input = -1;
                 boolean inputTaken = false;

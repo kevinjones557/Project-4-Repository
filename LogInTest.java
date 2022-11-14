@@ -5,12 +5,19 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+/**
+ * A class to test every part of the LogIn class
+ * <p>
+ * author @Adenr4615
+ * version 11/13/22
+ */
 
 public class LogInTest {
     public static void main(String[] args) {
@@ -26,7 +33,13 @@ public class LogInTest {
         }
     }
 
-    //the structure below for testing was taken partially from the RunLocalTest methods that appear in homeworks and projects
+    /**
+     * Runs the testing for the LogIn class - template code obtained from @PurdueCS
+     * <p>
+     * author @Adenr4615
+     * version 11/13/22
+     */
+
     public static class TestCase {
         private final PrintStream originalOutput = System.out;
         private final InputStream originalSysin = System.in;
@@ -66,6 +79,10 @@ public class LogInTest {
                     "password" + System.lineSeparator() +
                     "password" + System.lineSeparator() +
                     "yes" + System.lineSeparator() +
+                    "" + System.lineSeparator() +
+                    "store1" + System.lineSeparator() +
+                    "no" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
                     "firstStore" + System.lineSeparator() +
                     "yes" + System.lineSeparator() +
                     "secondStore" + System.lineSeparator() +
@@ -92,6 +109,15 @@ public class LogInTest {
                     "Please enter your password again to confirm it.\n" +
                     "Are you a seller? Please enter 'yes' or 'no.'\n" +
                     "Please enter your store name.\n" +
+                    "Store name constraints: \n" +
+                    "- Cannot be blank \n" +
+                    "- Must be in between 4 and 16 characters inclusive \n" +
+                    "Please enter a valid store name.\n" +
+                    "Are you sure you want to add this store to your account? This action cannot be undone. \n" +
+                    "Enter 'yes' to confirm or 'no' to abort.\n" +
+                    "Enter '1' to add a store or '2' to finish adding stores.\n" +
+                    "Sellers must have at least one store! Please add a store before continuing.\n" +
+                    "Please enter your store name.\n" +
                     "Are you sure you want to add this store to your account? This action cannot be undone. \n" +
                     "Enter 'yes' to confirm or 'no' to abort.\n" +
                     "Enter '1' to add a store or '2' to finish adding stores.\n" +
@@ -104,8 +130,8 @@ public class LogInTest {
                     "Please enter an email to be associated with your account.\n" +
                     "That's not a valid email! Please enter an email with a valid name and domain.\n" +
                     "Account created! Welcome, testCaseRun!\n" +
-                    "Would you like to enter messaging or make account changes? \n" +
-                    "1. Messaging \n" +
+                    "Would you like to enter user interaction or make account changes? \n" +
+                    "1. User Interaction \n" +
                     "2. Account changes\n" +
                     "Options: \n" +
                     "1. Edit your name\n" +
@@ -120,8 +146,8 @@ public class LogInTest {
                     "Would you like to continue using the program? \n" +
                     "1. Yes \n" +
                     "2. No\n" +
-                    "Would you like to enter messaging or make account changes? \n" +
-                    "1. Messaging \n" +
+                    "Would you like to enter user interaction or make account changes? \n" +
+                    "1. User Interaction \n" +
                     "2. Account changes\n" +
                     "Options: \n" +
                     "1. Edit your name\n" +
@@ -189,8 +215,8 @@ public class LogInTest {
                     "Please enter an email to be associated with your account.\n" +
                     "That's not a valid email! Please enter an email with a valid name and domain.\n" +
                     "Account created! Welcome, testCaseRun!\n" +
-                    "Would you like to enter messaging or make account changes? \n" +
-                    "1. Messaging \n" +
+                    "Would you like to enter user interaction or make account changes? \n" +
+                    "1. User Interaction \n" +
                     "2. Account changes\n" +
                     "Please enter '1' or '2' as input!\n" +
                     "Options: \n" +
@@ -244,6 +270,10 @@ public class LogInTest {
                     "5" + System.lineSeparator() +
                     "2" + System.lineSeparator() +
                     "5" + System.lineSeparator() +
+                    "no" + System.lineSeparator() +
+                    "1" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
                     "yes";
 
             String expected = "Welcome! Please enter 1 to log in or 2 to create a new account.\n" +
@@ -268,8 +298,8 @@ public class LogInTest {
                     "Enter '1' to add a store or '2' to finish adding stores.\n" +
                     "Please enter an email to be associated with your account.\n" +
                     "Account created! Welcome, testCaseRun!\n" +
-                    "Would you like to enter messaging or make account changes? \n" +
-                    "1. Messaging \n" +
+                    "Would you like to enter user interaction or make account changes? \n" +
+                    "1. User Interaction \n" +
                     "2. Account changes\n" +
                     "Options: \n" +
                     "1. Edit your name\n" +
@@ -281,8 +311,8 @@ public class LogInTest {
                     "Would you like to continue using the program? \n" +
                     "1. Yes \n" +
                     "2. No\n" +
-                    "Would you like to enter messaging or make account changes? \n" +
-                    "1. Messaging \n" +
+                    "Would you like to enter user interaction or make account changes? \n" +
+                    "1. User Interaction \n" +
                     "2. Account changes\n" +
                     "Options: \n" +
                     "1. Edit your name\n" +
@@ -297,8 +327,8 @@ public class LogInTest {
                     "Would you like to continue using the program? \n" +
                     "1. Yes \n" +
                     "2. No\n" +
-                    "Would you like to enter messaging or make account changes? \n" +
-                    "1. Messaging \n" +
+                    "Would you like to enter user interaction or make account changes? \n" +
+                    "1. User Interaction \n" +
                     "2. Account changes\n" +
                     "Options: \n" +
                     "1. Edit your name\n" +
@@ -309,7 +339,21 @@ public class LogInTest {
                     "Are you sure you want to delete your account? This action cannot be undone. \n" +
                     "Enter 'yes' to confirm or 'no' to abort.\n" +
                     "Please enter 'yes' or 'no'!\n" +
-                    "Thank you for using the messenger. Goodbye!\n";
+                    "We're glad you decided to stay!\n" +
+                    "Would you like to continue using the program? \n" +
+                    "1. Yes \n" +
+                    "2. No\n" +
+                    "Would you like to enter user interaction or make account changes? \n" +
+                    "1. User Interaction \n" +
+                    "2. Account changes\n" +
+                    "Options: \n" +
+                    "1. Edit your name\n" +
+                    "2. Delete your account\n" +
+                    "3. Change a store name\n" +
+                    "4. Exit\n" +
+                    "Are you sure you want to delete your account? This action cannot be undone. \n" +
+                    "Enter 'yes' to confirm or 'no' to abort.\n" +
+                    "Thank you for using the messenger. Goodbye!";
 
             receiveInput(input);
             LogIn.main(new String[0]);
@@ -317,6 +361,116 @@ public class LogInTest {
             expected = expected.replaceAll("\r\n", "\n");
             output = output.replaceAll("\r\n", "\n");
             assertEquals(expected.trim(), output.trim());
+        }
+
+        @Test
+        public void testFour() {
+            String input = "2" + System.lineSeparator() +
+                    "testCaseRun" + System.lineSeparator() +
+                    "password" + System.lineSeparator() +
+                    "password" + System.lineSeparator() +
+                    "yes" + System.lineSeparator() +
+                    "" + System.lineSeparator() +
+                    "store1" + System.lineSeparator() +
+                    "no" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "firstStore" + System.lineSeparator() +
+                    "yes" + System.lineSeparator() +
+                    "secondStore" + System.lineSeparator() +
+                    "1" + System.lineSeparator() +
+                    "firstStore" + System.lineSeparator() +
+                    "secondStore" + System.lineSeparator() +
+                    "yes" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "email" + System.lineSeparator() +
+                    "email@domain.com" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "3" + System.lineSeparator() +
+                    "firstStore" + System.lineSeparator() +
+                    "secondStore" + System.lineSeparator() +
+                    "newStore" + System.lineSeparator() +
+                    "1" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "4" + System.lineSeparator();
+
+            List<String> fileContents = new ArrayList<>();
+            List<String> expectedContents = new ArrayList<>(Arrays.asList("testCaseRun", "u\\xn|jw_", "true", "[newStore, secondStore]", "email@domain.com"));
+            receiveInput(input);
+            LogIn.main(new String[0]);
+            try (BufferedReader bfr = new BufferedReader(new FileReader("users/testCaseRun/testCaseRun"))) {
+                String line = bfr.readLine();
+                while (line != null) {
+                    fileContents.add(line);
+                    line = bfr.readLine();
+                }
+            } catch (Exception e) {
+                System.out.println("Test 4 was not successful!");
+            }
+            assertEquals(fileContents, expectedContents);
+
+            input = "1" + System.lineSeparator() +
+                    "testCaseRun" + System.lineSeparator() +
+                    "password" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "yes" + System.lineSeparator();
+            receiveInput(input);
+            LogIn.main(new String[0]);
+        }
+
+        @Test
+        public void testFive() {
+            String input = "2" + System.lineSeparator() +
+                    "testCaseRun" + System.lineSeparator() +
+                    "mfiji!JHfje78g" + System.lineSeparator() +
+                    "mfiji!JHfje78g" + System.lineSeparator() +
+                    "yes" + System.lineSeparator() +
+                    "store1" + System.lineSeparator() +
+                    "yes" + System.lineSeparator() +
+                    "1" + System.lineSeparator() +
+                    "store2" + System.lineSeparator() +
+                    "yes" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "anotherEmail@gmail.com" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "1" + System.lineSeparator() +
+                    "newName" + System.lineSeparator() +
+                    "1" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "3" + System.lineSeparator() +
+                    "store1" + System.lineSeparator() +
+                    "newStore1" + System.lineSeparator() +
+                    "1" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "3" + System.lineSeparator() +
+                    "store2" + System.lineSeparator() +
+                    "newStore1" + System.lineSeparator() +
+                    "newStore2" + System.lineSeparator() +
+                    "2" + System.lineSeparator();
+
+            List<String> fileContents = new ArrayList<>();
+            List<String> expectedContents = new ArrayList<>(Arrays.asList("newName", "ranen\u001COCkej2=b", "true", "[newStore1, newStore2]", "anotherEmail@gmail.com"));
+            receiveInput(input);
+            LogIn.main(new String[0]);
+            try (BufferedReader bfr = new BufferedReader(new FileReader("users/newName/newName"))) {
+                String line = bfr.readLine();
+                while (line != null) {
+                    fileContents.add(line);
+                    line = bfr.readLine();
+                }
+            } catch (Exception e) {
+                System.out.println("Test 5 was not successful!");
+            }
+            assertEquals(fileContents, expectedContents);
+
+            input = "1" + System.lineSeparator() +
+                    "newName" + System.lineSeparator() +
+                    "mfiji!JHfje78g" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "yes" + System.lineSeparator();
+            receiveInput(input);
+            LogIn.main(new String[0]);
         }
     }
 }

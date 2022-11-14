@@ -145,7 +145,7 @@ public class MetricManager {
 
         try (BufferedReader bfr = new BufferedReader(new FileReader(filePath))) {
             String line = bfr.readLine();
-            messageCount = Integer.parseInt(line.substring(15)) + 1;
+            messageCount = Integer.parseInt(line.substring(15));
             line = bfr.readLine();
             while (line != null) {
                 String[] unmapped = line.split(" ");
@@ -231,11 +231,12 @@ public class MetricManager {
             choice = DisplayMenu("Metrics Dashboard", choices, scanner);
             switch (choice) {
                 case 1:
+                    choices = new String[sellerStores.size()]; // oopsie
                     choices = sellerStores.toArray(choices);
                     int choice2 = DisplayMenu("Store Metrics", choices, scanner);
                     if (choice2 == 0) { break; }
-                    String chosenStore = choices[choice-1];
-                    System.out.println(choices[choice-1] + "'s  metrics:");
+                    String chosenStore = choices[choice2-1];
+                    System.out.println(choices[choice2-1] + "'s Metrics:");
 
                     try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(username) + "/" + chosenStore + "/metrics.txt"))) {
                         String line = bfr.readLine();
