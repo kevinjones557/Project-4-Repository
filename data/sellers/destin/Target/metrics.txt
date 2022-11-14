@@ -1,6 +1,0 @@
-Message Count: 2
-1 hey
-2 another
-1 message
-1 and
-1 one
