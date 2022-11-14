@@ -5,6 +5,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -61,10 +62,58 @@ class MarketUserTest {
 
     @Test
     void changeUsername() {
+        try {
+            Path testUserFolder = Files.createDirectory(Paths.get("data/buyers/TempBuyer"));
+        } catch (IOException e) {
+            System.out.println("Could not create folder");
+        }
+
+        String expected = "NewBuyer";
+        String actual;
+
+        MarketUser.changeUsername("TempBuyer", "NewBuyer");
+
+        File newFile = new File("data/buyers/NewBuyer");
+        if (newFile.exists()) {
+            actual = "NewBuyer";
+        } else {
+            actual = "";
+        }
+        Assert.assertEquals(expected, actual);
+        try {
+            Files.delete(Paths.get("data/buyers/NewBuyer"));
+        } catch (IOException e) {
+            System.out.println("Unable to delete file and folder");
+        }
     }
 
     @Test
     void changeStoreName() {
+        try {
+            Path testUserFolder = Files.createDirectory(Paths.get("data/sellers/TempSeller"));
+            Path testStoreFolder = Files.createDirectory(Paths.get("data/sellers/TempSeller/Store"));
+        } catch (IOException e) {
+            System.out.println("Could not create folder");
+        }
+
+        String expected = "NewStore";
+        String actual;
+
+        MarketUser.changeStoreName("Store", "NewStore");
+
+        File newFile = new File("data/sellers/TempSeller/NewStore");
+        if (newFile.exists()) {
+            actual = "NewStore";
+        } else {
+            actual = "";
+        }
+        Assert.assertEquals(expected, actual);
+        try {
+            Files.delete(Paths.get("data/sellers/TempSeller/NewStore"));
+            Files.delete(Paths.get("data/sellers/TempSeller"));
+        } catch (IOException e) {
+            System.out.println("Unable to delete file and folder");
+        }
     }
 
     @Test
