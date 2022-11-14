@@ -36,7 +36,7 @@ users
 
 ## 2. Submission
 - Kevin Jones submitted the Vocareum workplace
-- Vinh Pham Ngoc Thanh submitted Report on Brightspace
+- Kevin Jones submitted Report on Brightspace
 
 
 ## 3. Classes, their functionalities and testing
