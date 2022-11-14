@@ -64,7 +64,7 @@ class BlockingandInvisibleTest {
         String[] getMessage_ableUser = {"buyer1", "buyer2"};
         String[] output = new String[2];
         try {
-            output = test.getAvailableUsers();
+            output = test.getMessageAbleUser();
         } catch (IOException e) {
             System.out.println("Test Case ran into an unexpected error");
         }
