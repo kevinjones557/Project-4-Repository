@@ -6,18 +6,29 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class MarketUserTest {
-
-    @Test
-    void main() {
-
-    }
-
     @Test
     void waitForValidInput() {
+        String input = "5" + System.lineSeparator() + "h" + System.lineSeparator() + 3 + System.lineSeparator();
+        InputStream inputStream = new ByteArrayInputStream(input.getBytes());
+        Scanner scan = new Scanner(inputStream);
+
+        OutputStream os = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(os));
+
+        MarketUser mu = new MarketUser("testBuyer", false);
+        mu.waitForValidInput(1, 4, scan);
+
+        String expectedOutput = "Please enter a valid number:" + System.lineSeparator() +
+                "Please enter a valid number:" + System.lineSeparator() +
+                "Please enter a valid number:" + System.lineSeparator();
+
+        Assert.assertEquals(expectedOutput, os.toString());
+
     }
 
     @Test
@@ -30,6 +41,22 @@ class MarketUserTest {
 
     @Test
     void deleteUsername() {
+        Path testUserFolder = null;
+        Path testUserMessage = null;
+
+        try {
+            testUserFolder = Files.createDirectory(Paths.get("data/buyers/TempUser"));
+            testUserMessage = Files.createFile(Path.of("data/buyers/TempUser/convo.txt"));
+
+        } catch (IOException e) {
+            System.out.println("Could not create folders");
+        }
+
+        String username = "TempUser";
+
+        MarketUser.deleteUsername(username);
+
+        assertEquals(false, Files.exists(testUserFolder));
     }
 
     @Test
@@ -42,6 +69,45 @@ class MarketUserTest {
 
     @Test
     void changeNameInFile() {
+        try {
+            File buyerFile = new File("data/buyers/TempBuyerTempSeller.txt");
+            buyerFile.createNewFile();
+            PrintWriter pw = new PrintWriter(new FileWriter(buyerFile, true));
+            pw.write("TempBuyer 11/14 08:52:56- hello there");
+            pw.close();
+
+        } catch (IOException e) {
+            System.out.println("Could not create folders");
+        }
+
+        MarketUser.changeNameInFile("TempBuyer", "NewBuyer",
+                "data/buyers/TempBuyerTempSeller.txt");
+
+        ArrayList<String> expectedResult = new ArrayList<>();
+        expectedResult.add("NewBuyer 11/14 08:52:56- hello there");
+
+        File csvFile = new File("data/buyers/TempBuyerTempSeller.txt");
+        ArrayList<String> actualResult = new ArrayList<>();
+        try (BufferedReader bfr = new BufferedReader(new FileReader(csvFile))) {
+            actualResult = new ArrayList<>();
+            String line = bfr.readLine();
+            while (line != null) {
+                actualResult.add(line);
+                line = bfr.readLine();
+            }
+        } catch (IOException e){
+            System.out.println("Could not read file");
+        }
+
+        for (int i = 0; i < expectedResult.size(); i++) {
+            Assert.assertEquals(expectedResult.get(i), actualResult.get(i));
+        }
+
+        try {
+            Files.delete(Paths.get("data/buyers/TempBuyerTempSeller.txt"));
+        } catch (IOException e) {
+            System.out.println("Unable to delete file and folder");
+        }
     }
 
     @Test
@@ -51,7 +117,6 @@ class MarketUserTest {
     @Test
     void writeCSV() {
         Path testUserFolder = null;
-        Path testUserOutput = null;
 
         MarketUser mu = new MarketUser("TempBuyer", false);
 
