@@ -42,6 +42,22 @@ class MarketUserTest {
 
     @Test
     void deleteUsername() {
+        Path testUserFolder = null;
+        Path testUserMessage = null;
+
+        try {
+            testUserFolder = Files.createDirectory(Paths.get("data/buyers/TempUser"));
+            testUserMessage = Files.createFile(Path.of("data/buyers/TempUser/convo.txt"));
+
+        } catch (IOException e) {
+            System.out.println("Could not create folders");
+        }
+
+        String username = "TempUser";
+
+        MarketUser.deleteUsername(username);
+
+        assertEquals(false, Files.exists(testUserFolder));
     }
 
     @Test

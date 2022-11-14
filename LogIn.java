@@ -10,8 +10,8 @@ import java.nio.file.Paths;
 /**
  * A class to create accounts for users, log them in, and perform any necessary interaction with said accounts.
  * <p>
- * author @Adenr4615
- * version 11/13/22
+ * @author @Adenr4615
+ * @version 11/13/22
  */
 
 public class LogIn {
@@ -153,7 +153,8 @@ public class LogIn {
                         }
                     }
                     if (!storeFound) {
-                        System.out.println("That store was not found under your account! Please enter one of the following stores:");
+                        System.out.println("That store was not found under your account! " +
+                                "Please enter one of the following stores:");
                         System.out.println(storesArray);
                     }
                 }
@@ -229,7 +230,8 @@ public class LogIn {
                         }
                     }
                     if (!storeFound) {
-                        System.out.println("That store was not found under your account! Please enter one of the following stores:");
+                        System.out.println("That store was not found under your account! " +
+                                "Please enter one of the following stores:");
                         System.out.println(storesArray);
                     }
                 }
@@ -262,7 +264,8 @@ public class LogIn {
                     System.out.println("Username already exists! Please enter another username.");
                     newUser = scan.nextLine();
                     dir.delete();
-                } else if (newUser.equals("") || newUser.length() < 6 || newUser.length() > 16 || newUser.contains(" ")) {
+                } else if (newUser.equals("") || newUser.length() < 6
+                        || newUser.length() > 16 || newUser.contains(" ")) {
                     System.out.println("Username constraints: " +
                             "\n- Cannot be blank " +
                             "\n- Must be in between 6 and 16 characters inclusive " +
@@ -307,7 +310,7 @@ public class LogIn {
         } catch (Exception e) {
             System.out.println("Name change was not successful!");
         }
-        return(null);
+        return (null);
     }
 
     /**
@@ -408,7 +411,7 @@ public class LogIn {
             return (true);
         } else {
             System.out.println("We're glad you decided to stay!");
-            return(false);
+            return (false);
         }
     }
 
@@ -532,7 +535,8 @@ public class LogIn {
                     String password = scan.nextLine();
                     if (password.length() < 8 || password.length() > 16) {
                         while (password.length() < 8 || password.length() > 16) {
-                            System.out.println("Password length must be between 8 and 16 characters! Please enter a valid password.");
+                            System.out.println("Password length must be between 8 and 16 characters! " +
+                                    "Please enter a valid password.");
                             password = scan.nextLine();
                         }
                     }
@@ -567,21 +571,25 @@ public class LogIn {
                             System.out.println("Please enter your store name.");
                             String storeName = scan.nextLine();
                             boolean nameChecked = checkStoreList(storeName);
-                            if (storeName.equals("") || !nameChecked || storeName.length() < 4 || storeName.length() > 16) {
-                                while (storeName.equals("") || !nameChecked || storeName.length() < 4 || storeName.length() > 16) {
+                            if (storeName.equals("") || !nameChecked ||
+                                    storeName.length() < 4 || storeName.length() > 16) {
+                                while (storeName.equals("") || !nameChecked ||
+                                        storeName.length() < 4 || storeName.length() > 16) {
                                     if (nameChecked || storeName.equals("")) {
                                         System.out.println("Store name constraints: " +
                                                 "\n- Cannot be blank " +
                                                 "\n- Must be in between 4 and 16 characters inclusive " +
                                                 "\nPlease enter a valid store name.");
                                     } else {
-                                        System.out.println("Name is already in use! Please pick a different name.");
+                                        System.out.println("Name is already in use! " +
+                                                "Please pick a different name.");
                                     }
                                     storeName = scan.nextLine();
                                     nameChecked = checkStoreList(storeName);
                                 }
                             }
-                            System.out.println("Are you sure you want to add this store to your account? This action cannot be undone. " +
+                            System.out.println("Are you sure you want to add this store to your account? " +
+                                    "This action cannot be undone. " +
                                     "\nEnter 'yes' to confirm or 'no' to abort.");
                             String addStore = "";
                             boolean storeInput = false;
@@ -620,7 +628,8 @@ public class LogIn {
                             if (input == 2 && !storeNames.isEmpty()) {
                                 doneStores = true;
                             } else if (input == 2 && storeNames.isEmpty()) {
-                                System.out.println("Sellers must have at least one store! Please add a store before continuing.");
+                                System.out.println("Sellers must have at least one store! " +
+                                        "Please add a store before continuing.");
                             }
                         }
                         fileStatus = writeFile(user, isSeller);
@@ -641,7 +650,8 @@ public class LogIn {
                 while (!done) {
                     email = scan.nextLine();
                     if (email.equals("") || !email.contains("@")) {
-                        System.out.println("That's not a valid email! Please enter an email with a valid name and domain.");
+                        System.out.println("That's not a valid email! " +
+                                "Please enter an email with a valid name and domain.");
                     } else {
                         done = true;
                     }
@@ -706,7 +716,8 @@ public class LogIn {
                 if (input == 1 || input == 2) {
                     done = true;
                 } else {
-                    System.out.println("That's not a valid input! Please enter 1 to log in or 2 to create a new account.");
+                    System.out.println("That's not a valid input! " +
+                            "Please enter 1 to log in or 2 to create a new account.");
                 }
             } catch (Exception e) {
                 System.out.println("That's not a valid input! Please enter 1 to log in or 2 to create a new account.");
@@ -740,10 +751,12 @@ public class LogIn {
                                 } else if (input == 1) {
                                     continueUser = true;
                                 } else {
-                                    System.out.println("Please enter a valid input! Press 1 to try again and 2 to exit.");
+                                    System.out.println("Please enter a valid input! " +
+                                            "Press 1 to try again and 2 to exit.");
                                 }
                             } catch (Exception e) {
-                                System.out.println("Please enter a valid input! Press 1 to try again and 2 to exit.");
+                                System.out.println("Please enter a valid input! " +
+                                        "Press 1 to try again and 2 to exit.");
                             }
                         }
                     } else {
