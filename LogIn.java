@@ -11,7 +11,7 @@ import java.nio.file.Paths;
  * A class to create accounts for users, log them in, and perform any necessary interaction with said accounts.
  * <p>
  * author @Adenr4615
- * version 11/9/22
+ * version 11/13/22
  */
 
 public class LogIn {
