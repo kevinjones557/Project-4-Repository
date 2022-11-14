@@ -1158,6 +1158,7 @@ public class MarketUser {
                 line = bfr.readLine();
             }
             pw.close();
+            bfr.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
