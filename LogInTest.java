@@ -12,8 +12,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- * A class to test every part of the LogIn class
+/** A class to test every part of the LogIn class.
+ * To avoid any errors, these tests MUST be run WITHOUT ANY EXISTING USERS
+ * or else the output might be changed from the expected output in these cases, and they may fail.
  * <p>
  * author @Adenr4615
  * version 11/13/22
@@ -33,8 +34,7 @@ public class LogInTest {
         }
     }
 
-    /**
-     * Runs the testing for the LogIn class - template code obtained from @PurdueCS
+    /** Runs the testing for the LogIn class - template code obtained from @PurdueCS
      * <p>
      * author @Adenr4615
      * version 11/13/22
