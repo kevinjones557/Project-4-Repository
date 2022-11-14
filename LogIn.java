@@ -189,7 +189,6 @@ public class LogIn {
                             writeFile(user, fileContents.get(i));
                         }
                     }
-                    //TODO Kevin needs to change this to handle deleting a store that has been renamed
                     removeRenamedStore(storeToChange, newName);
                     MarketUser.changeStoreName(storeToChange, newName);
                     System.out.println("Name change successful!");
@@ -401,7 +400,6 @@ public class LogIn {
             if (stores != null) {
                 appendStoreList(stores);
             }
-            //TODO Kevin also needs to change this to delete the user
             MarketUser.deleteUsername(user);
             File userInfo = new File("users/" + user + "/" + user);
             userInfo.delete();

@@ -1,12 +1,11 @@
 import java.io.*;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
 /** Handles various metric data for Sellers
  *
  * @author Destin Groves
- * @version November 2022
+ * @version November 14th 2022
  */
 
 public class MetricManager {
@@ -77,7 +76,7 @@ public class MetricManager {
                 if (fileData.containsKey(word)) {
                     fileData.put(word, fileData.get(word) + data.get(word));
                 } else {
-                    fileData.put(word, 1);
+                    fileData.put(word, data.get(word));
                 }
             }
         });
@@ -230,12 +229,12 @@ public class MetricManager {
            3. View Personal Metrics
            0. Exit
          */
-            choice = DisplayMenu("Metrics Dashboard", choices, scanner);
+            choice = displayMenu("Metrics Dashboard", choices, scanner);
             switch (choice) {
                 case 1:
                     choices = new String[sellerStores.size()]; // oopsie
                     choices = sellerStores.toArray(choices);
-                    int choice2 = DisplayMenu("Store Metrics", choices, scanner);
+                    int choice2 = displayMenu("Store Metrics", choices, scanner);
                     if (choice2 == 0) { break; }
                     String chosenStore = choices[choice2-1];
                     System.out.println(choices[choice2-1] + "'s Metrics:");
@@ -340,7 +339,7 @@ public class MetricManager {
            3. View Personal Metrics
            0. Exit
          */
-            choice = DisplayMenu("Metrics Dashboard", choices, scanner);
+            choice = displayMenu("Metrics Dashboard", choices, scanner);
             switch (choice) {
                 case 1:
                     SortedMap<Integer, String> sortedUserStores = new TreeMap<>();
@@ -394,7 +393,7 @@ public class MetricManager {
             }
         }
     }
-    public static int DisplayMenu(String MenuHeader, String[] options, Scanner scanner) {
+    public static int displayMenu(String MenuHeader, String[] options, Scanner scanner) {
         while (true) {
             System.out.println(MenuHeader);
             for (int i = 0; i < options.length; i++) {
