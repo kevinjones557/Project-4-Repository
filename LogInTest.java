@@ -15,9 +15,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /** A class to test every part of the LogIn class.
  * To avoid any errors, these tests MUST be run WITHOUT ANY EXISTING USERS
  * or else the output might be changed from the expected output in these cases, and they may fail.
+ * These are JUnit4 tests.
  * <p>
- * author @Adenr4615
- * version 11/13/22
+ * @author riley197
+ * @version 11/13/22
  */
 
 public class LogInTest {
@@ -394,7 +395,8 @@ public class LogInTest {
                     "4" + System.lineSeparator();
 
             List<String> fileContents = new ArrayList<>();
-            List<String> expectedContents = new ArrayList<>(Arrays.asList("testCaseRun", "u\\xn|jw_", "true", "[newStore, secondStore]", "email@domain.com"));
+            List<String> expectedContents = new ArrayList<>(Arrays.asList("testCaseRun", "u\\xn|jw_",
+                    "true", "[newStore, secondStore]", "email@domain.com"));
             receiveInput(input);
             LogIn.main(new String[0]);
             try (BufferedReader bfr = new BufferedReader(new FileReader("users/testCaseRun/testCaseRun"))) {
@@ -449,7 +451,8 @@ public class LogInTest {
                     "2" + System.lineSeparator();
 
             List<String> fileContents = new ArrayList<>();
-            List<String> expectedContents = new ArrayList<>(Arrays.asList("newName", "ranen\u001COCkej2=b", "true", "[newStore1, newStore2]", "anotherEmail@gmail.com"));
+            List<String> expectedContents = new ArrayList<>(Arrays.asList("newName", "ranen\u001COCkej2=b", "true",
+                    "[newStore1, newStore2]", "anotherEmail@gmail.com"));
             receiveInput(input);
             LogIn.main(new String[0]);
             try (BufferedReader bfr = new BufferedReader(new FileReader("users/newName/newName"))) {
