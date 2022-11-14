@@ -472,5 +472,166 @@ public class LogInTest {
             receiveInput(input);
             LogIn.main(new String[0]);
         }
+
+        @Test
+        public void testSix() {
+            String input = "2" + System.lineSeparator() +
+                    "testCaseRun" + System.lineSeparator() +
+                    "password" + System.lineSeparator() +
+                    "password" + System.lineSeparator() +
+                    "5" + System.lineSeparator() +
+                    "yes" + System.lineSeparator() +
+                    "store1" + System.lineSeparator() +
+                    "5" + System.lineSeparator() +
+                    "yes" + System.lineSeparator() +
+                    "1" + System.lineSeparator() +
+                    "store1" + System.lineSeparator() +
+                    "store2" + System.lineSeparator() +
+                    "no" + System.lineSeparator() +
+                    "1" + System.lineSeparator() +
+                    "store2" + System.lineSeparator() +
+                    "yes" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "email@domain.com" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "1" + System.lineSeparator() +
+                    "newName" + System.lineSeparator() +
+                    "1" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "3" + System.lineSeparator() +
+                    "store1" + System.lineSeparator() +
+                    "store2" + System.lineSeparator() +
+                    "store3" + System.lineSeparator() +
+                    "1" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "5" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "5" + System.lineSeparator() +
+                    "no" + System.lineSeparator() +
+                    "1" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "no" + System.lineSeparator() +
+                    "2";
+
+            String expected = "Welcome! Please enter 1 to log in or 2 to create a new account.\n" +
+                    "Please enter a username in between 6 and 16 characters inclusive.\n" +
+                    "Please enter a password between 8 and 16 characters.\n" +
+                    "Please enter your password again to confirm it.\n" +
+                    "Are you a seller? Please enter 'yes' or 'no.'\n" +
+                    "Please enter 'yes' or 'no'!\n" +
+                    "Please enter your store name.\n" +
+                    "Are you sure you want to add this store to your account? This action cannot be undone. \n" +
+                    "Enter 'yes' to confirm or 'no' to abort.\n" +
+                    "Please enter 'yes' or 'no'!\n" +
+                    "Enter '1' to add a store or '2' to finish adding stores.\n" +
+                    "Please enter your store name.\n" +
+                    "Name is already in use! Please pick a different name.\n" +
+                    "Are you sure you want to add this store to your account? This action cannot be undone. \n" +
+                    "Enter 'yes' to confirm or 'no' to abort.\n" +
+                    "Enter '1' to add a store or '2' to finish adding stores.\n" +
+                    "Please enter your store name.\n" +
+                    "Are you sure you want to add this store to your account? This action cannot be undone. \n" +
+                    "Enter 'yes' to confirm or 'no' to abort.\n" +
+                    "Enter '1' to add a store or '2' to finish adding stores.\n" +
+                    "Please enter an email to be associated with your account.\n" +
+                    "Account created! Welcome, testCaseRun!\n" +
+                    "Would you like to enter user interaction or make account changes? \n" +
+                    "1. User Interaction \n" +
+                    "2. Account changes\n" +
+                    "Options: \n" +
+                    "1. Edit your name\n" +
+                    "2. Delete your account\n" +
+                    "3. Change a store name\n" +
+                    "4. Exit\n" +
+                    "Please enter your new username!\n" +
+                    "Name change successful! Enjoy your new username, newName!\n" +
+                    "Would you like to continue using the program? \n" +
+                    "1. Yes \n" +
+                    "2. No\n" +
+                    "Would you like to enter user interaction or make account changes? \n" +
+                    "1. User Interaction \n" +
+                    "2. Account changes\n" +
+                    "Options: \n" +
+                    "1. Edit your name\n" +
+                    "2. Delete your account\n" +
+                    "3. Change a store name\n" +
+                    "4. Exit\n" +
+                    "Which store name would you like to change?\n" +
+                    "[store1, store2]\n" +
+                    "Please enter the new store name.\n" +
+                    "Name is already in use! Please pick a different name.\n" +
+                    "Name change successful!\n" +
+                    "Would you like to continue using the program? \n" +
+                    "1. Yes \n" +
+                    "2. No\n" +
+                    "Would you like to enter user interaction or make account changes? \n" +
+                    "1. User Interaction \n" +
+                    "2. Account changes\n" +
+                    "Options: \n" +
+                    "1. Edit your name\n" +
+                    "2. Delete your account\n" +
+                    "3. Change a store name\n" +
+                    "4. Exit\n" +
+                    "Please enter '1,' '2,' '3,' or '4' as input!\n" +
+                    "Are you sure you want to delete your account? This action cannot be undone. \n" +
+                    "Enter 'yes' to confirm or 'no' to abort.\n" +
+                    "Please enter 'yes' or 'no'!\n" +
+                    "We're glad you decided to stay!\n" +
+                    "Would you like to continue using the program? \n" +
+                    "1. Yes \n" +
+                    "2. No\n" +
+                    "Would you like to enter user interaction or make account changes? \n" +
+                    "1. User Interaction \n" +
+                    "2. Account changes\n" +
+                    "Options: \n" +
+                    "1. Edit your name\n" +
+                    "2. Delete your account\n" +
+                    "3. Change a store name\n" +
+                    "4. Exit\n" +
+                    "Are you sure you want to delete your account? This action cannot be undone. \n" +
+                    "Enter 'yes' to confirm or 'no' to abort.\n" +
+                    "We're glad you decided to stay!\n" +
+                    "Would you like to continue using the program? \n" +
+                    "1. Yes \n" +
+                    "2. No\n" +
+                    "Thank you for using the messenger. Goodbye!\n" +
+                    "Welcome! Please enter 1 to log in or 2 to create a new account.\n" +
+                    "Please enter your username.\n" +
+                    "That user doesn't exist! Press 1 to try again and 2 to exit.\n" +
+                    "Please enter your username.\n" +
+                    "Please enter your password\n" +
+                    "Welcome, newName!\n" +
+                    "Would you like to enter user interaction or make account changes? \n" +
+                    "1. User Interaction \n" +
+                    "2. Account changes\n" +
+                    "Options: \n" +
+                    "1. Edit your name\n" +
+                    "2. Delete your account\n" +
+                    "3. Change a store name\n" +
+                    "4. Exit\n" +
+                    "Are you sure you want to delete your account? This action cannot be undone. \n" +
+                    "Enter 'yes' to confirm or 'no' to abort.\n" +
+                    "Thank you for using the messenger. Goodbye!";
+
+            receiveInput(input);
+            LogIn.main(new String[0]);
+
+            input = "1" + System.lineSeparator() +
+                    "new" + System.lineSeparator() +
+                    "1" + System.lineSeparator() +
+                    "newName" + System.lineSeparator() +
+                    "password" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "yes" + System.lineSeparator();
+
+            receiveInput(input);
+            LogIn.main(new String[0]);
+            String output = getOutput();
+            expected = expected.replaceAll("\r\n", "\n");
+            output = output.replaceAll("\r\n", "\n");
+            assertEquals(expected.trim(), output.trim());
+        }
     }
 }
