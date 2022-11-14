@@ -76,7 +76,7 @@ public class MetricManager {
                 if (fileData.containsKey(word)) {
                     fileData.put(word, fileData.get(word) + data.get(word));
                 } else {
-                    fileData.put(word, 1);
+                    fileData.put(word, data.get(word));
                 }
             }
         });
