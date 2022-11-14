@@ -883,6 +883,14 @@ public class MarketUser implements User{
             File f = new File(FileManager.getDirectoryFromUsername(username));
             String[] allFiles = f.list();
             for (String file : allFiles) {
+                if (Files.isDirectory(Paths.get(FileManager.getDirectoryFromUsername(username) + "/" + file))) {
+                    File fs = new File(FileManager.getDirectoryFromUsername(username) + "/" + file);
+                    String[] storeFiles = fs.list();
+                    for (String storeFile : storeFiles) {
+                        Files.delete(Paths.get((FileManager.getDirectoryFromUsername(username) + "/" + file +
+                                "/" + storeFile)));
+                    }
+                }
                 Files.delete(Paths.get((FileManager.getDirectoryFromUsername(username) + "/" + file)));
             }
             Files.delete(Paths.get(FileManager.getDirectoryFromUsername(username)));
