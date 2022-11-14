@@ -257,6 +257,10 @@ public class LogInTest {
                     "5" + System.lineSeparator() +
                     "2" + System.lineSeparator() +
                     "5" + System.lineSeparator() +
+                    "no" + System.lineSeparator() +
+                    "1" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
                     "yes";
 
             String expected = "Welcome! Please enter 1 to log in or 2 to create a new account.\n" +
@@ -322,7 +326,21 @@ public class LogInTest {
                     "Are you sure you want to delete your account? This action cannot be undone. \n" +
                     "Enter 'yes' to confirm or 'no' to abort.\n" +
                     "Please enter 'yes' or 'no'!\n" +
-                    "Thank you for using the messenger. Goodbye!\n";
+                    "We're glad you decided to stay!\n" +
+                    "Would you like to continue using the program? \n" +
+                    "1. Yes \n" +
+                    "2. No\n" +
+                    "Would you like to enter user interaction or make account changes? \n" +
+                    "1. User Interaction \n" +
+                    "2. Account changes\n" +
+                    "Options: \n" +
+                    "1. Edit your name\n" +
+                    "2. Delete your account\n" +
+                    "3. Change a store name\n" +
+                    "4. Exit\n" +
+                    "Are you sure you want to delete your account? This action cannot be undone. \n" +
+                    "Enter 'yes' to confirm or 'no' to abort.\n" +
+                    "Thank you for using the messenger. Goodbye!";
 
             receiveInput(input);
             LogIn.main(new String[0]);
@@ -362,7 +380,6 @@ public class LogInTest {
                     "2" + System.lineSeparator() +
                     "4" + System.lineSeparator();
 
-
             List<String> fileContents = new ArrayList<>();
             List<String> expectedContents = new ArrayList<>(Arrays.asList("testCaseRun", "u\\xn|jw_", "true", "[newStore, secondStore]", "email@domain.com"));
             receiveInput(input);
@@ -381,6 +398,61 @@ public class LogInTest {
             input = "1" + System.lineSeparator() +
                     "testCaseRun" + System.lineSeparator() +
                     "password" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "yes" + System.lineSeparator();
+            receiveInput(input);
+            LogIn.main(new String[0]);
+        }
+
+        @Test
+        public void testFive() {
+            String input = "2" + System.lineSeparator() +
+                    "testCaseRun" + System.lineSeparator() +
+                    "mfiji!JHfje78g" + System.lineSeparator() +
+                    "mfiji!JHfje78g" + System.lineSeparator() +
+                    "yes" + System.lineSeparator() +
+                    "store1" + System.lineSeparator() +
+                    "yes" + System.lineSeparator() +
+                    "1" + System.lineSeparator() +
+                    "store2" + System.lineSeparator() +
+                    "yes" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "anotherEmail@gmail.com" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "1" + System.lineSeparator() +
+                    "newName" + System.lineSeparator() +
+                    "1" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "3" + System.lineSeparator() +
+                    "store1" + System.lineSeparator() +
+                    "newStore1" + System.lineSeparator() +
+                    "1" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "3" + System.lineSeparator() +
+                    "store2" + System.lineSeparator() +
+                    "newStore1" + System.lineSeparator() +
+                    "newStore2" + System.lineSeparator() +
+                    "2" + System.lineSeparator();
+
+            List<String> fileContents = new ArrayList<>();
+            List<String> expectedContents = new ArrayList<>(Arrays.asList("newName", "ranen\u001COCkej2=b", "true", "[newStore1, newStore2]", "anotherEmail@gmail.com"));
+            receiveInput(input);
+            LogIn.main(new String[0]);
+            try (BufferedReader bfr = new BufferedReader(new FileReader("users/newName/newName"))) {
+                String line = bfr.readLine();
+                while (line != null) {
+                    fileContents.add(line);
+                    line = bfr.readLine();
+                }
+            } catch (Exception e) {
+                System.out.println("Test 5 was not successful!");
+            }
+            assertEquals(fileContents, expectedContents);
+
+            input = "1" + System.lineSeparator() +
+                    "newName" + System.lineSeparator() +
+                    "mfiji!JHfje78g" + System.lineSeparator() +
                     "2" + System.lineSeparator() +
                     "2" + System.lineSeparator() +
                     "yes" + System.lineSeparator();
