@@ -59,7 +59,6 @@ public class LogInTest {
             System.setIn(testIn);
         }
 
-        /*
         @Test
         public void testOne() {
             String input = "2" + System.lineSeparator() +
@@ -223,56 +222,7 @@ public class LogInTest {
             output = output.replaceAll("\r\n", "\n");
             assertEquals(expected.trim(), output.trim());
         }
-         */
-        @Test
-        public void testFour() {
-            String input = "2" + System.lineSeparator() +
-                    "testCaseRun" + System.lineSeparator() +
-                    "password" + System.lineSeparator() +
-                    "password" + System.lineSeparator() +
-                    "yes" + System.lineSeparator() +
-                    "" + System.lineSeparator() +
-                    "store1" + System.lineSeparator() +
-                    "no" + System.lineSeparator() +
-                    "2" + System.lineSeparator() +
-                    "firstStore" + System.lineSeparator() +
-                    "yes" + System.lineSeparator() +
-                    "secondStore" + System.lineSeparator() +
-                    "1" + System.lineSeparator() +
-                    "firstStore" + System.lineSeparator() +
-                    "secondStore" + System.lineSeparator() +
-                    "yes" + System.lineSeparator() +
-                    "2" + System.lineSeparator() +
-                    "email" + System.lineSeparator() +
-                    "email@domain.com" + System.lineSeparator() +
-                    "2" + System.lineSeparator() +
-                    "3" + System.lineSeparator() +
-                    "firstStore" + System.lineSeparator() +
-                    "secondStore" + System.lineSeparator() +
-                    "newStore" + System.lineSeparator() +
-                    "1" + System.lineSeparator() +
-                    "2" + System.lineSeparator() +
-                    "4" + System.lineSeparator();
 
-
-            List<String> fileContents = new ArrayList<>();
-            List<String> expectedContents = new ArrayList<>(Arrays.asList("testCaseRun", "u\\xn|jw_", "true", "[newStore, secondStore]", "email@domain.com"));
-            try (BufferedReader bfr = new BufferedReader(new FileReader("users/testCaseRun/testCaseRun"))) {
-                String line = bfr.readLine();
-                while (line != null) {
-                    fileContents.add(line);
-                    line = bfr.readLine();
-                }
-            } catch (Exception e) {
-                System.out.println("Test 4 was not successful!");
-            }
-
-            receiveInput(input);
-            LogIn.main(new String[0]);
-            assertEquals(fileContents, expectedContents);
-        }
-
-        /*
         @Test
         public void testThree() {
             String input = "2" + System.lineSeparator() +
@@ -381,6 +331,54 @@ public class LogInTest {
             output = output.replaceAll("\r\n", "\n");
             assertEquals(expected.trim(), output.trim());
         }
-         */
+       /*
+        @Test
+        public void testFour() {
+            String input = "2" + System.lineSeparator() +
+                    "testCaseRun" + System.lineSeparator() +
+                    "password" + System.lineSeparator() +
+                    "password" + System.lineSeparator() +
+                    "yes" + System.lineSeparator() +
+                    "" + System.lineSeparator() +
+                    "store1" + System.lineSeparator() +
+                    "no" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "firstStore" + System.lineSeparator() +
+                    "yes" + System.lineSeparator() +
+                    "secondStore" + System.lineSeparator() +
+                    "1" + System.lineSeparator() +
+                    "firstStore" + System.lineSeparator() +
+                    "secondStore" + System.lineSeparator() +
+                    "yes" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "email" + System.lineSeparator() +
+                    "email@domain.com" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "3" + System.lineSeparator() +
+                    "firstStore" + System.lineSeparator() +
+                    "secondStore" + System.lineSeparator() +
+                    "newStore" + System.lineSeparator() +
+                    "1" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "4" + System.lineSeparator();
+
+
+            List<String> fileContents = new ArrayList<>();
+            List<String> expectedContents = new ArrayList<>(Arrays.asList("testCaseRun", "u\\xn|jw_", "true", "[newStore, secondStore]", "email@domain.com"));
+            try (BufferedReader bfr = new BufferedReader(new FileReader("users/testCaseRun/testCaseRun"))) {
+                String line = bfr.readLine();
+                while (line != null) {
+                    fileContents.add(line);
+                    line = bfr.readLine();
+                }
+            } catch (Exception e) {
+                System.out.println("Test 4 was not successful!");
+            }
+
+            receiveInput(input);
+            LogIn.main(new String[0]);
+            assertEquals(fileContents, expectedContents);
+        }
+        */
     }
 }
