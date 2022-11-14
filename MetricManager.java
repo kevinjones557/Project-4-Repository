@@ -2,18 +2,21 @@ import java.io.*;
 import java.nio.file.Path;
 import java.util.*;
 
-/** Handles various metric data for Sellers
+/**
+ * Handles various metric data for Sellers
  *
  * @author Destin Groves
  * @version November 14th 2022
  */
 
 public class MetricManager {
-    /** Takes a Seller's message and extracts frequency of words. It writes this information to metrics.txt
+    /**
+     * Takes a Seller's message and extracts frequency of words. It writes this information to metrics.txt
      * Yes, this uses maps. It's great, means I don't need to make a new class to hold 2 values.
+     *
      * @param username The Seller's username
-     * @param message The Seller's message to be parsed
-     * @param delete whether this message is being deleted
+     * @param message  The Seller's message to be parsed
+     * @param delete   whether this message is being deleted
      */
     public static void addDeleteMessageData(String username, String storePath, String message, boolean delete) {
         int messageCount = 0;
@@ -30,15 +33,12 @@ public class MetricManager {
         filePath = filePath + "/metrics.txt";
         Map<String, Integer> fileData = new LinkedHashMap<>();
         /* The formatting for the Metrics file goes as follows:
-
             Message Count: n
             Word Frequency:
             20 word
             80 wordly
             10 words
-
          */
-
 
         try (BufferedReader bfr = new BufferedReader(new FileReader(filePath))) {
             String line = bfr.readLine();
@@ -81,18 +81,21 @@ public class MetricManager {
             }
         });
 
-        try (BufferedWriter bfw1 = new BufferedWriter(new FileWriter(filePath, false))){
+        try (BufferedWriter bfw1 = new BufferedWriter(new FileWriter(filePath, false))) {
             if (delete) {
                 bfw1.write(String.format("Message Count: %d\n", messageCount - 1));
             } else {
                 bfw1.write(String.format("Message Count: %d\n", messageCount + 1));
             }
             if (storePath != null) {
-                try (BufferedReader bfr2 = new BufferedReader(new FileReader(storePath + "/" + username + "metrics.txt"))) {
+                try (BufferedReader bfr2 = new BufferedReader(
+                        new FileReader(storePath + "/" + username + "metrics.txt"))) {
                     String line = bfr2.readLine();
                     int messageCount2 = Integer.parseInt(line.substring(15));
                     bfr2.close();
-                    try (BufferedWriter bfw2 = new BufferedWriter(new FileWriter(storePath + "/" + username + "metrics.txt", false))) {
+                    try (BufferedWriter bfw2 = new BufferedWriter(
+                            new FileWriter(storePath + "/" +
+                                    username + "metrics.txt", false))) {
                         if (delete) {
                             messageCount2 -= 1;
                         } else {
@@ -116,17 +119,24 @@ public class MetricManager {
         }
 
     }
-    /** Takes a Seller's initial message, edited message, and extracts the delta of the messages. It writes this information to metrics.txt
-     * @param username The Seller's username
+
+    /**
+     * Takes a Seller's initial message, edited message,
+     * and extracts the delta of the messages.
+     * It writes this information to metrics.txt
+     *
+     * @param username        The Seller's username
      * @param previousMessage The Seller's previous message
-     * @param newMessage The Seller's new, edited message
+     * @param newMessage      The Seller's new, edited message
      */
     public static void editMessageData(String username, String storePath, String previousMessage, String newMessage) {
         int messageCount = 0;
         String filePath;
         try {
-            if (storePath != null) { filePath = storePath; }
-            else { filePath = FileManager.getDirectoryFromUsername(username);
+            if (storePath != null) {
+                filePath = storePath;
+            } else {
+                filePath = FileManager.getDirectoryFromUsername(username);
             }
         } catch (UserNotFoundException e) {
             throw new RuntimeException("User does not exist!");
@@ -184,7 +194,7 @@ public class MetricManager {
 
         firstMessageData.forEach((word, count) -> { // checks for commonality and words that have been removed
             if (newMessageData.containsKey(word)) {
-                messageDelta.put(word,newMessageData.get(word)-firstMessageData.get(word));
+                messageDelta.put(word, newMessageData.get(word) - firstMessageData.get(word));
                 newMessageData.remove(word);
             } else {
                 messageDelta.put(word, -firstMessageData.get(word));
@@ -199,7 +209,7 @@ public class MetricManager {
 
         fileData.putAll(newMessageData);
 
-        try (BufferedWriter bfr = new BufferedWriter(new FileWriter(filePath, false))){
+        try (BufferedWriter bfr = new BufferedWriter(new FileWriter(filePath, false))) {
             bfr.write(String.format("Message Count: %d\n", messageCount));
             fileData.forEach((word, count) -> {
                 try {
@@ -235,11 +245,15 @@ public class MetricManager {
                     choices = new String[sellerStores.size()]; // oopsie
                     choices = sellerStores.toArray(choices);
                     int choice2 = displayMenu("Store Metrics", choices, scanner);
-                    if (choice2 == 0) { break; }
-                    String chosenStore = choices[choice2-1];
-                    System.out.println(choices[choice2-1] + "'s Metrics:");
+                    if (choice2 == 0) {
+                        break;
+                    }
+                    String chosenStore = choices[choice2 - 1];
+                    System.out.println(choices[choice2 - 1] + "'s Metrics:");
 
-                    try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(username) + "/" + chosenStore + "/metrics.txt"))) {
+                    try (BufferedReader bfr = new BufferedReader(
+                            new FileReader(FileManager.getDirectoryFromUsername(username)
+                                    + "/" + chosenStore + "/metrics.txt"))) {
                         String line = bfr.readLine();
                         while (line != null) {
                             System.out.println(line);
@@ -252,12 +266,15 @@ public class MetricManager {
                     }
                     // the following feature is being bodged together at 1 am
                     try {
-                        String[] subdir = Path.of(FileManager.getDirectoryFromUsername(username) + "/" + chosenStore).toFile().list();
+                        String[] subdir = Path.of(FileManager.getDirectoryFromUsername(username)
+                                + "/" + chosenStore).toFile().list();
                         for (String filename : subdir) {
                             if (filename.contains("metrics.txt") & !filename.equals("metrics.txt")) {
                                 String buyername = filename.substring(0, filename.indexOf("metrics.txt"));
                                 int messageCount = 0;
-                                try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(username) + "/" + chosenStore + "/" + filename))) {
+                                try (BufferedReader bfr = new BufferedReader(
+                                        new FileReader(FileManager.getDirectoryFromUsername(username)
+                                                + "/" + chosenStore + "/" + filename))) {
                                     String line = bfr.readLine();
                                     messageCount = Integer.parseInt(line.substring(15));
                                     System.out.println(buyername + " sent " + messageCount + " messages");
@@ -280,7 +297,9 @@ public class MetricManager {
                     storeData.forEach((store, owner) -> {
                         if (owner.equals(username)) {
                             int storeMessageCount = 0;
-                            try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(username) + "/" + store + "/metrics.txt"))) {
+                            try (BufferedReader bfr = new BufferedReader(
+                                    new FileReader(FileManager.getDirectoryFromUsername(username)
+                                            + "/" + store + "/metrics.txt"))) {
                                 String line = bfr.readLine();
                                 storeMessageCount = Integer.parseInt(line.substring(15));
                                 sortedStores.put(storeMessageCount, store);
@@ -301,7 +320,9 @@ public class MetricManager {
                     return;
                 case 3:
                     System.out.println("Your Metrics:");
-                    try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(username) + "/metrics.txt"))) {
+                    try (BufferedReader bfr = new BufferedReader(
+                            new FileReader(FileManager.getDirectoryFromUsername(username)
+                                    + "/metrics.txt"))) {
                         String line = bfr.readLine();
                         while (line != null) {
                             System.out.println(line);
@@ -345,7 +366,9 @@ public class MetricManager {
                     SortedMap<Integer, String> sortedUserStores = new TreeMap<>();
                     storeData.forEach((store, owner) -> {
                         int storeMessageCount = 0;
-                        try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(owner) + "/" + store + "/" + username + "metrics.txt"))) {
+                        try (BufferedReader bfr = new BufferedReader(
+                                new FileReader(FileManager.getDirectoryFromUsername(owner)
+                                        + "/" + store + "/" + username + "metrics.txt"))) {
                             String line = bfr.readLine();
                             storeMessageCount = Integer.parseInt(line.substring(15));
                             sortedUserStores.put(storeMessageCount, store);
@@ -369,7 +392,9 @@ public class MetricManager {
                     SortedMap<Integer, String> sortedStores = new TreeMap<>();
                     storeData.forEach((store, owner) -> {
                         int storeMessageCount = 0;
-                        try (BufferedReader bfr = new BufferedReader(new FileReader(FileManager.getDirectoryFromUsername(owner) + "/" + store + "/metrics.txt"))) {
+                        try (BufferedReader bfr = new BufferedReader(
+                                new FileReader(FileManager.getDirectoryFromUsername(owner)
+                                        + "/" + store + "/metrics.txt"))) {
                             String line = bfr.readLine();
                             storeMessageCount = Integer.parseInt(line.substring(15));
                         } catch (IOException e) {
@@ -393,9 +418,10 @@ public class MetricManager {
             }
         }
     }
-    public static int displayMenu(String MenuHeader, String[] options, Scanner scanner) {
+
+    public static int displayMenu(String menuHeader, String[] options, Scanner scanner) {
         while (true) {
-            System.out.println(MenuHeader);
+            System.out.println(menuHeader);
             for (int i = 0; i < options.length; i++) {
                 System.out.println((i + 1) + ". " + options[i]);
             }
@@ -411,5 +437,3 @@ public class MetricManager {
     }
 
 }
-// TODO: add data sorting
-// TODO Add UI static method that handles dashboard
