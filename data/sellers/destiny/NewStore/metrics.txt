@@ -1,8 +1,0 @@
-Message Count: 2
-1 hi
-1 these
-1 are
-1 reandom
-1 messages
-1 and
-1 words
