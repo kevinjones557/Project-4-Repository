@@ -819,7 +819,6 @@ public class LogIn {
      *
      * @param args
      */
-    //TODO FIX DELETION
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
         String user = userInteraction(scan);
@@ -832,9 +831,7 @@ public class LogIn {
             }
             MarketUser currentUser = new MarketUser(user, isSeller);
             boolean running = true;
-            //This is here because the user needs to get logged out after deletion
             boolean userDeleted = false;
-            //This is here because the program breaks if a user tries to do a deletion after changing their name in the same run
             while (running) {
                 System.out.println("Would you like to enter user interaction or make account changes? " +
                         "\n1. User Interaction " +
