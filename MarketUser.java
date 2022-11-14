@@ -1,11 +1,18 @@
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.SQLOutput;
 import java.util.*;
 import java.text.SimpleDateFormat;
 
-public class MarketUser implements User{
+/**
+ * A class that handles the messaging, blocking/unblocking, invisible/visible functionality between users
+ * @author Kevin Jones
+ * @author Vinh Pham
+ * @author John Brooks
+ *
+ * @version November 2022
+ */
+public class MarketUser {
     // Output messages
     public final String SELECT_OPTION = "Please select an option below:";
     public final String BLOCK_INVISIBLE_OPTION = "1. Use block/invisible features\n2. Continue to messaging\n3. Exit Messaging System";
@@ -65,8 +72,6 @@ public class MarketUser implements User{
         isUserStore = false;
     }
     public static void main(String[] args) {
-        MarketUser mu = new MarketUser("aden",true);
-        mu.mainForSeller();
     }
 
     /** Function that waits until valid prompt
@@ -76,9 +81,9 @@ public class MarketUser implements User{
      * @author Kevin Jones
      */
 
-    public int waitForValidInput(int lowestValidValue, int highestValidValue) {
+    public int waitForValidInput(int lowestValidValue, int highestValidValue, Scanner scan) {
         int selection = Integer.MAX_VALUE;
-        Scanner localScan = new Scanner(System.in);
+        Scanner localScan = scan;
         do {
             try {
                 if (selection != Integer.MAX_VALUE) {
@@ -94,13 +99,12 @@ public class MarketUser implements User{
         return selection;
     }
 
-    public void mainForSeller() {
+    public void mainForSeller(Scanner scan) {
         String sellerName = this.username;
-        Scanner sellerScan = new Scanner(System.in);
         do {
             System.out.println(SELECT_OPTION);
             System.out.println(BLOCK_INVISIBLE_OPTION);
-            int selection = waitForValidInput(1, 3);
+            int selection = waitForValidInput(1, 3, scan);
             if (selection == 3) {
                 return;
             }
@@ -114,8 +118,8 @@ public class MarketUser implements User{
             int option;
             while (true) {
                 try {
-                    option = sellerScan.nextInt();
-                    sellerScan.nextLine();
+                    option = scan.nextInt();
+                    scan.nextLine();
                     if (option >= 1 && option <= 4) {
                         break;
                     } else {
@@ -150,8 +154,8 @@ public class MarketUser implements User{
                             int victim;
                             while (true) {
                                 try {
-                                    victim = sellerScan.nextInt();
-                                    sellerScan.nextLine();
+                                    victim = scan.nextInt();
+                                    scan.nextLine();
                                     if (victim >= 1 && victim <= userList.length) {
                                         break;
                                     } else {
@@ -169,7 +173,7 @@ public class MarketUser implements User{
                                 System.out.printf("Successfully block %s\n", userList[victim]);
                             }
                             System.out.println("Do you want to continue? (Yes/No)");
-                            if ((sellerScan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
+                            if ((scan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
                                 break;
                             }
                         }
@@ -187,8 +191,8 @@ public class MarketUser implements User{
                                 int victim;
                                 while (true) {
                                     try {
-                                        victim = sellerScan.nextInt();
-                                        sellerScan.nextLine();
+                                        victim = scan.nextInt();
+                                        scan.nextLine();
                                         if (victim >= 1 && victim <= userList.length) {
                                             break;
                                         } else {
@@ -206,7 +210,7 @@ public class MarketUser implements User{
                                     break;
                                 } else {
                                     System.out.println("Do you want to continue? (Yes/No)");
-                                    if ((sellerScan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
+                                    if ((scan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
                                         break;
                                     }
                                 }
@@ -236,8 +240,8 @@ public class MarketUser implements User{
                             int victim;
                             while (true) {
                                 try {
-                                    victim = sellerScan.nextInt();
-                                    sellerScan.nextLine();
+                                    victim = scan.nextInt();
+                                    scan.nextLine();
                                     if (victim >= 1 && victim <= userList.length) {
                                         break;
                                     } else {
@@ -255,7 +259,7 @@ public class MarketUser implements User{
                                 System.out.printf("Successfully become invisible to %s\n", userList[victim]);
                             }
                             System.out.println("Do you want to continue? (Yes/No)");
-                            if ((sellerScan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
+                            if ((scan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
                                 break;
                             }
                         }
@@ -274,8 +278,8 @@ public class MarketUser implements User{
                                 int victim;
                                 while (true) {
                                     try {
-                                        victim = sellerScan.nextInt();
-                                        sellerScan.nextLine();
+                                        victim = scan.nextInt();
+                                        scan.nextLine();
                                         if (victim >= 1 && victim <= userList.length) {
                                             break;
                                         } else {
@@ -293,7 +297,7 @@ public class MarketUser implements User{
                                     break;
                                 } else {
                                     System.out.println("Do you want to continue? (Yes/No)");
-                                    if ((sellerScan.nextLine().equalsIgnoreCase("yes"))) {
+                                    if ((scan.nextLine().equalsIgnoreCase("yes"))) {
                                         break;
                                     }
                                 }
@@ -307,7 +311,7 @@ public class MarketUser implements User{
                 System.out.println("An unknown error occurred");
             }
             System.out.println("Do you want to keep using block/invisible features?(Yes/No)");
-            if (!sellerScan.nextLine().equalsIgnoreCase("yes")) {
+            if (!scan.nextLine().equalsIgnoreCase("yes")) {
                 break;
             }
 
@@ -318,7 +322,7 @@ public class MarketUser implements User{
             this.username = sellerName;
             System.out.println(SELECT_OPTION);
             System.out.println(STORE_OR_SELLER_ACCOUNT);
-            int storeOrUser = waitForValidInput(1, 4);
+            int storeOrUser = waitForValidInput(1, 4, scan);
             if (storeOrUser == 4) {
                 return;
             } else if (storeOrUser == 3) {
@@ -332,7 +336,7 @@ public class MarketUser implements User{
                         System.out.println((i + 1) + ". " + sellerStores.get(i));
                     }
                     System.out.println(SELECT_OPTION);
-                    int storeOption = waitForValidInput(1, sellerStores.size());
+                    int storeOption = waitForValidInput(1, sellerStores.size(), scan);
                     this.username = sellerStores.get(storeOption - 1);
                     isUserStore = true;
                 }
@@ -341,7 +345,7 @@ public class MarketUser implements User{
             do {
                 System.out.println(SELECT_OPTION);
                 System.out.println(SEARCH_LIST_BUYER);
-                int searchOrCancel = waitForValidInput(1, 3);
+                int searchOrCancel = waitForValidInput(1, 3, scan);
                 if (searchOrCancel == 3) {
                     break; // this will go back to store/user account
                 }
@@ -349,7 +353,7 @@ public class MarketUser implements User{
                 String buyerName;
                 if (searchOrCancel == 1) {
                     System.out.println("Please enter the name of a buyer:");
-                    buyerName = sellerScan.nextLine().trim();
+                    buyerName = scan.nextLine().trim();
                     String[] availableUsers;
                     boolean isRecipientInvisible = true;
                     try {
@@ -379,7 +383,7 @@ public class MarketUser implements User{
                         }
                         System.out.println(allAvailableBuyers.length + 1 + ": Cancel");
                         System.out.println(SELECT_OPTION);
-                        int storeOption = waitForValidInput(1, allAvailableBuyers.length + 1);
+                        int storeOption = waitForValidInput(1, allAvailableBuyers.length + 1, scan);
                         if (storeOption != allAvailableBuyers.length + 1) {
                             recipient = allAvailableBuyers[storeOption - 1];
                         }
@@ -408,7 +412,7 @@ public class MarketUser implements User{
                     do {
                         System.out.println(SELECT_OPTION);
                         System.out.println(MESSAGE_OPTIONS);
-                        int selection = waitForValidInput(1, 7);
+                        int selection = waitForValidInput(1, 7, scan);
                         if (selection == 7) {
                             break;
                         }
@@ -419,9 +423,9 @@ public class MarketUser implements User{
                             case 2:
                                 if (canMessage) {
                                     if (!isUserStore) {
-                                        appendMessage(recipient);
+                                        appendMessage(recipient, scan);
                                     } else {
-                                        appendMessage(storeNameMap.get(this.username), recipient);
+                                        appendMessage(storeNameMap.get(this.username), recipient, scan);
                                     }
                                 } else {
                                     System.out.println("You cannot message this user because they have blocked you!");
@@ -430,9 +434,9 @@ public class MarketUser implements User{
                             case 3:
                                 if (canMessage) {
                                     if (!isUserStore) {
-                                        editMessage(recipient);
+                                        editMessage(recipient, scan);
                                     } else {
-                                        editMessage(storeNameMap.get(username), recipient);
+                                        editMessage(storeNameMap.get(username), recipient, scan);
                                     }
                                 } else {
                                     System.out.println("You cannot edit messages because this user has blocked you!");
@@ -440,9 +444,9 @@ public class MarketUser implements User{
                                 break;
                             case 4:
                                 if (!isUserStore) {
-                                    deleteMessage(recipient);
+                                    deleteMessage(recipient, scan);
                                 } else {
-                                    deleteMessage(storeNameMap.get(username), recipient);
+                                    deleteMessage(storeNameMap.get(username), recipient, scan);
                                 }
                                 break;
                             case 5:
@@ -451,7 +455,7 @@ public class MarketUser implements User{
                                     System.out.println("Please enter the path to the text file you would like to import or " +
                                             "type 'cancel' to Cancel.");
                                     do {
-                                        path = sellerScan.nextLine();
+                                        path = scan.nextLine();
                                         if (path.equalsIgnoreCase("cancel")) {
                                             break;
                                         }
@@ -469,19 +473,19 @@ public class MarketUser implements User{
                                 break;
                             case 6:
                                 System.out.println("Enter the path where you would like the csv file to be stored:");
-                                String csvPath = sellerScan.nextLine();
+                                String csvPath = scan.nextLine();
                                 writeCSV(recipient, csvPath);
                                 break;
                         }
                         System.out.println("Would you like to continue interacting with this user?\n1. Yes\n2. No");
-                        int stayWithUser = waitForValidInput(1, 2);
+                        int stayWithUser = waitForValidInput(1, 2, scan);
                         if (stayWithUser == 2) {
                             break;
                         }
                     } while (true);
                     System.out.println(SELECT_OPTION);
                     System.out.println(SWITCH_ACCOUNT);
-                    int switchUser = waitForValidInput(1, 4);
+                    int switchUser = waitForValidInput(1, 4, scan);
                     if (switchUser == 4) {
                         return;
                     } else if (switchUser == 2) {
@@ -493,20 +497,19 @@ public class MarketUser implements User{
             } while (true);
         } while (true);
         this.username = sellerName;
-        MetricManager.sellerMetricsUI(this.username, sellerScan, storeNameMap);
+        MetricManager.sellerMetricsUI(this.username, scan, storeNameMap);
 
     }
 
     /** A function to handle user input for buyers
      * @author Kevin Jones
      */
-    public void mainForBuyer() {
-        Scanner buyerScan = new Scanner(System.in);
+    public void mainForBuyer(Scanner scan) {
         boolean isRecipientStore = false;
         do {
             System.out.println(SELECT_OPTION);
             System.out.println(BLOCK_INVISIBLE_OPTION);
-            int selection = waitForValidInput(1, 6);
+            int selection = waitForValidInput(1, 6, scan);
             if (selection == 3) {
                 return;
             }
@@ -520,8 +523,8 @@ public class MarketUser implements User{
             int option;
             while (true) {
                 try {
-                    option = buyerScan.nextInt();
-                    buyerScan.nextLine();
+                    option = scan.nextInt();
+                    scan.nextLine();
                     if (option >= 1 && option <= 4) {
                         break;
                     } else {
@@ -556,8 +559,8 @@ public class MarketUser implements User{
                             int victim;
                             while (true) {
                                 try {
-                                    victim = buyerScan.nextInt();
-                                    buyerScan.nextLine();
+                                    victim = scan.nextInt();
+                                    scan.nextLine();
                                     if (victim >= 1 && victim <= userList.length) {
                                         break;
                                     } else {
@@ -575,7 +578,7 @@ public class MarketUser implements User{
                                 System.out.printf("Successfully block %s\n", userList[victim]);
                             }
                             System.out.println("Do you want to continue? (Yes/No)");
-                            if ((buyerScan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
+                            if ((scan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
                                 break;
                             }
                         }
@@ -594,8 +597,8 @@ public class MarketUser implements User{
                                 int victim;
                                 while (true) {
                                     try {
-                                        victim = buyerScan.nextInt();
-                                        buyerScan.nextLine();
+                                        victim = scan.nextInt();
+                                        scan.nextLine();
                                         if (victim >= 1 && victim <= userList.length) {
                                             break;
                                         } else {
@@ -613,7 +616,7 @@ public class MarketUser implements User{
                                     break;
                                 } else {
                                     System.out.println("Do you want to continue? (Yes/No)");
-                                    if ((buyerScan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
+                                    if ((scan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
                                         break;
                                     }
                                 }
@@ -643,8 +646,8 @@ public class MarketUser implements User{
                             int victim;
                             while (true) {
                                 try {
-                                    victim = buyerScan.nextInt();
-                                    buyerScan.nextLine();
+                                    victim = scan.nextInt();
+                                    scan.nextLine();
                                     if (victim >= 1 && victim <= userList.length) {
                                         break;
                                     } else {
@@ -662,7 +665,7 @@ public class MarketUser implements User{
                                 System.out.printf("Successfully become invisible to %s\n", userList[victim]);
                             }
                             System.out.println("Do you want to continue? (Yes/No)");
-                            if ((buyerScan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
+                            if ((scan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
                                 break;
                             }
                         }
@@ -681,8 +684,8 @@ public class MarketUser implements User{
                                 int victim;
                                 while (true) {
                                     try {
-                                        victim = buyerScan.nextInt();
-                                        buyerScan.nextLine();
+                                        victim = scan.nextInt();
+                                        scan.nextLine();
                                         if (victim >= 1 && victim <= userList.length) {
                                             break;
                                         } else {
@@ -700,7 +703,7 @@ public class MarketUser implements User{
                                     break;
                                 } else {
                                     System.out.println("Do you want to continue? (Yes/No)");
-                                    if ((buyerScan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
+                                    if ((scan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
                                         break;
                                     }
                                 }
@@ -714,7 +717,7 @@ public class MarketUser implements User{
                 System.out.println("An unknown error occurred");
             }
             System.out.println("Do you want to keep using block/invisible features?(Yes/No)");
-            if ((buyerScan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
+            if ((scan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
                 break;
             }
         } while (true);
@@ -723,7 +726,7 @@ public class MarketUser implements User{
             isRecipientStore = false;
             System.out.println(SELECT_OPTION);
             System.out.println(SEARCH_LIST_SELLER);
-            int searchOrCancel = waitForValidInput(1, 4);
+            int searchOrCancel = waitForValidInput(1, 4, scan);
             if (searchOrCancel == 4) {
                 return;
             }
@@ -733,7 +736,7 @@ public class MarketUser implements User{
             String recipient = null;
             if (searchOrCancel == 1) {
                 System.out.println("Please enter the name of a seller:");
-                String sellerName = buyerScan.nextLine().trim();
+                String sellerName = scan.nextLine().trim();
                 String[] availableUsers;
                 boolean isRecipientInvisible = true;
                 try {
@@ -762,7 +765,7 @@ public class MarketUser implements User{
                     }
                     System.out.println(allAvailableStores.length + 1 + ": Cancel");
                     System.out.println(SELECT_OPTION);
-                    int storeOption = waitForValidInput(1, allAvailableStores.length + 1);
+                    int storeOption = waitForValidInput(1, allAvailableStores.length + 1, scan);
                     if (storeOption != allAvailableStores.length + 1) {
                         recipient = allAvailableStores[storeOption - 1];
                         isRecipientStore = true;
@@ -785,8 +788,6 @@ public class MarketUser implements User{
                         if (isRecipientStore) {
                             compareSeller = storeNameMap.get(recipient);
                         }
-                        System.out.println("temp" + compareSeller);
-                        System.out.println(recipient);
                         if (s.equalsIgnoreCase(compareSeller)) {
                             canMessage = true;
                             break;
@@ -798,7 +799,7 @@ public class MarketUser implements User{
                 do {
                     System.out.println(SELECT_OPTION);
                     System.out.println(MESSAGE_OPTIONS);
-                    int selection = waitForValidInput(1, 7);
+                    int selection = waitForValidInput(1, 7, scan);
                     if (selection == 7) {
                         break;
                     }
@@ -809,9 +810,9 @@ public class MarketUser implements User{
                         case 2:
                             if (canMessage) {
                                 if (!isRecipientStore) {
-                                    appendMessage(recipient);
+                                    appendMessage(recipient, scan);
                                 } else {
-                                    appendMessage(storeNameMap.get(recipient), recipient);
+                                    appendMessage(storeNameMap.get(recipient), recipient, scan);
                                 }
                             } else {
                                 System.out.println("Cannot send message, this user has blocked you!");
@@ -820,9 +821,9 @@ public class MarketUser implements User{
                         case 3:
                             if (canMessage) {
                                 if (!isRecipientStore) {
-                                    editMessage(recipient);
+                                    editMessage(recipient, scan);
                                 } else {
-                                    editMessage(storeNameMap.get(recipient), recipient);
+                                    editMessage(storeNameMap.get(recipient), recipient, scan);
                                 }
                             } else {
                                 System.out.println("Cannot edit message, this user has blocked you!");
@@ -830,9 +831,9 @@ public class MarketUser implements User{
                             break;
                         case 4:
                             if (!isRecipientStore) {
-                                deleteMessage(recipient);
+                                deleteMessage(recipient, scan);
                             } else {
-                                deleteMessage(storeNameMap.get(recipient), recipient);
+                                deleteMessage(storeNameMap.get(recipient), recipient, scan);
                             }
                             break;
                         case 5:
@@ -841,7 +842,7 @@ public class MarketUser implements User{
                                 System.out.println("Please enter the path to the text file you would like to import or " +
                                         "type 'cancel' to Cancel.");
                                 do {
-                                    path = buyerScan.nextLine();
+                                    path = scan.nextLine();
                                     if (path.equalsIgnoreCase("cancel")) {
                                         break;
                                     }
@@ -859,19 +860,19 @@ public class MarketUser implements User{
                             break;
                         case 6:
                             System.out.println("Enter the path where you would like the csv file to be stored:");
-                            String csvPath = buyerScan.nextLine();
+                            String csvPath = scan.nextLine();
                             writeCSV(recipient, csvPath);
                             break;
                     }
                     System.out.println("Would you like to continue interacting with this user?\n1. Yes\n2. No");
-                    int stayWithUser = waitForValidInput(1, 2);
+                    int stayWithUser = waitForValidInput(1, 2, scan);
                     if (stayWithUser == 2) {
                         break;
                     }
                 } while (true);
             }
         } while (true);
-        MetricManager.buyerMetricsUI(this.username, buyerScan, storeNameMap);
+        MetricManager.buyerMetricsUI(this.username, scan, storeNameMap);
     }
 
     /** A static method that will change the names of files and directories to match username
@@ -1086,11 +1087,12 @@ public class MarketUser implements User{
      */
 
     public void message() {
+        Scanner scan = new Scanner(System.in);
         if (isSeller) {
-            this.mainForSeller();
+            this.mainForSeller(scan);
         }
         else {
-            this.mainForBuyer();
+            this.mainForBuyer(scan);
         }
     }
 
@@ -1381,7 +1383,7 @@ public class MarketUser implements User{
      * @author John Brooks
      */
 
-    public void appendMessage(String recipient) {
+    public void appendMessage(String recipient, Scanner scan) {
 
         String fileRecipient = "";
         String fileSender = "";
@@ -1393,7 +1395,7 @@ public class MarketUser implements User{
             fileSender = "data/buyers/" + username + "/";
             fileRecipient = "data/sellers/" + recipient + "/";
         }
-        appendMessageExecute(recipient, fileSender, fileRecipient);
+        appendMessageExecute(recipient, fileSender, fileRecipient, scan);
     }
 
     /**
@@ -1406,17 +1408,17 @@ public class MarketUser implements User{
      * @author John Brooks
      */
 
-    public void appendMessage(String seller, String recipient) {
+    public void appendMessage(String seller, String recipient, Scanner scan) {
         String fileRecipient;
         String fileSender;
         if (!isUserStore) { // this means recipient is the storeName
             fileSender = "data/buyers/" + username + "/";
             fileRecipient = "data/sellers/" + seller + "/" + recipient + "/";
-            appendMessageExecute(recipient, fileSender, fileRecipient);
+            appendMessageExecute(recipient, fileSender, fileRecipient, scan);
         } else {
             fileSender = "data/sellers/" + seller + "/" + username + "/";
             fileRecipient = "data/buyers/" + recipient + "/";
-            appendMessageExecute(recipient, fileSender, fileRecipient);
+            appendMessageExecute(recipient, fileSender, fileRecipient, scan);
         }
     }
 
@@ -1461,7 +1463,7 @@ public class MarketUser implements User{
      *
      * @author John Brooks
      */
-    public void appendMessageExecute(String recipient, String fileSender, String fileRecipient) {
+    public void appendMessageExecute(String recipient, String fileSender, String fileRecipient, Scanner scan) {
         String message;
         String printFile;
 
@@ -1480,7 +1482,6 @@ public class MarketUser implements User{
                 PrintWriter messageSenderWriter = new PrintWriter(fosSend);
                 FileOutputStream fosReceive = new FileOutputStream(recipientF, true);
                 PrintWriter messageReceiveWriter = new PrintWriter(fosReceive);
-                Scanner scan = new Scanner(System.in);
                 System.out.print(username + "- ");
                 message = scan.nextLine();
                 //write it on the end of each person's file
@@ -1512,7 +1513,7 @@ public class MarketUser implements User{
      *
      * @author John Brooks
      */
-    public void editMessage(String recipient) {
+    public void editMessage(String recipient, Scanner scan) {
 
         String fileRecipient = "";
         String fileSender = "";
@@ -1524,7 +1525,7 @@ public class MarketUser implements User{
             fileSender = "data/buyers/" + username + "/";
             fileRecipient = "data/sellers/" + recipient + "/";
         }
-        editMessageExecute(recipient, fileSender, fileRecipient);
+        editMessageExecute(recipient, fileSender, fileRecipient, scan);
     }
 
     /**
@@ -1535,18 +1536,18 @@ public class MarketUser implements User{
      *
      * @author John Brooks
      */
-    public void editMessage(String seller, String recipient) {
+    public void editMessage(String seller, String recipient, Scanner scan) {
         String fileRecipient;
         String fileSender;
         if (!isUserStore) { // this means recipient is the store
             fileSender = "data/buyers/" + username + "/";
             fileRecipient = "data/sellers/" + seller + "/" + recipient + "/";
-            editMessageExecute(recipient, fileSender, fileRecipient);
+            editMessageExecute(recipient, fileSender, fileRecipient, scan);
         } else {
             fileSender = "data/sellers/" + seller + "/" + username + "/";
             fileRecipient = "data/buyers/" + recipient + "/";
             System.out.println(fileSender + "\n" + fileRecipient);
-            editMessageExecute(recipient, fileSender, fileRecipient);
+            editMessageExecute(recipient, fileSender, fileRecipient, scan);
         }
     }
 
@@ -1561,7 +1562,7 @@ public class MarketUser implements User{
      *
      * @author John Brooks
      */
-    public void editMessageExecute(String recipient, String fileSender, String fileRecipient) {
+    public void editMessageExecute(String recipient, String fileSender, String fileRecipient, Scanner scan) {
         String message;
         String printFile;
         int count = 0;
@@ -1598,7 +1599,6 @@ public class MarketUser implements User{
                     PrintWriter messageSenderWriter = new PrintWriter(fosSend);
                     FileOutputStream fosReceive = new FileOutputStream(recipientF, false);
                     PrintWriter messageReceiveWriter = new PrintWriter(fosReceive);
-                    Scanner scan = new Scanner(System.in);
                     //acquiring index
                     System.out.println("Which index would you like to change?");
                     do {
@@ -1670,7 +1670,7 @@ public class MarketUser implements User{
      *
      * @author John Brooks
      */
-    public void deleteMessage(String recipient) {
+    public void deleteMessage(String recipient, Scanner scan) {
 
         String fileRecipient = "";
         String fileSender = "";
@@ -1682,7 +1682,7 @@ public class MarketUser implements User{
             fileSender = "data/buyers/" + username + "/";
             fileRecipient = "data/sellers/" + recipient + "/";
         }
-        deleteMessageExecute(recipient, fileSender, fileRecipient);
+        deleteMessageExecute(recipient, fileSender, fileRecipient, scan);
     }
 
     /**
@@ -1693,17 +1693,17 @@ public class MarketUser implements User{
      *
      * @author John Brooks
      */
-    public void deleteMessage(String seller, String recipient) {
+    public void deleteMessage(String seller, String recipient, Scanner scan) {
         String fileRecipient;
         String fileSender;
         if (!isUserStore) { // this means recipient is the storeName
             fileSender = "data/buyers/" + username + "/";
             fileRecipient = "data/sellers/" + seller + "/" + recipient + "/";
-            deleteMessageExecute(recipient, fileSender, fileRecipient);
+            deleteMessageExecute(recipient, fileSender, fileRecipient, scan);
         } else {
             fileSender = "data/sellers/" + seller + "/" + username + "/";
             fileRecipient = "data/buyers/" + recipient + "/";
-            deleteMessageExecute(recipient, fileSender, fileRecipient);
+            deleteMessageExecute(recipient, fileSender, fileRecipient, scan);
         }
     }
 
@@ -1716,7 +1716,7 @@ public class MarketUser implements User{
      * @author John Brooks
      */
 
-    public void deleteMessageExecute(String recipient, String fileSender, String fileRecipient) {
+    public void deleteMessageExecute(String recipient, String fileSender, String fileRecipient, Scanner scan) {
         String printFile;
         int count = 0;
         int flag;
@@ -1741,7 +1741,6 @@ public class MarketUser implements User{
                 if (count > 0) {
                     FileOutputStream fosSend = new FileOutputStream(senderF, false);
                     PrintWriter messageSenderWriter = new PrintWriter(fosSend);
-                    Scanner scan = new Scanner(System.in);
                     //get index of delete
                     do {
                         flag = 0;
@@ -1822,6 +1821,15 @@ public class MarketUser implements User{
                 pwReceiver.println(line);
                 pwSender.println(line);
                 line = bfr.readLine();
+                if (!isSeller) {
+                    String storePath;
+                    if (FileManager.checkSellerExists(recipient)) {
+                        storePath = null;
+                    } else {
+                        storePath = FileManager.getStoreDirectory(storeNameMap.get(recipient),recipient);
+                    }
+                    MetricManager.addDeleteMessageData(username, storePath, line, false);
+                }
             }
             pwReceiver.close();
             pwSender.close();

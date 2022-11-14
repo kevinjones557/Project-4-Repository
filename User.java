@@ -1,5 +1,10 @@
 import java.io.IOException;
-
+/**
+ * An interface to set up original functionality of MarketUser
+ * @author Kevin Jones
+ *
+ * @version November 2022
+ */
 public interface User {
     // private String username (handed to class in constructor)
     // private boolean isSeller (passed to constructor)
