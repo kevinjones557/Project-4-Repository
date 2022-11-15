@@ -1117,14 +1117,16 @@ public class MarketUser {
     /**
      * Method called when user is logged in, using System.out.println() will ask user if they want to message someone,
      * who they want to message, and what they want to message.
+     *
+     * No test case for function, however, the only two possible functions called from this method have test cases
      */
 
     public void message() {
         Scanner scan = new Scanner(System.in);
         if (isSeller) {
-            this.mainForSeller(scan);
+            mainForSeller(scan);
         } else {
-            this.mainForBuyer(scan);
+            mainForBuyer(scan);
         }
     }
 
@@ -1402,7 +1404,6 @@ public class MarketUser {
                 e.printStackTrace();
             }
         } else {
-            System.out.println("making metrics for user");
             FileManager.generateMetricsAboutUser(this.username,
                     "data/sellers/" + storeNameMap.get(recipient)
                             + "/" + recipient + "/");

@@ -153,20 +153,7 @@ class MarketUserTest {
 
     @Test
     void message() {
-        String input = 5 + System.lineSeparator() + "h" + System.lineSeparator() + 3 + System.lineSeparator();
-        InputStream inputStream = new ByteArrayInputStream(input.getBytes());
-        Scanner scan = new Scanner(inputStream);
 
-        OutputStream os = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(os));
-
-        MarketUser mu = new MarketUser("testBuyer", false);
-        mu.waitForValidInput(1, 4, scan);
-
-        String expectedOutput = "Please enter a valid number:" + System.lineSeparator() +
-                "Please enter a valid number:" + System.lineSeparator();
-
-        Assert.assertEquals(expectedOutput, os.toString());
     }
 
 
@@ -206,9 +193,6 @@ class MarketUserTest {
         } catch (IOException e){
             System.out.println("Could not read csv");
         }
-
-        System.out.println(expectedResult);
-        System.out.println(actualResult);
 
         Assert.assertEquals(expectedResult, actualResult);
 
@@ -251,6 +235,40 @@ class MarketUserTest {
 
     @Test
     void displayMessage() {
+        Path testUserFolder = null;
+
+        OutputStream os = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(os));
+
+        MarketUser mu = new MarketUser("TempBuyer", false);
+
+        try {
+            testUserFolder = Files.createDirectory(Paths.get("data/buyers/TempBuyer"));
+            File buyerFile = new File(testUserFolder + "/TempBuyerTempSeller.txt");
+            buyerFile.createNewFile();
+            PrintWriter pw = new PrintWriter(new FileWriter(buyerFile, true));
+            pw.println("TempBuyer 11/14 08:52:56- hello there");
+            pw.println("TempBuyer 11/14 08:52:56- another message");
+            pw.println("TempBuyer 11/14 08:52:56- one last one");
+            pw.close();
+        } catch (IOException e) {
+            System.out.println("Could not create folders");
+        }
+
+        mu.displayMessage("TempSeller");
+
+        String expectedResult = "TempBuyer 11/14 08:52:56- hello there" + System.lineSeparator() +
+                "TempBuyer 11/14 08:52:56- another message" + System.lineSeparator() +
+                "TempBuyer 11/14 08:52:56- one last one" + System.lineSeparator();
+
+        Assert.assertEquals(expectedResult, os.toString());
+
+        try {
+            Files.delete(Paths.get(testUserFolder + "/TempBuyerTempSeller.txt"));
+            Files.delete(Paths.get("data/buyers/TempBuyer"));
+        } catch (IOException e) {
+            System.out.println("Unable to delete file and folder");
+        }
     }
 
     @Test
