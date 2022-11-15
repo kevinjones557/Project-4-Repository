@@ -71,7 +71,6 @@ public class MarketUser {
                 selection = localScan.nextInt();
                 localScan.nextLine();
             } catch (InputMismatchException e) {
-                System.out.println("Please enter a valid number:");
                 localScan.nextLine();
             }
         } while ((selection < lowestValidValue || selection > highestValidValue));
@@ -927,42 +926,46 @@ public class MarketUser {
         for (String seller : sellers) {
             File currentSeller = new File("data/sellers/" + seller);
             String[] allFiles = currentSeller.list();
-            for (String filename : allFiles) {
-                File possibleStore = new File("data/sellers/" + seller + "/" + filename);
-                if (possibleStore.isDirectory()) {
-                    String[] storeFiles = possibleStore.list();
-                    for (String storeFile : storeFiles) {
-                        int indexOldUsername = storeFile.indexOf(oldUsername);
+            if (!(allFiles == null)) {
+                for (String filename : allFiles) {
+                    File possibleStore = new File("data/sellers/" + seller + "/" + filename);
+                    if (possibleStore.isDirectory()) {
+                        String[] storeFiles = possibleStore.list();
+                        if (!(storeFiles == null)) {
+                            for (String storeFile : storeFiles) {
+                                int indexOldUsername = storeFile.indexOf(oldUsername);
+                                if (indexOldUsername >= 0) {
+                                    changeNameInFile(oldUsername, newUsername, "data/sellers/" + seller + "/"
+                                            + filename + "/" + storeFile);
+                                    String newFilename;
+                                    newFilename = filename.substring(0, indexOldUsername) + newUsername + ".txt";
+                                    try {
+                                        Files.move(Paths.get("data/sellers/" + seller + "/"
+                                                + filename + "/" + storeFile), Paths.get("data/sellers/" + seller + "/"
+                                                + filename + "/" + newFilename));
+                                    } catch (IOException e) {
+                                        System.out.println("Sorry, failed to rename user!");
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        int indexOldUsername = filename.indexOf(oldUsername);
                         if (indexOldUsername >= 0) {
-                            changeNameInFile(oldUsername, newUsername, "data/sellers/" + seller + "/"
-                                    + filename + "/" + storeFile);
+                            changeNameInFile(oldUsername, newUsername, "data/sellers/" + seller + "/" + filename);
                             String newFilename;
-                            newFilename = filename.substring(0, indexOldUsername) + newUsername + ".txt";
+                            if (indexOldUsername == 0) {
+                                newFilename = newUsername + filename.substring(oldUsername.length());
+                            } else {
+                                newFilename = filename.substring(0, indexOldUsername) + newUsername + ".txt";
+                            }
                             try {
-                                Files.move(Paths.get("data/sellers/" + seller + "/"
-                                        + filename + "/" + storeFile), Paths.get("data/sellers/" + seller + "/"
-                                        + filename + "/" + newFilename));
+                                Files.move(Paths.get("data/sellers/" + seller + "/" + filename),
+                                        Paths.get("data/sellers/"
+                                                + seller + "/" + newFilename));
                             } catch (IOException e) {
                                 System.out.println("Sorry, failed to rename user!");
                             }
-                        }
-                    }
-                } else {
-                    int indexOldUsername = filename.indexOf(oldUsername);
-                    if (indexOldUsername >= 0) {
-                        changeNameInFile(oldUsername, newUsername, "data/sellers/" + seller + "/" + filename);
-                        String newFilename;
-                        if (indexOldUsername == 0) {
-                            newFilename = newUsername + filename.substring(oldUsername.length());
-                        } else {
-                            newFilename = filename.substring(0, indexOldUsername) + newUsername + ".txt";
-                        }
-                        try {
-                            Files.move(Paths.get("data/sellers/" + seller + "/" + filename),
-                                    Paths.get("data/sellers/"
-                                            + seller + "/" + newFilename));
-                        } catch (IOException e) {
-                            System.out.println("Sorry, failed to rename user!");
                         }
                     }
                 }
@@ -980,21 +983,23 @@ public class MarketUser {
         for (String buyer : buyers) {
             File currentBuyer = new File("data/buyers/" + buyer);
             String[] allFiles = currentBuyer.list();
-            for (String filename : allFiles) {
-                int indexOldUsername = filename.indexOf(oldUsername);
-                if (indexOldUsername >= 0) {
-                    changeNameInFile(oldUsername, newUsername, "data/buyers/" + buyer + "/" + filename);
-                    String newFilename;
-                    if (indexOldUsername == 0) {
-                        newFilename = newUsername + filename.substring(oldUsername.length());
-                    } else {
-                        newFilename = filename.substring(0, indexOldUsername) + newUsername + ".txt";
-                    }
-                    try {
-                        Files.move(Paths.get("data/buyers/" + buyer + "/" + filename),
-                                Paths.get("data/buyers/" + buyer + "/" + newFilename));
-                    } catch (IOException e) {
-                        System.out.println("Sorry, failed to rename user!");
+            if (!(allFiles == null)) {
+                for (String filename : allFiles) {
+                    int indexOldUsername = filename.indexOf(oldUsername);
+                    if (indexOldUsername >= 0) {
+                        changeNameInFile(oldUsername, newUsername, "data/buyers/" + buyer + "/" + filename);
+                        String newFilename;
+                        if (indexOldUsername == 0) {
+                            newFilename = newUsername + filename.substring(oldUsername.length());
+                        } else {
+                            newFilename = filename.substring(0, indexOldUsername) + newUsername + ".txt";
+                        }
+                        try {
+                            Files.move(Paths.get("data/buyers/" + buyer + "/" + filename),
+                                    Paths.get("data/buyers/" + buyer + "/" + newFilename));
+                        } catch (IOException e) {
+                            System.out.println("Sorry, failed to rename user!");
+                        }
                     }
                 }
             }
@@ -1020,18 +1025,20 @@ public class MarketUser {
         for (String buyer : buyers) {
             File currentBuyer = new File("data/buyers/" + buyer);
             String[] allFiles = currentBuyer.list();
-            for (String filename : allFiles) {
-                int indexOldStoreName = filename.indexOf(oldStoreName);
-                if (indexOldStoreName >= 0) {
-                    changeNameInFile(oldStoreName, newStoreName,
-                            "data/buyers/" + buyer + "/" + filename);
-                    String newFilename;
-                    newFilename = filename.substring(0, indexOldStoreName) + newStoreName + ".txt";
-                    try {
-                        Files.move(Paths.get("data/buyers/" + buyer + "/" + filename),
-                                Paths.get("data/buyers/" + buyer + "/" + newFilename));
-                    } catch (IOException e) {
-                        System.out.println("Sorry, failed to rename user!");
+            if (!(allFiles == null)) {
+                for (String filename : allFiles) {
+                    int indexOldStoreName = filename.indexOf(oldStoreName);
+                    if (indexOldStoreName >= 0) {
+                        changeNameInFile(oldStoreName, newStoreName,
+                                "data/buyers/" + buyer + "/" + filename);
+                        String newFilename;
+                        newFilename = filename.substring(0, indexOldStoreName) + newStoreName + ".txt";
+                        try {
+                            Files.move(Paths.get("data/buyers/" + buyer + "/" + filename),
+                                    Paths.get("data/buyers/" + buyer + "/" + newFilename));
+                        } catch (IOException e) {
+                            System.out.println("Sorry, failed to rename user!");
+                        }
                     }
                 }
             }
@@ -1039,32 +1046,37 @@ public class MarketUser {
         for (String seller : sellers) {
             File currentSeller = new File("data/sellers/" + seller);
             String[] allFiles = currentSeller.list();
-            for (String filename : allFiles) {
-                File possibleStore = new File("data/sellers/" +
-                        seller + "/" + filename);
-                if (possibleStore.isDirectory() && filename.equals(oldStoreName)) {
-                    String[] storeFiles = possibleStore.list();
-                    for (String storeFile : storeFiles) {
-                        int indexOldUsername = storeFile.indexOf(oldStoreName);
-                        if (indexOldUsername >= 0) {
-                            changeNameInFile(oldStoreName, newStoreName, "data/sellers/" + seller + "/"
-                                    + filename + "/" + storeFile);
-                            String newFilename;
-                            newFilename = newStoreName + storeFile.substring(oldStoreName.length());
-                            try {
-                                Files.move(Paths.get("data/sellers/" + seller + "/"
-                                        + filename + "/" + storeFile), Paths.get("data/sellers/" + seller + "/"
-                                        + filename + "/" + newFilename));
-                            } catch (IOException e) {
-                                System.out.println("Sorry, failed to rename user!");
+            if (!(allFiles == null)) {
+                for (String filename : allFiles) {
+                    File possibleStore = new File("data/sellers/" +
+                            seller + "/" + filename);
+                    if (possibleStore.isDirectory() && filename.equals(oldStoreName)) {
+                        String[] storeFiles = possibleStore.list();
+                        if (!(storeFiles == null)) {
+                            for (String storeFile : storeFiles) {
+                                int indexOldUsername = storeFile.indexOf(oldStoreName);
+                                if (indexOldUsername >= 0) {
+                                    changeNameInFile(oldStoreName, newStoreName, "data/sellers/" +
+                                            seller + "/" + filename + "/" + storeFile);
+                                    String newFilename;
+                                    newFilename = newStoreName + storeFile.substring(oldStoreName.length());
+                                    try {
+                                        Files.move(Paths.get("data/sellers/" + seller + "/"
+                                                + filename + "/" + storeFile),
+                                                Paths.get("data/sellers/" + seller + "/"
+                                                + filename + "/" + newFilename));
+                                    } catch (IOException e) {
+                                        System.out.println("Sorry, failed to rename user!");
+                                    }
+                                }
                             }
                         }
-                    }
-                    try {
-                        Files.move(Paths.get("data/sellers/" + seller + "/" + oldStoreName),
-                                Paths.get("data/sellers/" + seller + "/" + newStoreName));
-                    } catch (Exception e) {
-                        System.out.println("Sorry, unable to rename store!");
+                        try {
+                            Files.move(Paths.get("data/sellers/" + seller + "/" + oldStoreName),
+                                    Paths.get("data/sellers/" + seller + "/" + newStoreName));
+                        } catch (Exception e) {
+                            System.out.println("Sorry, unable to rename store!");
+                        }
                     }
                 }
             }

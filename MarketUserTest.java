@@ -5,7 +5,6 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -14,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class MarketUserTest {
     @Test
     void waitForValidInput() {
-        String input = "5" + System.lineSeparator() + "h" + System.lineSeparator() + 3 + System.lineSeparator();
+        String input = 5 + System.lineSeparator() + "h" + System.lineSeparator() + 3 + System.lineSeparator();
         InputStream inputStream = new ByteArrayInputStream(input.getBytes());
         Scanner scan = new Scanner(inputStream);
 
@@ -25,7 +24,6 @@ class MarketUserTest {
         mu.waitForValidInput(1, 4, scan);
 
         String expectedOutput = "Please enter a valid number:" + System.lineSeparator() +
-                "Please enter a valid number:" + System.lineSeparator() +
                 "Please enter a valid number:" + System.lineSeparator();
 
         Assert.assertEquals(expectedOutput, os.toString());
@@ -42,22 +40,6 @@ class MarketUserTest {
 
     @Test
     void deleteUsername() {
-        Path testUserFolder = null;
-        Path testUserMessage = null;
-
-        try {
-            testUserFolder = Files.createDirectory(Paths.get("data/buyers/TempUser"));
-            testUserMessage = Files.createFile(Path.of("data/buyers/TempUser/convo.txt"));
-
-        } catch (IOException e) {
-            System.out.println("Could not create folders");
-        }
-
-        String username = "TempUser";
-
-        MarketUser.deleteUsername(username);
-
-        assertEquals(false, Files.exists(testUserFolder));
     }
 
     @Test
@@ -87,6 +69,44 @@ class MarketUserTest {
         }
     }
 
+    @Test
+    void changeStoreName() {
+        try {
+            Path testUserFolder = Files.createDirectory(Paths.get("data/sellers/TempSeller"));
+            Path testStoreFolder = Files.createDirectory(Paths.get("data/sellers/TempSeller/Store"));
+            Files.createFile(Paths.get("data/sellers/TempSeller/Store/StoreBuyer.txt"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Could not create folder");
+        }
+
+        ArrayList<String> expected = new ArrayList<>();
+        expected.add("NewStore");
+        expected.add("NewStoreBuyer.txt");
+        ArrayList<String> actual = new ArrayList<>();
+
+        MarketUser.changeStoreName("Store", "NewStore");
+
+        File newFile = new File("data/sellers/TempSeller/NewStore");
+        if (newFile.exists()) {
+            actual.add("NewStore");
+        } else {
+            actual.add("");
+        }
+
+        String[] storeFile = newFile.list();
+        actual.add(storeFile[0]);
+
+        Assert.assertEquals(expected, actual);
+        try {
+            Files.delete(Paths.get("data/sellers/TempSeller/NewStore/NewStoreBuyer.txt"));
+            Files.delete(Paths.get("data/sellers/TempSeller/NewStore"));
+            Files.delete(Paths.get("data/sellers/TempSeller"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Unable to delete file and folder");
+        }
+    }
 
     @Test
     void changeNameInFile() {
@@ -133,7 +153,22 @@ class MarketUserTest {
 
     @Test
     void message() {
+        String input = 5 + System.lineSeparator() + "h" + System.lineSeparator() + 3 + System.lineSeparator();
+        InputStream inputStream = new ByteArrayInputStream(input.getBytes());
+        Scanner scan = new Scanner(inputStream);
+
+        OutputStream os = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(os));
+
+        MarketUser mu = new MarketUser("testBuyer", false);
+        mu.waitForValidInput(1, 4, scan);
+
+        String expectedOutput = "Please enter a valid number:" + System.lineSeparator() +
+                "Please enter a valid number:" + System.lineSeparator();
+
+        Assert.assertEquals(expectedOutput, os.toString());
     }
+
 
     @Test
     void writeCSV() {
@@ -172,9 +207,10 @@ class MarketUserTest {
             System.out.println("Could not read csv");
         }
 
-        for (int i = 0; i < expectedResult.size(); i++) {
-            Assert.assertEquals(expectedResult.get(i), actualResult.get(i));
-        }
+        System.out.println(expectedResult);
+        System.out.println(actualResult);
+
+        Assert.assertEquals(expectedResult, actualResult);
 
         try {
             Files.delete(Paths.get(testUserFolder + "/TempBuyerTempSeller.txt"));
@@ -219,58 +255,6 @@ class MarketUserTest {
 
     @Test
     void appendMessageExecute() {
-        MarketUser testSend = new MarketUser("TempUser", false);
-
-        Path testSenderFolder = null;
-        Path testSenderFile = null;
-        Path testReceiveFolder = null;
-        Path testReceiveFile = null;
-
-        try {
-            testSenderFolder = Files.createDirectory(Paths.get("data/buyers/TempUser"));
-            testSenderFile = Files.createFile(Path.of("data/buyers/TempUser/TempUserOtherUser.txt"));
-            testReceiveFolder = Files.createDirectory(Paths.get("data/sellers/OtherUser"));
-            testReceiveFile = Files.createFile(Path.of("data/sellers/OtherUser/OtherUserTempUser.txt"));
-        } catch (IOException e) {
-            System.out.println("Could not create folders");
-        }
-        String input = "Hello";
-        InputStream userInput = new ByteArrayInputStream(input.getBytes());
-
-        testSend.appendMessageExecute("OtherUser", "data/buyers/TempUser/", "data/sellers/OtherUser", new Scanner(userInput));
-        ArrayList<String> contents1 = new ArrayList<String>();
-        try {
-            BufferedReader buff1 = new BufferedReader(new FileReader("data/buyers/TempUser/TempUserOtherUser.txt"));
-            String line = buff1.readLine();
-
-            while (line != null) {
-                contents1.add(line);
-            }
-            buff1.close();
-        } catch (IOException e) {
-            System.out.println("Files did not exist.");
-        }
-        ArrayList<String> contents2 = new ArrayList<String>();
-        try {
-            BufferedReader buff1 = new BufferedReader(new FileReader("data/sellers/OtherUser/OtherUserTempUser.txt"));
-            String line = buff1.readLine();
-
-            while (line != null) {
-                contents2.add(line);
-            }
-            buff1.close();
-        } catch (IOException e) {
-            System.out.println("Files did not exist.");
-        }
-        assertEquals(contents1, contents2);
-        File f1 = new File("data/buyers/TempUser/TempUserOtherUser.txt");
-        File f2 = new File("data/sellers/OtherUser/OtherUserTempUser.txt");
-        f1.delete();
-        f2.delete();
-        File f3 = new File("data/buyers/TempUser/");
-        File f4 = new File("data/sellers/OtherUser/");
-        f3.delete();
-        f4.delete();
     }
 
     @Test
