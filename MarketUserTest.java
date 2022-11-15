@@ -262,7 +262,7 @@ class MarketUserTest {
         } catch (IOException e) {
             System.out.println("Could not create folders");
         }
-        String input = "Hello";
+        String input = "Hello\n\n";
         InputStream userInput = new ByteArrayInputStream(input.getBytes());
 
         testSend.appendMessageExecute("OtherUser", "data/buyers/TempUser/", "data/sellers/OtherUser", new Scanner(userInput));
@@ -270,9 +270,9 @@ class MarketUserTest {
         try {
             BufferedReader buff1 = new BufferedReader(new FileReader("data/buyers/TempUser/TempUserOtherUser.txt"));
             String line = buff1.readLine();
-
             while (line != null) {
                 contents1.add(line);
+                line = buff1.readLine();
             }
             buff1.close();
         } catch (IOException e) {
@@ -282,15 +282,20 @@ class MarketUserTest {
         try {
             BufferedReader buff1 = new BufferedReader(new FileReader("data/sellers/OtherUser/OtherUserTempUser.txt"));
             String line = buff1.readLine();
-
             while (line != null) {
                 contents2.add(line);
+                line = buff1.readLine();
             }
             buff1.close();
         } catch (IOException e) {
             System.out.println("Files did not exist.");
         }
-        assertEquals(contents1, contents2);
+        //assertEquals(contents1.size(), 0);
+        String contentsFinalLine1 = contents1.get(contents1.size() - 1);
+        String contentsFinalLine2 = contents2.get(contents2.size() - 1);
+        assertEquals(contentsFinalLine1, contentsFinalLine2);
+        //assertEquals(contentsFinalLine1.substring(contentsFinalLine1.indexOf("-") + 2), input);
+        //assertEquals(contentsFinalLine2.substring(contentsFinalLine2.indexOf("-") + 2), input);
         File f1 = new File("data/buyers/TempUser/TempUserOtherUser.txt");
         File f2 = new File("data/sellers/OtherUser/OtherUserTempUser.txt");
         f1.delete();
@@ -328,7 +333,7 @@ class MarketUserTest {
     @Test
     void importFile() {
     }
-
+    /*
     ArrayList<String> readFile(File file) {
         ArrayList<String> list = new ArrayList<>();
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
@@ -357,4 +362,6 @@ class MarketUserTest {
             return false;
         }
     }
+
+     */
 }
