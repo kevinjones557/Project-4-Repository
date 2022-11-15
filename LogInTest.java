@@ -12,11 +12,13 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/** A class to test every part of the LogIn class.
+/**
+ * A class to test every part of the LogIn class along with file output.
  * To avoid any errors, these tests MUST be run WITHOUT ANY EXISTING USERS
  * or else the output might be changed from the expected output in these cases, and they may fail.
  * These are JUnit4 tests.
  * <p>
+ *
  * @author riley197
  * @version 11/13/22
  */
@@ -35,7 +37,8 @@ public class LogInTest {
         }
     }
 
-    /** Runs the testing for the LogIn class - template code obtained from @PurdueCS
+    /**
+     * Runs the testing for the LogIn class - template code obtained from @PurdueCS
      * <p>
      * author @Adenr4615
      * version 11/13/22
@@ -259,6 +262,7 @@ public class LogInTest {
                     "email@domain.com" + System.lineSeparator() +
                     "2" + System.lineSeparator() +
                     "1" + System.lineSeparator() +
+                    "testCaseRun" + System.lineSeparator() +
                     "newName" + System.lineSeparator() +
                     "1" + System.lineSeparator() +
                     "2" + System.lineSeparator() +
@@ -308,6 +312,7 @@ public class LogInTest {
                     "3. Change a store name\n" +
                     "4. Exit\n" +
                     "Please enter your new username!\n" +
+                    "Username already exists! Please enter another username.\n" +
                     "Name change successful! Enjoy your new username, newName!\n" +
                     "Would you like to continue using the program? \n" +
                     "1. Yes \n" +
@@ -408,7 +413,7 @@ public class LogInTest {
             } catch (Exception e) {
                 System.out.println("Test 4 was not successful!");
             }
-            assertEquals(fileContents, expectedContents);
+            assertEquals(expectedContents, fileContents);
 
             input = "1" + System.lineSeparator() +
                     "testCaseRun" + System.lineSeparator() +
@@ -464,7 +469,7 @@ public class LogInTest {
             } catch (Exception e) {
                 System.out.println("Test 5 was not successful!");
             }
-            assertEquals(fileContents, expectedContents);
+            assertEquals(expectedContents, fileContents);
 
             input = "1" + System.lineSeparator() +
                     "newName" + System.lineSeparator() +
@@ -635,6 +640,21 @@ public class LogInTest {
             expected = expected.replaceAll("\r\n", "\n");
             output = output.replaceAll("\r\n", "\n");
             assertEquals(expected.trim(), output.trim());
+        }
+
+        /*Confirms that the deletion algorithm worked by checking
+        the directory to see if the files still exist or not*/
+        @Test
+        public void testSeven() {
+            String[] directoryContents = null;
+            String[] expectedContents = {"storeNames"};
+            try {
+                File f = new File("users/");
+                directoryContents = f.list();
+            } catch (Exception e) {
+                System.out.println("Test 7 was not successful!");
+            }
+            assertEquals(Arrays.deepToString(expectedContents), Arrays.deepToString(directoryContents));
         }
     }
 }
