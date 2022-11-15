@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * A class to test every part of the LogIn class along with file output.
- * To avoid any errors, these tests MUST be run WITHOUT ANY EXISTING USERS
+ * To avoid any errors, these tests MUST be run WITHOUT ANY EXISTING US0ERS
  * or else the output might be changed from the expected output in these cases, and they may fail.
  * These are JUnit4 tests.
  * <p>
