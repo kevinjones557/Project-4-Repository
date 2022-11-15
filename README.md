@@ -63,7 +63,7 @@ Testing: Run ```LogInTest.java```. Ensure that the users folder has no files oth
 
 The MarketUser class handles the messaging portion of the application. It is called from LogIn.
 
-Testing: Run ```MarketUserTest.java```.
+Testing: Run ```MarketUserTest.java``` and ```BlockingAndInvisibleTest.java```.
 
 **User**
 
