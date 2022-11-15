@@ -264,6 +264,7 @@ public class LogIn {
                     System.out.println("Username already exists! Please enter another username.");
                     newUser = scan.nextLine();
                     dir.delete();
+                    dir = new File("users/" + newUser);
                 } else if (newUser.equals("") || newUser.length() < 6
                         || newUser.length() > 16 || newUser.contains(" ")) {
                     System.out.println("Username constraints: " +
