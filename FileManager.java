@@ -157,13 +157,17 @@ public class FileManager {
     public static LinkedHashMap<String, String> mapStoresToSellers() {
         LinkedHashMap<String, String> storesMapped = new LinkedHashMap<>();
         String[] sellerList = new File("data/sellers/").list();
-        for (String seller : sellerList) {
-            String[] storesOwned = new File("data/sellers/" + seller).list();
-            for (String store : storesOwned) {
-                if (Files.isDirectory(Paths.get("data/sellers/" + seller + "/" + store))) {
-                    storesMapped.put(store, seller);
-                }
+        if (!(sellerList == null)) {
+            for (String seller : sellerList) {
+                String[] storesOwned = new File("data/sellers/" + seller).list();
+                if (!(storesOwned == null)) {
+                    for (String store : storesOwned) {
+                        if (Files.isDirectory(Paths.get("data/sellers/" + seller + "/" + store))) {
+                            storesMapped.put(store, seller);
+                        }
 
+                    }
+                }
             }
         }
         return storesMapped;
