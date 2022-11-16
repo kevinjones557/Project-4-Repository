@@ -37,7 +37,7 @@ users
 
 
 ## 2. Submission
-- Kevin Jones submitted the Vocareum workplace
+- Aden Riley submitted the Vocareum workplace
 - Kevin Jones submitted Report on Brightspace
 
 
