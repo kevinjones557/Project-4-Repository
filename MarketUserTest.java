@@ -547,66 +547,87 @@ class MarketUserTest {
         }
     }
 
-//    @Test
-//    void appendMessageExecute() {
-//        MarketUser testSend = new MarketUser("TempUser", false);
-//
-//        Path testSenderFolder = null;
-//        Path testSenderFile = null;
-//        Path testReceiveFolder = null;
-//        Path testReceiveFile = null;
-//
-//        try {
-//            testSenderFolder = Files.createDirectory(Paths.get("data/buyers/TempUser"));
-//            testSenderFile = Files.createFile(Path.of("data/buyers/TempUser/TempUserOtherUser.txt"));
-//            testReceiveFolder = Files.createDirectory(Paths.get("data/sellers/OtherUser"));
-//            testReceiveFile = Files.createFile(Path.of("data/sellers/OtherUser/OtherUserTempUser.txt"));
-//        } catch (IOException e) {
-//            System.out.println("Could not create folders");
-//        }
-//        String input = "Hello\n\n";
-//        InputStream userInput = new ByteArrayInputStream(input.getBytes());
-//
-//        testSend.appendMessageExecute("OtherUser", "data/buyers/TempUser/", "data/sellers/OtherUser", new Scanner(userInput));
-//        ArrayList<String> contents1 = new ArrayList<String>();
-//        try {
-//            BufferedReader buff1 = new BufferedReader(new FileReader("data/buyers/TempUser/TempUserOtherUser.txt"));
-//            String line = buff1.readLine();
-//            while (line != null) {
-//                contents1.add(line);
-//                line = buff1.readLine();
-//            }
-//            buff1.close();
-//        } catch (IOException e) {
-//            System.out.println("Files did not exist.");
-//        }
-//        ArrayList<String> contents2 = new ArrayList<String>();
-//        try {
-//            BufferedReader buff1 = new BufferedReader(new FileReader("data/sellers/OtherUser/OtherUserTempUser.txt"));
-//            String line = buff1.readLine();
-//            while (line != null) {
-//                contents2.add(line);
-//                line = buff1.readLine();
-//            }
-//            buff1.close();
-//        } catch (IOException e) {
-//            System.out.println("Files did not exist.");
-//        }
-//        //assertEquals(contents1.size(), 0);
-//        String contentsFinalLine1 = contents1.get(contents1.size() - 1);
-//        String contentsFinalLine2 = contents2.get(contents2.size() - 1);
-//        assertEquals(contentsFinalLine1, contentsFinalLine2);
-//        //assertEquals(contentsFinalLine1.substring(contentsFinalLine1.indexOf("-") + 2), input);
-//        //assertEquals(contentsFinalLine2.substring(contentsFinalLine2.indexOf("-") + 2), input);
-//        File f1 = new File("data/buyers/TempUser/TempUserOtherUser.txt");
-//        File f2 = new File("data/sellers/OtherUser/OtherUserTempUser.txt");
-//        f1.delete();
-//        f2.delete();
-//        File f3 = new File("data/buyers/TempUser/");
-//        File f4 = new File("data/sellers/OtherUser/");
-//        f3.delete();
-//        f4.delete();
-//    }
+    @Test
+    void appendMessageExecute() {
+                MarketUser testSend = new MarketUser("TempUser", false);
+
+        Path testSenderFolder = null;
+        Path testSenderFile = null;
+        Path testReceiveFolder = null;
+        Path testReceiveFile = null;
+        Path testerMetrics = null;
+
+        //creating the temporary message files that the append method will access to modify
+        try {
+            testSenderFolder = Files.createDirectory(Paths.get("data/buyers/TempUser"));
+            testSenderFile = Files.createFile(Path.of("data/buyers/TempUser/TempUserOtherUser.txt"));
+            testReceiveFolder = Files.createDirectory(Paths.get("data/sellers/OtherUser"));
+            testReceiveFile = Files.createFile(Path.of("data/sellers/OtherUser/OtherUserTempUser.txt"));
+            testerMetrics = Files.createFile(Path.of("data/buyers/TempUser/metrics.txt"));
+        } catch (IOException e) {
+            System.out.println("Could not create folders");
+        }
+        try {
+            File metric = new File("data/buyers/TempUser/metrics.txt");
+            FileOutputStream outToMetric = new FileOutputStream(metric, true);
+            PrintWriter writeMetricLine = new PrintWriter(outToMetric);
+            writeMetricLine.println("Message Count: 0");
+            writeMetricLine.close();
+        } catch (IOException e) {
+            System.out.println("File did not write correctly.");
+        }
+
+        //input message
+        String input = "Hello" + System.lineSeparator();
+        InputStream userInput = new ByteArrayInputStream(input.getBytes());
+
+        testSend.appendMessageExecute("OtherUser", "data/buyers/TempUser/", "data/sellers/OtherUser/", new Scanner(userInput));
+
+        //declaring lines as random letters to ensure no null risk
+        String line1 = "jklmn";
+        String line2 = "abcde";
+
+        // both tries read each file that was supposed to be written to
+        ArrayList<String> buyerFile = new ArrayList<String>();
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("data/buyers/TempUser/TempUserOtherUser.txt"))) {
+            line1 = bufferedReader.readLine();
+            while (line1 != null) {
+                buyerFile.add(line1);
+                line1 = bufferedReader.readLine();
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred while reading the file");
+        }
+
+        ArrayList<String> sellerFile = new ArrayList<String>();
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("data/sellers/OtherUser/OtherUserTempUser.txt"))) {
+            line2 = bufferedReader.readLine();
+            while (line2 != null) {
+                sellerFile.add(line2);
+                line2 = bufferedReader.readLine();
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred while reading the file");
+        }
+
+        //each expect is the final line of each file
+        String expect1 = buyerFile.get(buyerFile.size() - 1).substring(buyerFile.get(buyerFile.size() - 1).indexOf("-") + 2);
+        String expect2 = sellerFile.get(sellerFile.size() - 1).substring(sellerFile.get(sellerFile.size() - 1).indexOf("-") + 2);
+        assertEquals(expect1, "Hello");
+        assertEquals(expect2, "Hello");
+
+        File f1 = new File("data/buyers/TempUser/TempUserOtherUser.txt");
+        File f2 = new File("data/sellers/OtherUser/OtherUserTempUser.txt");
+        File f5 = new File("data/buyers/TempUser/metrics.txt");
+        f1.delete();
+        f2.delete();
+        f5.delete();
+        File f3 = new File("data/buyers/TempUser/");
+        File f4 = new File("data/sellers/OtherUser/");
+        f3.delete();
+        f4.delete();
+
+    }
 
     @Test
     void editMessage() {
