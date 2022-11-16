@@ -13,6 +13,17 @@ import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+* This class is dedicated to testing all message functions
+* and all of the menu navigation, csv export, import, correct input
+* methods, and file checking methods
+* 
+* @author Kevin Jones
+* @author John Brooks
+*
+* @version 11/16/22
+*/
+
 class MarketUserTest {
 
     @Test
@@ -167,8 +178,8 @@ class MarketUserTest {
                 "3. Continue to statistics" + System.lineSeparator() +
                 "4. Exit Messaging System" + System.lineSeparator();
 
-        assertEquals(expectedOutput.trim().replace("\r",""),
-                os.toString().trim().replace("\r",""));
+        assertEquals(expectedOutput.trim().replace("\r", ""),
+                os.toString().trim().replace("\r", ""));
 
         MarketUser.deleteUsername("TempBuyer");
         MarketUser.deleteUsername("TempSeller");
@@ -181,7 +192,6 @@ class MarketUserTest {
         FileManager.generateDirectoryFromUsername("TempBuyer", false);
         FileManager.generateDirectoryFromUsername("TempSeller", true);
         FileManager.generateStoreForSeller("TempSeller", "Store");
-
 
         String input = 1 + System.lineSeparator() + 5 + System.lineSeparator() + 2 + System.lineSeparator() +
                 1  + System.lineSeparator() + "asdf" + System.lineSeparator() + 2 + System.lineSeparator() +
@@ -268,8 +278,8 @@ class MarketUserTest {
                 "3. Continue to statistics" + System.lineSeparator() +
                 "4. Exit Messaging System" + System.lineSeparator();
 
-        assertEquals(expectedOutput.trim().replace("\r",""),
-                os.toString().trim().replace("\r",""));
+        assertEquals(expectedOutput.trim().replace("\r", ""),
+                os.toString().trim().replace("\r", ""));
 
         MarketUser.deleteUsername("TempBuyer");
         MarketUser.deleteUsername("TempSeller");
@@ -392,7 +402,7 @@ class MarketUserTest {
                 actualResult.add(line);
                 line = bfr.readLine();
             }
-        } catch (IOException e){
+        } catch (IOException e) {
             System.out.println("Could not read file");
         }
 
@@ -440,7 +450,7 @@ class MarketUserTest {
                 actualResult.add(line);
                 line = bfr.readLine();
             }
-        } catch (IOException e){
+        } catch (IOException e) {
             System.out.println("Could not read csv");
         }
 
@@ -453,22 +463,6 @@ class MarketUserTest {
         } catch (IOException e) {
             System.out.println("Unable to delete file and folder");
         }
-    }
-
-    @Test
-    void getAvailableUsers() {
-    }
-
-    @Test
-    void getMessage_ableUser() {
-    }
-
-    @Test
-    void getAvailableStores() {
-    }
-
-    @Test
-    void getMessage_ableStores() {
     }
 
     @Test
@@ -555,7 +549,8 @@ class MarketUserTest {
 
         //reading file that is supposed to have some message
         String line1 = null;
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("data/buyers/TempUser/TempUserOtherUser.txt"))) {
+        try (BufferedReader bufferedReader = new BufferedReader(
+            new FileReader("data/buyers/TempUser/TempUserOtherUser.txt"))) {
             line1 = bufferedReader.readLine();
         } catch (IOException e) {
             System.out.println("An error occurred while reading the file");
@@ -644,7 +639,8 @@ class MarketUserTest {
 
         //reading message file
         String line1 = null;
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("data/buyers/TempUser/TempUserOtherStore.txt"))) {
+        try (BufferedReader bufferedReader = new BufferedReader(
+            new FileReader("data/buyers/TempUser/TempUserOtherStore.txt"))) {
             line1 = bufferedReader.readLine();
         } catch (IOException e) {
             System.out.println("An error occurred while reading the file");
@@ -752,7 +748,8 @@ class MarketUserTest {
         //creates partial timestamp for later test and runs method with message input
         String timeStamp = new SimpleDateFormat(
                 "MM/dd ").format(new java.util.Date());
-        testSend.appendMessageExecute("OtherUser", "data/buyers/TempUser/", "data/sellers/OtherUser/", new Scanner(userInput));
+        testSend.appendMessageExecute("OtherUser", "data/buyers/TempUser/",
+                                      "data/sellers/OtherUser/", new Scanner(userInput));
 
         //declaring lines as random letters to ensure no null risk
         String line1 = "jklmn";
@@ -760,7 +757,8 @@ class MarketUserTest {
 
         // both tries read one of the files that was supposed to be written to and adds them to array lists
         ArrayList<String> buyerFile = new ArrayList<String>();
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("data/buyers/TempUser/TempUserOtherUser.txt"))) {
+        try (BufferedReader bufferedReader = new BufferedReader(
+            new FileReader("data/buyers/TempUser/TempUserOtherUser.txt"))) {
             line1 = bufferedReader.readLine();
             while (line1 != null) {
                 buyerFile.add(line1);
@@ -770,7 +768,8 @@ class MarketUserTest {
             System.out.println("An error occurred while reading the file");
         }
         ArrayList<String> sellerFile = new ArrayList<String>();
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("data/sellers/OtherUser/OtherUserTempUser.txt"))) {
+        try (BufferedReader bufferedReader = new BufferedReader(
+            new FileReader("data/sellers/OtherUser/OtherUserTempUser.txt"))) {
             line2 = bufferedReader.readLine();
             while (line2 != null) {
                 sellerFile.add(line2);
@@ -798,11 +797,11 @@ class MarketUserTest {
         String expectStamp2 = lastLine2.substring(0, lastLine2.indexOf("-"));
         //ensures timestamp exists in both of those lines
         boolean indexTrue1 = false;
-        if (expectStamp1.indexOf(timeStamp) > -1){
+        if (expectStamp1.indexOf(timeStamp) > -1) {
             indexTrue1 = true;
         }
         boolean indexTrue2 = false;
-        if (expectStamp2.indexOf(timeStamp) > -1){
+        if (expectStamp2.indexOf(timeStamp) > -1) {
             indexTrue2 = true;
         }
         //assertEquals to test that
@@ -861,7 +860,8 @@ class MarketUserTest {
         //creating message to edit
         String input = "Hello" + System.lineSeparator();
         InputStream userInput = new ByteArrayInputStream(input.getBytes());
-        testSend.appendMessageExecute("OtherUser", "data/buyers/TempUser/", "data/sellers/OtherUser/", new Scanner(userInput));
+        testSend.appendMessageExecute("OtherUser", "data/buyers/TempUser/",
+                                      "data/sellers/OtherUser/", new Scanner(userInput));
 
         //providing editing input and calling editMessage
         String inputEdit = "1" + System.lineSeparator()
@@ -871,7 +871,8 @@ class MarketUserTest {
 
         //reading file
         String line1 = null;
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("data/buyers/TempUser/TempUserOtherUser.txt"))) {
+        try (BufferedReader bufferedReader = new BufferedReader(
+            new FileReader("data/buyers/TempUser/TempUserOtherUser.txt"))) {
             line1 = bufferedReader.readLine();
         } catch (IOException e) {
             System.out.println("An error occurred while reading the file");
@@ -956,7 +957,8 @@ class MarketUserTest {
         //writing message to be edited
         String input = "Hello" + System.lineSeparator();
         InputStream userInput1 = new ByteArrayInputStream(input.getBytes());
-        testSend.appendMessageExecute("OtherStore", "data/buyers/TempUser/", "data/sellers/OtherUser/OtherStore/", new Scanner(userInput1));
+        testSend.appendMessageExecute("OtherStore", "data/buyers/TempUser/",
+                                      "data/sellers/OtherUser/OtherStore/", new Scanner(userInput1));
 
         //calling edit message with overloaded store parameters
         String inputForEdit = "1" + System.lineSeparator()
@@ -966,7 +968,8 @@ class MarketUserTest {
 
         //reading file
         String line1 = null;
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("data/buyers/TempUser/TempUserOtherStore.txt"))) {
+        try (BufferedReader bufferedReader = new BufferedReader(
+            new FileReader("data/buyers/TempUser/TempUserOtherStore.txt"))) {
             line1 = bufferedReader.readLine();
         } catch (IOException e) {
             System.out.println("An error occurred while reading the file");
@@ -1046,28 +1049,34 @@ class MarketUserTest {
         //creates messages for the later editing
         String input1 = "Hello" + System.lineSeparator();
         InputStream userInput1 = new ByteArrayInputStream(input1.getBytes());
-        testTempBuy.appendMessageExecute("OtherUser", "data/buyers/TempUser/", "data/sellers/OtherUser/", new Scanner(userInput1));
+        testTempBuy.appendMessageExecute("OtherUser", "data/buyers/TempUser/",
+                                         "data/sellers/OtherUser/", new Scanner(userInput1));
         String input2 = "How are you?" + System.lineSeparator();
         InputStream userInput2 = new ByteArrayInputStream(input2.getBytes());
-        testTempBuy.appendMessageExecute("OtherUser", "data/buyers/TempUser/", "data/sellers/OtherUser/", new Scanner(userInput2));
+        testTempBuy.appendMessageExecute("OtherUser", "data/buyers/TempUser/",
+                                         "data/sellers/OtherUser/", new Scanner(userInput2));
         String input3 = "I am good" + System.lineSeparator();
         InputStream userInput3 = new ByteArrayInputStream(input3.getBytes());
-        testOtherUse.appendMessageExecute("TempUser", "data/sellers/OtherUser/", "data/buyers/TempUser/", new Scanner(userInput3));
+        testOtherUse.appendMessageExecute("TempUser", "data/sellers/OtherUser/",
+                                          "data/buyers/TempUser/", new Scanner(userInput3));
         String input4 = "How about you?" + System.lineSeparator();
         InputStream userInput4 = new ByteArrayInputStream(input4.getBytes());
-        testOtherUse.appendMessageExecute("TempUser", "data/sellers/OtherUser/", "data/buyers/TempUser/", new Scanner(userInput4));
+        testOtherUse.appendMessageExecute("TempUser", "data/sellers/OtherUser/",
+                                          "data/buyers/TempUser/", new Scanner(userInput4));
 
         //calling delete to make sure the edit works even when files are not the same
         String inputDelete = "1" + System.lineSeparator();
         InputStream deleteStream = new ByteArrayInputStream(inputDelete.getBytes());
-        testOtherUse.deleteMessageExecute("TempUser", "data/sellers/OtherUser/", "data/buyers/TempUser/", new Scanner(deleteStream));
+        testOtherUse.deleteMessageExecute("TempUser", "data/sellers/OtherUser/",
+                                          "data/buyers/TempUser/", new Scanner(deleteStream));
 
         //calling edit method to change
         String inputEdit = "11" + System.lineSeparator()
                 + "3" + System.lineSeparator()
                 + "I am great!" + System.lineSeparator();
         InputStream userInputForEdit = new ByteArrayInputStream(inputEdit.getBytes());
-        testTempBuy.editMessageExecute("OtherUser", "data/buyers/TempUser/", "data/sellers/OtherUser/", new Scanner(userInputForEdit));
+        testTempBuy.editMessageExecute("OtherUser", "data/buyers/TempUser/",
+                                       "data/sellers/OtherUser/", new Scanner(userInputForEdit));
 
         //declaring lines as random letters to ensure no null risk
         String line1 = "jklmn";
@@ -1075,7 +1084,8 @@ class MarketUserTest {
 
         // both of these "tries" read one of the files that was supposed to be edited to and adds them to array lists
         ArrayList<String> buyerFile = new ArrayList<String>();
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("data/buyers/TempUser/TempUserOtherUser.txt"))) {
+        try (BufferedReader bufferedReader = new BufferedReader(
+            new FileReader("data/buyers/TempUser/TempUserOtherUser.txt"))) {
             line1 = bufferedReader.readLine();
             while (line1 != null) {
                 buyerFile.add(line1);
@@ -1085,7 +1095,8 @@ class MarketUserTest {
             System.out.println("An error occurred while reading the file");
         }
         ArrayList<String> sellerFile = new ArrayList<String>();
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("data/sellers/OtherUser/OtherUserTempUser.txt"))) {
+        try (BufferedReader bufferedReader = new BufferedReader(
+            new FileReader("data/sellers/OtherUser/OtherUserTempUser.txt"))) {
             line2 = bufferedReader.readLine();
             while (line2 != null) {
                 sellerFile.add(line2);
@@ -1165,7 +1176,8 @@ class MarketUserTest {
         //writing message to be deleted
         String input = "Hello" + System.lineSeparator();
         InputStream userInput = new ByteArrayInputStream(input.getBytes());
-        testTempBuy.appendMessageExecute("OtherUser", "data/buyers/TempUser/", "data/sellers/OtherUser/", new Scanner(userInput));
+        testTempBuy.appendMessageExecute("OtherUser", "data/buyers/TempUser/",
+                                         "data/sellers/OtherUser/", new Scanner(userInput));
 
         //giving input to delete
         String inputDelete = "1" + System.lineSeparator();
@@ -1174,7 +1186,8 @@ class MarketUserTest {
 
         //reading file
         String line1 = "abcd";
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("data/sellers/OtherUser/OtherUserTempUser.txt"))) {
+        try (BufferedReader bufferedReader = new BufferedReader(
+            new FileReader("data/sellers/OtherUser/OtherUserTempUser.txt"))) {
             line1 = bufferedReader.readLine();
         } catch (IOException e) {
             System.out.println("An error occurred while reading the file");
@@ -1260,7 +1273,8 @@ class MarketUserTest {
         //writing message to edit
         String input = "Hello" + System.lineSeparator();
         InputStream userInput1 = new ByteArrayInputStream(input.getBytes());
-        testTempBuy.appendMessageExecute("OtherStore", "data/buyers/TempUser/", "data/sellers/OtherUser/OtherStore/", new Scanner(userInput1));
+        testTempBuy.appendMessageExecute("OtherStore", "data/buyers/TempUser/",
+                                         "data/sellers/OtherUser/OtherStore/", new Scanner(userInput1));
 
         //calling delete message with overloaded store parameters
         String inputForDelete = "1" + System.lineSeparator();
@@ -1269,7 +1283,8 @@ class MarketUserTest {
 
         //reading file
         String line1 = "abcd";
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("data/sellers/OtherUser/OtherStore/OtherStoreTempUser.txt"))) {
+        try (BufferedReader bufferedReader = new BufferedReader(
+            new FileReader("data/sellers/OtherUser/OtherStore/OtherStoreTempUser.txt"))) {
             line1 = bufferedReader.readLine();
         } catch (IOException e) {
             System.out.println("An error occurred while reading the file");
@@ -1346,16 +1361,20 @@ class MarketUserTest {
         //creates messages for deleting later
         String input1 = "Hello" + System.lineSeparator();
         InputStream userInput1 = new ByteArrayInputStream(input1.getBytes());
-        testTempBuy.appendMessageExecute("OtherUser", "data/buyers/TempUser/", "data/sellers/OtherUser/", new Scanner(userInput1));
+        testTempBuy.appendMessageExecute("OtherUser", "data/buyers/TempUser/",
+                                         "data/sellers/OtherUser/", new Scanner(userInput1));
         String input2 = "How are you?" + System.lineSeparator();
         InputStream userInput2 = new ByteArrayInputStream(input2.getBytes());
-        testTempBuy.appendMessageExecute("OtherUser", "data/buyers/TempUser/", "data/sellers/OtherUser/", new Scanner(userInput2));
+        testTempBuy.appendMessageExecute("OtherUser", "data/buyers/TempUser/",
+                                         "data/sellers/OtherUser/", new Scanner(userInput2));
         String input3 = "I am good" + System.lineSeparator();
         InputStream userInput3 = new ByteArrayInputStream(input3.getBytes());
-        testOtherUse.appendMessageExecute("TempUser", "data/sellers/OtherUser/", "data/buyers/TempUser/", new Scanner(userInput3));
+        testOtherUse.appendMessageExecute("TempUser", "data/sellers/OtherUser/",
+                                          "data/buyers/TempUser/", new Scanner(userInput3));
         String input4 = "How about you?" + System.lineSeparator();
         InputStream userInput4 = new ByteArrayInputStream(input4.getBytes());
-        testOtherUse.appendMessageExecute("TempUser", "data/sellers/OtherUser/", "data/buyers/TempUser/", new Scanner(userInput4));
+        testOtherUse.appendMessageExecute("TempUser", "data/sellers/OtherUser/",
+                                          "data/buyers/TempUser/", new Scanner(userInput4));
 
         //declaring lines as random letters to ensure no null risk
         String line1 = "jklmn";
@@ -1363,7 +1382,8 @@ class MarketUserTest {
 
         // both of these "tries" read one of the files that was supposed to be edited to and adds them to array lists
         ArrayList<String> buyerFile = new ArrayList<String>();
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("data/buyers/TempUser/TempUserOtherUser.txt"))) {
+        try (BufferedReader bufferedReader = new BufferedReader(
+            new FileReader("data/buyers/TempUser/TempUserOtherUser.txt"))) {
             line1 = bufferedReader.readLine();
             while (line1 != null) {
                 buyerFile.add(line1);
@@ -1373,7 +1393,8 @@ class MarketUserTest {
             System.out.println("An error occurred while reading the file");
         }
         ArrayList<String> sellerFile = new ArrayList<String>();
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("data/sellers/OtherUser/OtherUserTempUser.txt"))) {
+        try (BufferedReader bufferedReader = new BufferedReader(
+            new FileReader("data/sellers/OtherUser/OtherUserTempUser.txt"))) {
             line2 = bufferedReader.readLine();
             while (line2 != null) {
                 sellerFile.add(line2);
@@ -1386,10 +1407,12 @@ class MarketUserTest {
         //calling delete to make sure the edit works even when files are not the same
         String inputDelete = "2" + System.lineSeparator();
         InputStream deleteStream = new ByteArrayInputStream(inputDelete.getBytes());
-        testOtherUse.deleteMessageExecute("TempUser", "data/sellers/OtherUser/", "data/buyers/TempUser/", new Scanner(deleteStream));
+        testOtherUse.deleteMessageExecute("TempUser", "data/sellers/OtherUser/",
+                                          "data/buyers/TempUser/", new Scanner(deleteStream));
 
         ArrayList<String> buyerFileAfter = new ArrayList<String>();
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("data/buyers/TempUser/TempUserOtherUser.txt"))) {
+        try (BufferedReader bufferedReader = new BufferedReader(
+            new FileReader("data/buyers/TempUser/TempUserOtherUser.txt"))) {
             line1 = bufferedReader.readLine();
             while (line1 != null) {
                 buyerFileAfter.add(line1);
@@ -1399,7 +1422,8 @@ class MarketUserTest {
             System.out.println("An error occurred while reading the file");
         }
         ArrayList<String> sellerFileAfter = new ArrayList<String>();
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("data/sellers/OtherUser/OtherUserTempUser.txt"))) {
+        try (BufferedReader bufferedReader = new BufferedReader(
+            new FileReader("data/sellers/OtherUser/OtherUserTempUser.txt"))) {
             line2 = bufferedReader.readLine();
             while (line2 != null) {
                 sellerFileAfter.add(line2);
@@ -1437,7 +1461,7 @@ class MarketUserTest {
         try {
             FileManager.generateDirectoryFromUsername("TempBuyer", false);
             FileManager.generateDirectoryFromUsername("TempSeller", true);
-            File testFile = new File ("data/testFile.txt");
+            File testFile = new File("data/testFile.txt");
             testFile.createNewFile();
             PrintWriter pw = new PrintWriter(new FileWriter(testFile, true));
             pw.println("here is a message to append");
@@ -1463,7 +1487,7 @@ class MarketUserTest {
                 actualResult.add(line.substring(line.indexOf("-") + 2));
                 line = bfr.readLine();
             }
-        } catch (IOException e){
+        } catch (IOException e) {
             System.out.println("Could not read file");
         }
 
