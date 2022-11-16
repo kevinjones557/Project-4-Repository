@@ -70,10 +70,12 @@ public class FileManager {
         File sellerDirectory = new File("data/sellers/" + seller);
         String[] possibleStores = sellerDirectory.list();
         ArrayList<String> sellerStores = new ArrayList<>();
-        for (String store : possibleStores) {
-            File storeFile = new File("data/sellers/" + seller + "/" + store);
-            if (storeFile.isDirectory()) {
-                sellerStores.add(store);
+        if (possibleStores != null) {
+            for (String store : possibleStores) {
+                File storeFile = new File("data/sellers/" + seller + "/" + store);
+                if (storeFile.isDirectory()) {
+                    sellerStores.add(store);
+                }
             }
         }
         return sellerStores;
