@@ -1,16 +1,20 @@
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class MarketUserTest {
+
     @Test
     void waitForValidInput() {
         String input = 5 + System.lineSeparator() + "h" + System.lineSeparator() + 3 + System.lineSeparator();
@@ -30,6 +34,7 @@ class MarketUserTest {
 
     @Test
     void mainForSeller() {
+        Placeholders.delete();
         FileManager.generateDirectoryFromUsername("TempBuyer", false);
         FileManager.generateDirectoryFromUsername("TempSeller", true);
         FileManager.generateStoreForSeller("TempSeller", "Store");
@@ -167,10 +172,12 @@ class MarketUserTest {
 
         MarketUser.deleteUsername("TempBuyer");
         MarketUser.deleteUsername("TempSeller");
+        Placeholders.create();
     }
 
     @Test
     void mainForBuyer() {
+        Placeholders.delete();
         FileManager.generateDirectoryFromUsername("TempBuyer", false);
         FileManager.generateDirectoryFromUsername("TempSeller", true);
         FileManager.generateStoreForSeller("TempSeller", "Store");
@@ -266,6 +273,7 @@ class MarketUserTest {
 
         MarketUser.deleteUsername("TempBuyer");
         MarketUser.deleteUsername("TempSeller");
+        Placeholders.create();
     }
 
     @Test
@@ -317,6 +325,7 @@ class MarketUserTest {
 
     @Test
     void changeStoreName() {
+        Placeholders.delete();
         try {
             Path testUserFolder = Files.createDirectory(Paths.get("data/sellers/TempSeller"));
             Path testStoreFolder = Files.createDirectory(Paths.get("data/sellers/TempSeller/Store"));
@@ -352,6 +361,7 @@ class MarketUserTest {
             e.printStackTrace();
             System.out.println("Unable to delete file and folder");
         }
+        Placeholders.create();
     }
 
     @Test
@@ -1420,36 +1430,52 @@ class MarketUserTest {
 
     @Test
     void importFile() {
-    }
-    /*
-    ArrayList<String> readFile(File file) {
-        ArrayList<String> list = new ArrayList<>();
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
-            String line = bufferedReader.readLine();
+        Path testUserFolder = null;
+
+        MarketUser mu = new MarketUser("TempBuyer", false);
+
+        try {
+            FileManager.generateDirectoryFromUsername("TempBuyer", false);
+            FileManager.generateDirectoryFromUsername("TempSeller", true);
+            File testFile = new File ("data/testFile.txt");
+            testFile.createNewFile();
+            PrintWriter pw = new PrintWriter(new FileWriter(testFile, true));
+            pw.println("here is a message to append");
+            pw.println("this is another message");
+            pw.close();
+
+        } catch (IOException e) {
+            System.out.println("Could not create folders");
+        }
+
+        mu.importFile("data/testFile.txt", "TempSeller", false);
+
+        ArrayList<String> expectedResult = new ArrayList<>();
+        expectedResult.add("here is a message to append");
+        expectedResult.add("this is another message");
+
+        ArrayList<String> actualResult = new ArrayList<>();
+        try (BufferedReader bfr = new BufferedReader(new FileReader("" +
+                "data/buyers/TempBuyer/TempBuyerTempSeller.txt"))) {
+            actualResult = new ArrayList<>();
+            String line = bfr.readLine();
             while (line != null) {
-                list.add(line);
-                line = bufferedReader.readLine();
+                actualResult.add(line.substring(line.indexOf("-") + 2));
+                line = bfr.readLine();
             }
-            return list;
+        } catch (IOException e){
+            System.out.println("Could not read file");
+        }
+
+        Assert.assertEquals(expectedResult, actualResult);
+
+        try {
+            MarketUser.deleteUsername("TempBuyer");
+            MarketUser.deleteUsername("TempSeller");
+            Files.delete(Paths.get("data/testFile.txt"));
         } catch (IOException e) {
-            System.out.println("An error occurred while reading the file");
-            return null;
+            System.out.println("Unable to delete file and folder");
         }
     }
 
-    boolean writeToFile(File file, String[] fileContents) {
-        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file))) {
-            for (String line : fileContents) {
-                bufferedWriter.write(line);
-            }
-            bufferedWriter.flush();
-            bufferedWriter.close();
-            return true;
-        } catch (IOException e) {
-            System.out.println("An error occurred while creating the test file");
-            return false;
-        }
-    }
-
-     */
 }
