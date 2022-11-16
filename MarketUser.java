@@ -1838,7 +1838,6 @@ public class MarketUser {
                 pwReceiver.print(username + " " + timeStamp + "- ");
                 pwReceiver.println(line);
                 pwSender.println(line);
-                line = bfr.readLine();
                 if (!isSeller) {
                     String storePath;
                     if (FileManager.checkSellerExists(recipient)) {
@@ -1850,6 +1849,7 @@ public class MarketUser {
                     MetricManager.addDeleteMessageData(username, storePath,
                             line, false);
                 }
+                line = bfr.readLine();
             }
             pwReceiver.close();
             pwSender.close();
