@@ -1,6 +1,4 @@
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
@@ -26,6 +24,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MarketUserTest {
 
+    /**
+     * This method checks to see if the waitForValidInput works and
+     * returns a valid input with no errors
+     * @author Kevin Jones
+     *
+     */
     @Test
     void waitForValidInput() {
         String input = 5 + System.lineSeparator() + "h" + System.lineSeparator() + 3 + System.lineSeparator();
@@ -40,9 +44,12 @@ class MarketUserTest {
 
         String expectedOutput = "Please enter a valid number:" + System.lineSeparator() +
                 "Please enter a valid number:" + System.lineSeparator();
-
     }
-
+    /**
+     * This method checks to see if the mainForSeller function does not
+     * throw any errors and directs the user to the proper options
+     * @author Kevin Jones
+     */
     @Test
     void mainForSeller() {
         Placeholders.delete();
@@ -185,7 +192,11 @@ class MarketUserTest {
         MarketUser.deleteUsername("TempSeller");
         Placeholders.create();
     }
-
+    /**
+     * This method checks to see if the mainForBuyer function does not
+     * throw any errors and directs the user to the proper options
+     * @author Kevin Jones
+     */
     @Test
     void mainForBuyer() {
         Placeholders.delete();
@@ -285,7 +296,11 @@ class MarketUserTest {
         MarketUser.deleteUsername("TempSeller");
         Placeholders.create();
     }
-
+    /**
+     * This method checks to see if the deleteUsername deletes the
+     * directory of the current user
+     * @author Kevin Jones
+     */
     @Test
     void deleteUsername() {
         Path testUserFolder = null;
@@ -305,7 +320,11 @@ class MarketUserTest {
 
         assertEquals(false, Files.exists(testUserFolder));
     }
-
+    /**
+     * This method checks to see if the changeUsername function does not throw any
+     * errors changes the username of the directories and files containing the current name
+     * @author Kevin Jones
+     */
     @Test
     void changeUsername() {
         try {
@@ -332,7 +351,11 @@ class MarketUserTest {
             System.out.println("Unable to delete file and folder");
         }
     }
-
+    /**
+     * This method checks to see if the changeStoreName function changes the name of all
+     * files and directories containing the store name
+     * @author Kevin Jones
+     */
     @Test
     void changeStoreName() {
         Placeholders.delete();
@@ -373,7 +396,11 @@ class MarketUserTest {
         }
         Placeholders.create();
     }
-
+    /**
+     * This method checks to see if the changeNameInFile helper method changes the
+     * name in all text files containing the current name
+     * @author Kevin Jones
+     */
     @Test
     void changeNameInFile() {
         try {
@@ -416,7 +443,11 @@ class MarketUserTest {
             System.out.println("Unable to delete file and folder");
         }
     }
-
+    /**
+     * This method checks to see if the writeCSV file correctly writes the
+     * contents of a text file to a .csv file
+     * @author Kevin Jones
+     */
     @Test
     void writeCSV() {
         Path testUserFolder = null;
@@ -464,7 +495,11 @@ class MarketUserTest {
             System.out.println("Unable to delete file and folder");
         }
     }
-
+    /**
+     * This method checks to see if the checkIfMessageExists correctly creates
+     * the text files needed for the user and recipient
+     * @author Kevin Jones
+     */
     @Test
     void checkIfMessageExists() {
         try {
@@ -665,7 +700,10 @@ class MarketUserTest {
         f7.delete();
         f8.delete();
     }
-
+    /**
+     * This method checks that displayMessage properly displays message contents
+     * @author Kevin Jones
+     */
     @Test
     void displayMessage() {
         Path testUserFolder = null;
@@ -1451,7 +1489,11 @@ class MarketUserTest {
         f5.delete();
         f6.delete();
     }
-
+    /**
+     * This method checks to see if importFile properly takes a file and
+     * writes its message contents to the text files
+     * @author Kevin Jones
+     */
     @Test
     void importFile() {
         Path testUserFolder = null;
