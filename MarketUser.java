@@ -50,6 +50,16 @@ public class MarketUser {
         this.isSeller = isSeller;
         isUserStore = false;
     }
+    
+    /**
+     * Setter for isUserStore
+     * 
+     * @param isUserStore
+     * @author John Brooks
+     */
+    public void setIsUserStore(boolean isUserStore) {
+        this.isUserStore = isUserStore;
+    }
 
     public static void main(String[] args) {
         MarketUser mu = new MarketUser("TempBuyer", false);
@@ -1903,6 +1913,7 @@ public class MarketUser {
                 victims.add(line);
             }
         }
+        bfr.close();
         String[] blockedList = new String[victims.size()];
         for (int i = 0; i < victims.size(); i++) {
             blockedList[i] = victims.get(i);
@@ -1960,6 +1971,7 @@ public class MarketUser {
                 victims.add(line);
             }
         }
+        bfr.close();
         String[] invisibleList = new String[victims.size()];
         for (int i = 0; i < victims.size(); i++) {
             invisibleList[i] = victims.get(i);

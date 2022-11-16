@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 /**
  * A class to create accounts for users, log them in, and perform any necessary interaction with said accounts.
  * <p>
+ *
  * @author @Adenr4615
  * @version 11/13/22
  */
@@ -35,7 +36,7 @@ public class LogIn {
     /**
      * Appends an additional line to a given user's file
      *
-     * @param user the user whose file is being appended
+     * @param user     the user whose file is being appended
      * @param toAppend the parameter that is being appended to the file
      * @return boolean of if the file was successfully written or not
      */
@@ -699,7 +700,7 @@ public class LogIn {
     /**
      * Allows users to log in OR calls methods above and builds a file of the following format for a new user:
      * <p>
-     * username
+     * username (case insensitive)
      * password (encrypted)
      * isSeller (true or false)
      * [storeName(s)] array in String representation (included ONLY if user isSeller)
@@ -832,6 +833,7 @@ public class LogIn {
      * @param args
      */
     public static void main(String[] args) {
+        Placeholders.delete();
         Scanner scan = new Scanner(System.in);
         String user = userInteraction(scan);
         if (user != null) {
@@ -925,5 +927,6 @@ public class LogIn {
         } else {
             System.out.println("Thank you for using the messenger. Goodbye!");
         }
+        Placeholders.create();
     }
 }

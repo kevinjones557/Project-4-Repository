@@ -40,8 +40,9 @@ public class LogInTest {
     /**
      * Runs the testing for the LogIn class - template code obtained from @PurdueCS
      * <p>
-     * author @Adenr4615
-     * version 11/13/22
+     *
+     * @author @riley197
+     * @version 11/16/22
      */
 
     public static class TestCase {
@@ -76,8 +77,13 @@ public class LogInTest {
             System.setIn(testIn);
         }
 
+        /**
+         * Tests store creation, name changing, account deletion, and incorrect input
+         */
+
         @Test
         public void testOne() {
+            Placeholders.delete();
             String input = "2" + System.lineSeparator() +
                     "testCaseRun" + System.lineSeparator() +
                     "password" + System.lineSeparator() +
@@ -170,6 +176,10 @@ public class LogInTest {
             assertEquals(expected.trim(), output.trim());
         }
 
+        /**
+         * Tests incorrect input for account creation and password confirmation
+         */
+
         @Test
         public void testTwo() {
             String input = "2" + System.lineSeparator() +
@@ -239,6 +249,11 @@ public class LogInTest {
             output = output.replaceAll("\r\n", "\n");
             assertEquals(expected.trim(), output.trim());
         }
+
+        /**
+         * Tests store creation, changing store names, changing account name,
+         * some incorrect input, and all parts of the control flow for the UI
+         */
 
         @Test
         public void testThree() {
@@ -369,6 +384,11 @@ public class LogInTest {
             assertEquals(expected.trim(), output.trim());
         }
 
+        /**
+         * Tests file contents after seller account is created and
+         * ensures they are written as expected
+         */
+
         @Test
         public void testFour() {
             String input = "2" + System.lineSeparator() +
@@ -425,8 +445,54 @@ public class LogInTest {
             LogIn.main(new String[0]);
         }
 
+        /**
+         * Tests file contents when a buyer is created
+         */
+
         @Test
         public void testFive() {
+            String input = "2" + System.lineSeparator() +
+                    "testCaseRun" + System.lineSeparator() +
+                    "password" + System.lineSeparator() +
+                    "password" + System.lineSeparator() +
+                    "no" + System.lineSeparator() +
+                    "email@domain.com" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "4" + System.lineSeparator();
+
+            List<String> fileContents = new ArrayList<>();
+            List<String> expectedContents = new ArrayList<>(Arrays.asList("testCaseRun", "u\\xn|jw_",
+                    "false", "email@domain.com"));
+            receiveInput(input);
+            LogIn.main(new String[0]);
+            try (BufferedReader bfr = new BufferedReader(new FileReader("users/testCaseRun/testCaseRun"))) {
+                String line = bfr.readLine();
+                while (line != null) {
+                    fileContents.add(line);
+                    line = bfr.readLine();
+                }
+            } catch (Exception e) {
+                System.out.println("Test 4 was not successful!");
+            }
+            assertEquals(expectedContents, fileContents);
+
+            input = "1" + System.lineSeparator() +
+                    "testCaseRun" + System.lineSeparator() +
+                    "password" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "2" + System.lineSeparator() +
+                    "yes" + System.lineSeparator();
+            receiveInput(input);
+            LogIn.main(new String[0]);
+        }
+
+        /**
+         * Another file test with different input to further ensure file writing
+         * is successful after changing account name and store names
+         */
+
+        @Test
+        public void testSix() {
             String input = "2" + System.lineSeparator() +
                     "testCaseRun" + System.lineSeparator() +
                     "mfiji!JHfje78g" + System.lineSeparator() +
@@ -481,8 +547,13 @@ public class LogInTest {
             LogIn.main(new String[0]);
         }
 
+        /**
+         * Tests account creation, logging in, multiple incorrect inputs, and
+         * account deletion
+         */
+
         @Test
-        public void testSix() {
+        public void testSeven() {
             String input = "2" + System.lineSeparator() +
                     "testCaseRun" + System.lineSeparator() +
                     "password" + System.lineSeparator() +
@@ -642,10 +713,13 @@ public class LogInTest {
             assertEquals(expected.trim(), output.trim());
         }
 
-        /*Confirms that the deletion algorithm worked by checking
-        the directory to see if the files still exist or not*/
+        /**
+         * Confirms that the deletion algorithm worked by checking the directory
+         * contents to see if it is empty
+         */
+
         @Test
-        public void testSeven() {
+        public void testEight() {
             String[] directoryContents = null;
             String[] expectedContents = {"storeNames"};
             try {
@@ -655,6 +729,7 @@ public class LogInTest {
                 System.out.println("Test 7 was not successful!");
             }
             assertEquals(Arrays.deepToString(expectedContents), Arrays.deepToString(directoryContents));
+            Placeholders.create();
         }
     }
 }
