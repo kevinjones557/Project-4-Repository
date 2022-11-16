@@ -14,20 +14,20 @@ import java.text.SimpleDateFormat;
  */
 public class MarketUser {
     // Output messages
-    public final String selectOption = "Please select an option below:";
-    public final String blockInvisibleOption = "1. Use block/invisible features\n" +
+    public static final String selectOption = "Please select an option below:";
+    public static final String blockInvisibleOption = "1. Use block/invisible features\n" +
             "2. Continue to messaging\n3. Exit Messaging System";
-    public final String searchListBuyer = "1. Search for a buyer\n2. View a list of buyers\n3. Cancel";
-    public final String searchListSeller = "1. Search for a seller\n2. View a list of stores\n" +
+    public static final String searchListBuyer = "1. Search for a buyer\n2. View a list of buyers\n3. Cancel";
+    public static final String searchListSeller = "1. Search for a seller\n2. View a list of stores\n" +
             "3. Continue to statistics\n4. Exit Messaging System";
-    public final String messageOptions = "1. View Message Contents\n2. Send a message\n3. Edit a message\n" +
+    public static final String messageOptions = "1. View Message Contents\n2. Send a message\n3. Edit a message\n" +
             "4. Delete a message\n5. Import a .txt file\n6. Export message history as a CSV file\n7.Cancel";
-    public final String metricsPrompt = "1. View statistics for stores\n2. Exit Messaging System";
+    public static final String metricsPrompt = "1. View statistics for stores\n2. Exit Messaging System";
 
-    public final String storeOrSellerAccount = "1. Message with personal account\n2. Message with store account" +
+    public static final String storeOrSellerAccount = "1. Message with personal account\n2. Message with store account" +
             "\n3. Continue to statistics\n4. Exit Messaging System";
 
-    public final String switchAccount = "1. Continue with current account\n2. Switch accounts\n" +
+    public static final String switchAccount = "1. Continue with current account\n2. Switch accounts\n" +
             "3. Continue to statistics\n4. Exit Messaging System";
 
     private String username;
@@ -51,6 +51,11 @@ public class MarketUser {
         isUserStore = false;
     }
 
+    public static void main(String[] args) {
+        MarketUser mu = new MarketUser("TempBuyer", false);
+        mu.mainForBuyer(new Scanner(System.in));
+    }
+
     /**
      * Function that waits until valid prompt
      *
@@ -71,6 +76,9 @@ public class MarketUser {
                 selection = localScan.nextInt();
                 localScan.nextLine();
             } catch (InputMismatchException e) {
+                if (selection == Integer.MAX_VALUE) {
+                    System.out.println("Please enter a valid number:");
+                }
                 localScan.nextLine();
             }
         } while ((selection < lowestValidValue || selection > highestValidValue));
@@ -91,220 +99,184 @@ public class MarketUser {
             }
             // at this point they want to block/unblock/visible/invisible a user so ask for user
             System.out.println(selectOption);
-            System.out.println("1. Block a user \n2. Unblock a user " +
-                    "\n3. Become invisible to a user \n" +
-                    "4. Become visible again");
-            int option;
-            while (true) {
+            System.out.println("1. Block a user\n2. Unblock a user" +
+                    "\n3. Become invisible to a user\n" +
+                    "4. Become visible again\n5. Cancel");
+            int option = waitForValidInput(1, 5, scan);
+            if (option != 5) {
                 try {
-                    option = scan.nextInt();
-                    scan.nextLine();
-                    if (option >= 1 && option <= 4) {
-                        break;
-                    } else {
-                        System.out.println("Option number must be between 1 and 4 inclusively!");
+                    switch (option) {
+                        case 1:
+                            while (true) {
+                                String[] userList = getAvailableUsers();
+                                String[] blockedList = blockedList();
+                                if (Arrays.equals(userList, blockedList)) {
+                                    System.out.println("You have blocked all available user!");
+                                    break;
+                                }
+                                boolean inBlockedList = false;
+                                System.out.println("Please select a user to block");
+                                for (int i = 0; i < userList.length; i++) {
+                                    for (String blockedUser : blockedList) {
+                                        if (blockedUser.equals(userList[i])) {
+                                            inBlockedList = true;
+                                        }
+                                    }
+                                    System.out.printf("%d. %s" + ((inBlockedList) ? "(blocked)" : "")
+                                            + "\n", i + 1, userList[i]);
+                                    inBlockedList = false;
+                                }
+                                int victim;
+                                while (true) {
+                                    try {
+                                        victim = scan.nextInt();
+                                        scan.nextLine();
+                                        if (victim >= 1 && victim <= userList.length) {
+                                            break;
+                                        } else {
+                                            System.out.printf("Option number must be between 1 and %d inclusively!\n"
+                                                    , userList.length);
+                                        }
+                                    } catch (InputMismatchException e) {
+                                        System.out.println("Please enter a valid option number!");
+                                    }
+                                }
+                                victim -= 1;
+                                boolean blocked = blockUser(userList[victim]);
+                                if (blocked) {
+                                    System.out.printf("%s is already blocked\n", userList[victim]);
+                                } else {
+                                    System.out.printf("Successfully block %s\n", userList[victim]);
+                                }
+                            }
+                            break;
+                        case 2:
+                            if (blockedList().length == 0) {
+                                System.out.println("You haven't blocked any user");
+                            } else {
+                                while (blockedList().length != 0) {
+                                    String[] userList = blockedList();
+                                    System.out.println("Please select a user to unblock");
+                                    for (int i = 0; i < userList.length; i++) {
+                                        System.out.printf("%d. %s\n", i + 1, userList[i]);
+                                    }
+                                    int victim;
+                                    while (true) {
+                                        try {
+                                            victim = scan.nextInt();
+                                            scan.nextLine();
+                                            if (victim >= 1 && victim <= userList.length) {
+                                                break;
+                                            } else {
+                                                System.out.printf("Option number must be between 1 and %d inclusively!\n"
+                                                        , userList.length);
+                                            }
+                                        } catch (InputMismatchException e) {
+                                            System.out.println("Please enter a valid option number!");
+                                        }
+                                    }
+                                    victim -= 1;
+                                    unblockUser(userList[victim]);
+                                    System.out.printf("Successfully unblock %s\n", userList[victim]);
+                                    if (blockedList().length == 0) {
+                                        System.out.println("Your blocked list is now empty");
+                                        break;
+                                    }
+                                }
+                            }
+                            break;
+
+                        case 3:
+                            while (true) {
+                                String[] userList = getAvailableUsers();
+                                String[] invisibleList = invisibleList();
+                                if (Arrays.equals(userList, invisibleList)) {
+                                    System.out.println("You have become invisible to all available user");
+                                    break;
+                                }
+                                boolean inInvisibleList = false;
+                                for (int i = 0; i < userList.length; i++) {
+                                    for (String blockedUser : invisibleList) {
+                                        if (blockedUser.equals(userList[i])) {
+                                            inInvisibleList = true;
+                                        }
+                                    }
+                                    System.out.printf("%d. %s" + ((inInvisibleList) ? "(can't see you)" : "")
+                                            + "\n", i + 1, userList[i]);
+                                    inInvisibleList = false;
+                                }
+                                int victim;
+                                while (true) {
+                                    try {
+                                        victim = scan.nextInt();
+                                        scan.nextLine();
+                                        if (victim >= 1 && victim <= userList.length) {
+                                            break;
+                                        } else {
+                                            System.out.printf("Option number must be between 1 and %d inclusively!\n"
+                                                    , userList.length);
+                                        }
+                                    } catch (InputMismatchException e) {
+                                        System.out.println("Please enter a valid option number!");
+                                    }
+                                }
+                                victim -= 1;
+                                boolean invisible = becomeInvisibleToUser(userList[victim]);
+                                if (invisible) {
+                                    System.out.printf("You are already invisible to %s\n", userList[victim]);
+                                } else {
+                                    System.out.printf("Successfully become invisible to %s\n", userList[victim]);
+                                }
+                            }
+                            break;
+
+                        case 4:
+                            if (invisibleList().length == 0) {
+                                System.out.println("You haven't made yourself invisible to any user");
+                            } else {
+                                while (invisibleList().length != 0) {
+                                    String[] userList = invisibleList();
+                                    System.out.println("Please select a user to become visible to");
+                                    for (int i = 0; i < userList.length; i++) {
+                                        System.out.printf("%d. %s\n", i + 1, userList[i]);
+                                    }
+                                    int victim;
+                                    while (true) {
+                                        try {
+                                            victim = scan.nextInt();
+                                            scan.nextLine();
+                                            if (victim >= 1 && victim <= userList.length) {
+                                                break;
+                                            } else {
+                                                System.out.printf("Option number must be between 1 and %d inclusively!\n"
+                                                        , userList.length);
+                                            }
+                                        } catch (InputMismatchException e) {
+                                            System.out.println("Please enter a valid option number!");
+                                        }
+                                    }
+                                    victim -= 1;
+                                    becomeVisibleAgain(userList[victim]);
+                                    System.out.printf("Successfully become visible again to %s\n", userList[victim]);
+                                    if (invisibleList().length == 0) {
+                                        System.out.println("Your invisible list is now empty");
+                                        break;
+                                    }
+                                }
+                            }
+                            break;
                     }
-                } catch (NumberFormatException e) {
-                    System.out.println("Please enter a valid option number!");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("An unknown error occurred");
                 }
-
             }
-            try {
-                switch (option) {
-                    case 1:
-                        while (true) {
-                            String[] userList = getAvailableUsers();
-                            String[] blockedList = blockedList();
-                            if (Arrays.equals(userList, blockedList)) {
-                                System.out.println("You have blocked all available user!");
-                                break;
-                            }
-                            boolean inBlockedList = false;
-                            System.out.println("Please select a user to block");
-                            for (int i = 0; i < userList.length; i++) {
-                                for (String blockedUser : blockedList) {
-                                    if (blockedUser.equals(userList[i])) {
-                                        inBlockedList = true;
-                                    }
-                                }
-                                System.out.printf("%d. %s" + ((inBlockedList) ? "(blocked)" : "")
-                                        + "\n", i + 1, userList[i]);
-                                inBlockedList = false;
-                            }
-                            int victim;
-                            while (true) {
-                                try {
-                                    victim = scan.nextInt();
-                                    scan.nextLine();
-                                    if (victim >= 1 && victim <= userList.length) {
-                                        break;
-                                    } else {
-                                        System.out.printf("Option number must be between 1 and %d inclusively!\n"
-                                                , userList.length);
-                                    }
-                                } catch (NumberFormatException e) {
-                                    System.out.println("Please enter a valid option number!");
-                                }
-                            }
-                            victim -= 1;
-                            boolean blocked = blockUser(userList[victim]);
-                            if (blocked) {
-                                System.out.printf("%s is already blocked\n", userList[victim]);
-                            } else {
-                                System.out.printf("Successfully block %s\n", userList[victim]);
-                            }
-                            System.out.println("Do you want to continue? (Yes/No)");
-                            if ((scan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
-                                break;
-                            }
-                        }
-                        break;
-                    case 2:
-                        if (blockedList().length == 0) {
-                            System.out.println("You haven't blocked any user");
-                        } else {
-                            while (blockedList().length != 0) {
-                                String[] userList = blockedList();
-                                System.out.println("Please select a user to unblock");
-                                for (int i = 0; i < userList.length; i++) {
-                                    System.out.printf("%d. %s\n", i + 1, userList[i]);
-                                }
-                                int victim;
-                                while (true) {
-                                    try {
-                                        victim = scan.nextInt();
-                                        scan.nextLine();
-                                        if (victim >= 1 && victim <= userList.length) {
-                                            break;
-                                        } else {
-                                            System.out.printf("Option number must be between 1 and %d inclusively!\n"
-                                                    , userList.length);
-                                        }
-                                    } catch (NumberFormatException e) {
-                                        System.out.println("Please enter a valid option number!");
-                                    }
-                                }
-                                victim -= 1;
-                                unblockUser(userList[victim]);
-                                System.out.printf("Successfully unblock %s\n", userList[victim]);
-                                if (blockedList().length == 0) {
-                                    System.out.println("Your blocked list is now empty");
-                                    break;
-                                } else {
-                                    System.out.println("Do you want to continue? (Yes/No)");
-                                    if ((scan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
-                                        break;
-                                    }
-                                }
-                            }
-
-                        }
-                        break;
-
-                    case 3:
-                        while (true) {
-                            String[] userList = getAvailableUsers();
-                            String[] invisibleList = invisibleList();
-                            if (Arrays.equals(userList, invisibleList)) {
-                                System.out.println("You have become invisible to all available user");
-                                break;
-                            }
-                            boolean inInvisibleList = false;
-                            for (int i = 0; i < userList.length; i++) {
-                                for (String blockedUser : invisibleList) {
-                                    if (blockedUser.equals(userList[i])) {
-                                        inInvisibleList = true;
-                                    }
-                                }
-                                System.out.printf("%d. %s" + ((inInvisibleList) ? "(can't see you)" : "")
-                                        + "\n", i + 1, userList[i]);
-                                inInvisibleList = false;
-                            }
-                            int victim;
-                            while (true) {
-                                try {
-                                    victim = scan.nextInt();
-                                    scan.nextLine();
-                                    if (victim >= 1 && victim <= userList.length) {
-                                        break;
-                                    } else {
-                                        System.out.printf("Option number must be between 1 and %d inclusively!\n"
-                                                , userList.length);
-                                    }
-                                } catch (NumberFormatException e) {
-                                    System.out.println("Please enter a valid option number!");
-                                }
-                            }
-                            victim -= 1;
-                            boolean invisible = becomeInvisibleToUser(userList[victim]);
-                            if (invisible) {
-                                System.out.printf("You are already invisible to %s\n", userList[victim]);
-                            } else {
-                                System.out.printf("Successfully become invisible to %s\n", userList[victim]);
-                            }
-                            System.out.println("Do you want to continue? (Yes/No)");
-                            if ((scan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
-                                break;
-                            }
-                        }
-                        break;
-
-                    case 4:
-                        if (invisibleList().length == 0) {
-                            System.out.println("You haven't made yourself invisible to any user");
-                        } else {
-                            while (invisibleList().length != 0) {
-                                String[] userList = invisibleList();
-                                System.out.println("Please select a user to become visible to");
-                                for (int i = 0; i < userList.length; i++) {
-                                    System.out.printf("%d. %s\n", i + 1, userList[i]);
-                                }
-                                int victim;
-                                while (true) {
-                                    try {
-                                        victim = scan.nextInt();
-                                        scan.nextLine();
-                                        if (victim >= 1 && victim <= userList.length) {
-                                            break;
-                                        } else {
-                                            System.out.printf("Option number must be between 1 and %d inclusively!\n"
-                                                    , userList.length);
-                                        }
-                                    } catch (NumberFormatException e) {
-                                        System.out.println("Please enter a valid option number!");
-                                    }
-                                }
-                                victim -= 1;
-                                becomeVisibleAgain(userList[victim]);
-                                System.out.printf("Successfully become visible again to %s\n", userList[victim]);
-                                if (invisibleList().length == 0) {
-                                    System.out.println("Your invisible list is now empty");
-                                    break;
-                                } else {
-                                    System.out.println("Do you want to continue? (Yes/No)");
-                                    if ((scan.nextLine().equalsIgnoreCase("yes"))) {
-                                        break;
-                                    }
-                                }
-                            }
-
-                        }
-                        break;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("An unknown error occurred");
-            }
-            System.out.println("Do you want to keep using block/invisible features?(Yes/No)");
-            if (!scan.nextLine().equalsIgnoreCase("yes")) {
-                break;
-            }
-
         } while (true);
         /*at this point past blocking/visible stage, onto messaging,
         and we need to prompt if they want to use store*/
         messaging:
         do {
+            boolean doesSellerHaveStores = true;
             isUserStore = false;
             this.username = sellerName;
             System.out.println(selectOption);
@@ -318,6 +290,7 @@ public class MarketUser {
                 ArrayList<String> sellerStores = FileManager.getStoresFromSeller(this.username);
                 if (sellerStores.size() == 0) {
                     System.out.println("You have not added any stores!");
+                    doesSellerHaveStores = false;
                 } else {
                     for (int i = 0; i < sellerStores.size(); i++) {
                         System.out.println((i + 1) + ". " + sellerStores.get(i));
@@ -330,6 +303,9 @@ public class MarketUser {
             }
             // at this point username is either personal username or store name now we get recipient
             do {
+                if (!doesSellerHaveStores) {
+                    break;
+                }
                 System.out.println(selectOption);
                 System.out.println(searchListBuyer);
                 int searchOrCancel = waitForValidInput(1, 3, scan);
@@ -354,7 +330,7 @@ public class MarketUser {
                     } catch (Exception e) {
                         System.out.println("Unable to retrieve information.");
                     }
-                    if (!FileManager.checkBuyerExists(buyerName)) {
+                    if (!FileManager.checkBuyerExists(buyerName) || buyerName.length() == 0) {
                         System.out.println("Sorry, this buyer does not exist!");
                     } else if (isRecipientInvisible) {
                         System.out.println("This user has made themselves invisible to you!");
@@ -510,216 +486,183 @@ public class MarketUser {
             }
             //start of blocking 
             System.out.println(selectOption);
-            System.out.println("1. Block a user \n2. Unblock a user " +
-                    "\n3. Become invisible to a user \n" +
-                    "4. Become visible again");
-            int option;
-            while (true) {
+            System.out.println("1. Block a user\n2. Unblock a user" +
+                    "\n3. Become invisible to a user\n" +
+                    "4. Become visible again\n5. Cancel");
+            int option = waitForValidInput(1, 5, scan);
+            if (option != 5) {
                 try {
-                    option = scan.nextInt();
-                    scan.nextLine();
-                    if (option >= 1 && option <= 4) {
-                        break;
-                    } else {
-                        System.out.println("Option number must be between 1 and 4 inclusively!");
+                    switch (option) {
+                        case 1:
+                            while (true) {
+                                String[] userList = getAvailableUsers();
+                                String[] blockedList = blockedList();
+                                if (Arrays.equals(userList, blockedList)) {
+                                    System.out.println("You have blocked all available user!");
+                                    break;
+                                }
+                                boolean inBlockedList = false;
+                                System.out.println("Please select a user to block");
+                                for (int i = 0; i < userList.length; i++) {
+                                    for (String blockedUser : blockedList) {
+                                        if (blockedUser.equals(userList[i])) {
+                                            inBlockedList = true;
+                                        }
+                                    }
+                                    System.out.printf("%d. %s" + ((inBlockedList) ? "(blocked)" : "")
+                                            + "\n", i + 1, userList[i]);
+                                    inBlockedList = false;
+                                }
+                                int victim;
+                                while (true) {
+                                    try {
+                                        victim = scan.nextInt();
+                                        scan.nextLine();
+                                        if (victim >= 1 && victim <= userList.length) {
+                                            break;
+                                        } else {
+                                            System.out.printf("Option number must be between 1 and %d inclusively!\n"
+                                                    , userList.length);
+                                        }
+                                    } catch (InputMismatchException e) {
+                                        System.out.println("Please enter a valid option number!");
+                                    }
+                                }
+                                victim -= 1;
+                                boolean blocked = blockUser(userList[victim]);
+                                if (blocked) {
+                                    System.out.printf("%s is already blocked\n", userList[victim]);
+                                } else {
+                                    System.out.printf("Successfully block %s\n", userList[victim]);
+                                }
+                            }
+                            break;
+
+                        case 2:
+                            if (blockedList().length == 0) {
+                                System.out.println("You haven't blocked any user");
+                            } else {
+                                while (blockedList().length != 0) {
+                                    String[] userList = blockedList();
+                                    System.out.println("Please select a user to unblock");
+                                    for (int i = 0; i < userList.length; i++) {
+                                        System.out.printf("%d. %s\n", i + 1, userList[i]);
+                                    }
+                                    int victim;
+                                    while (true) {
+                                        try {
+                                            victim = scan.nextInt();
+                                            scan.nextLine();
+                                            if (victim >= 1 && victim <= userList.length) {
+                                                break;
+                                            } else {
+                                                System.out.printf("Option number must be between 1 and %d inclusively!\n"
+                                                        , userList.length);
+                                            }
+                                        } catch (InputMismatchException e) {
+                                            System.out.println("Please enter a valid option number!");
+                                        }
+                                    }
+                                    victim -= 1;
+                                    unblockUser(userList[victim]);
+                                    System.out.printf("Successfully unblock %s\n", userList[victim]);
+                                    if (blockedList().length == 0) {
+                                        System.out.println("Your blocked list is now empty");
+                                        break;
+                                    }
+                                }
+
+                            }
+                            break;
+
+                        case 3:
+                            while (true) {
+                                String[] userList = getAvailableUsers();
+                                String[] invisibleList = invisibleList();
+                                if (Arrays.equals(userList, invisibleList)) {
+                                    System.out.println("You have become invisible to all available user");
+                                    break;
+                                }
+                                boolean inInvisibleList = false;
+                                for (int i = 0; i < userList.length; i++) {
+                                    for (String blockedUser : invisibleList) {
+                                        if (blockedUser.equals(userList[i])) {
+                                            inInvisibleList = true;
+                                        }
+                                    }
+                                    System.out.printf("%d. %s" + ((inInvisibleList) ? "(can't see you)" : "")
+                                            + "\n", i + 1, userList[i]);
+                                    inInvisibleList = false;
+                                }
+                                int victim;
+                                while (true) {
+                                    try {
+                                        victim = scan.nextInt();
+                                        scan.nextLine();
+                                        if (victim >= 1 && victim <= userList.length) {
+                                            break;
+                                        } else {
+                                            System.out.printf("Option number must be between 1 and %d inclusively!\n"
+                                                    , userList.length);
+                                        }
+                                    } catch (InputMismatchException e) {
+                                        System.out.println("Please enter a valid option number!");
+                                    }
+                                }
+                                victim -= 1;
+                                boolean invisible = becomeInvisibleToUser(userList[victim]);
+                                if (invisible) {
+                                    System.out.printf("You are already invisible to %s\n", userList[victim]);
+                                } else {
+                                    System.out.printf("Successfully become invisible to %s\n", userList[victim]);
+                                }
+                            }
+                            break;
+
+                        case 4:
+                            if (invisibleList().length == 0) {
+                                System.out.println("You haven't become invisible to any user");
+                            } else {
+                                while (invisibleList().length != 0) {
+                                    String[] userList = invisibleList();
+                                    System.out.println("Please select a user to become visible to");
+                                    for (int i = 0; i < userList.length; i++) {
+                                        System.out.printf("%d. %s\n", i + 1, userList[i]);
+                                    }
+                                    int victim;
+                                    while (true) {
+                                        try {
+                                            victim = scan.nextInt();
+                                            scan.nextLine();
+                                            if (victim >= 1 && victim <= userList.length) {
+                                                break;
+                                            } else {
+                                                System.out.printf("Option number must be between 1 and %d inclusively!\n"
+                                                        , userList.length);
+                                            }
+                                        } catch (InputMismatchException e) {
+                                            System.out.println("Please enter a valid option number!");
+                                        }
+                                    }
+                                    victim -= 1;
+                                    becomeVisibleAgain(userList[victim]);
+                                    System.out.printf("Successfully become visible again to %s\n"
+                                            , userList[victim]);
+                                    if (invisibleList().length == 0) {
+                                        System.out.println("Your invisible list is now empty");
+                                        break;
+                                    }
+                                }
+
+                            }
+                            break;
                     }
-                } catch (NumberFormatException e) {
-                    System.out.println("Please enter a valid option number!");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("An unknown error occurred");
                 }
-
             }
-            try {
-                switch (option) {
-                    case 1:
-                        while (true) {
-                            String[] userList = getAvailableUsers();
-                            String[] blockedList = blockedList();
-                            if (Arrays.equals(userList, blockedList)) {
-                                System.out.println("You have blocked all available user!");
-                                break;
-                            }
-                            boolean inBlockedList = false;
-                            System.out.println("Please select a user to block");
-                            for (int i = 0; i < userList.length; i++) {
-                                for (String blockedUser : blockedList) {
-                                    if (blockedUser.equals(userList[i])) {
-                                        inBlockedList = true;
-                                    }
-                                }
-                                System.out.printf("%d. %s" + ((inBlockedList) ? "(blocked)" : "")
-                                        + "\n", i + 1, userList[i]);
-                                inBlockedList = false;
-                            }
-                            int victim;
-                            while (true) {
-                                try {
-                                    victim = scan.nextInt();
-                                    scan.nextLine();
-                                    if (victim >= 1 && victim <= userList.length) {
-                                        break;
-                                    } else {
-                                        System.out.printf("Option number must be between 1 and %d inclusively!\n"
-                                                , userList.length);
-                                    }
-                                } catch (NumberFormatException e) {
-                                    System.out.println("Please enter a valid option number!");
-                                }
-                            }
-                            victim -= 1;
-                            boolean blocked = blockUser(userList[victim]);
-                            if (blocked) {
-                                System.out.printf("%s is already blocked\n", userList[victim]);
-                            } else {
-                                System.out.printf("Successfully block %s\n", userList[victim]);
-                            }
-                            System.out.println("Do you want to continue? (Yes/No)");
-                            if ((scan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
-                                break;
-                            }
-                        }
-                        break;
 
-                    case 2:
-                        if (blockedList().length == 0) {
-                            System.out.println("You haven't blocked any user");
-                        } else {
-                            while (blockedList().length != 0) {
-                                String[] userList = blockedList();
-                                System.out.println("Please select a user to unblock");
-                                for (int i = 0; i < userList.length; i++) {
-                                    System.out.printf("%d. %s\n", i + 1, userList[i]);
-                                }
-                                int victim;
-                                while (true) {
-                                    try {
-                                        victim = scan.nextInt();
-                                        scan.nextLine();
-                                        if (victim >= 1 && victim <= userList.length) {
-                                            break;
-                                        } else {
-                                            System.out.printf("Option number must be between 1 and %d inclusively!\n"
-                                                    , userList.length);
-                                        }
-                                    } catch (NumberFormatException e) {
-                                        System.out.println("Please enter a valid option number!");
-                                    }
-                                }
-                                victim -= 1;
-                                unblockUser(userList[victim]);
-                                System.out.printf("Successfully unblock %s\n", userList[victim]);
-                                if (blockedList().length == 0) {
-                                    System.out.println("Your blocked list is now empty");
-                                    break;
-                                } else {
-                                    System.out.println("Do you want to continue? (Yes/No)");
-                                    if ((scan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
-                                        break;
-                                    }
-                                }
-                            }
-
-                        }
-                        break;
-
-                    case 3:
-                        while (true) {
-                            String[] userList = getAvailableUsers();
-                            String[] invisibleList = invisibleList();
-                            if (Arrays.equals(userList, invisibleList)) {
-                                System.out.println("You have become invisible to all available user");
-                                break;
-                            }
-                            boolean inInvisibleList = false;
-                            for (int i = 0; i < userList.length; i++) {
-                                for (String blockedUser : invisibleList) {
-                                    if (blockedUser.equals(userList[i])) {
-                                        inInvisibleList = true;
-                                    }
-                                }
-                                System.out.printf("%d. %s" + ((inInvisibleList) ? "(can't see you)" : "")
-                                        + "\n", i + 1, userList[i]);
-                                inInvisibleList = false;
-                            }
-                            int victim;
-                            while (true) {
-                                try {
-                                    victim = scan.nextInt();
-                                    scan.nextLine();
-                                    if (victim >= 1 && victim <= userList.length) {
-                                        break;
-                                    } else {
-                                        System.out.printf("Option number must be between 1 and %d inclusively!\n"
-                                                , userList.length);
-                                    }
-                                } catch (NumberFormatException e) {
-                                    System.out.println("Please enter a valid option number!");
-                                }
-                            }
-                            victim -= 1;
-                            boolean invisible = becomeInvisibleToUser(userList[victim]);
-                            if (invisible) {
-                                System.out.printf("You are already invisible to %s\n", userList[victim]);
-                            } else {
-                                System.out.printf("Successfully become invisible to %s\n", userList[victim]);
-                            }
-                            System.out.println("Do you want to continue? (Yes/No)");
-                            if ((scan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
-                                break;
-                            }
-                        }
-                        break;
-
-                    case 4:
-                        if (invisibleList().length == 0) {
-                            System.out.println("You haven't become invisible to any user");
-                        } else {
-                            while (invisibleList().length != 0) {
-                                String[] userList = invisibleList();
-                                System.out.println("Please select a user to become visible to");
-                                for (int i = 0; i < userList.length; i++) {
-                                    System.out.printf("%d. %s\n", i + 1, userList[i]);
-                                }
-                                int victim;
-                                while (true) {
-                                    try {
-                                        victim = scan.nextInt();
-                                        scan.nextLine();
-                                        if (victim >= 1 && victim <= userList.length) {
-                                            break;
-                                        } else {
-                                            System.out.printf("Option number must be between 1 and %d inclusively!\n"
-                                                    , userList.length);
-                                        }
-                                    } catch (NumberFormatException e) {
-                                        System.out.println("Please enter a valid option number!");
-                                    }
-                                }
-                                victim -= 1;
-                                becomeVisibleAgain(userList[victim]);
-                                System.out.printf("Successfully become visible again to %s\n"
-                                        , userList[victim]);
-                                if (invisibleList().length == 0) {
-                                    System.out.println("Your invisible list is now empty");
-                                    break;
-                                } else {
-                                    System.out.println("Do you want to continue? (Yes/No)");
-                                    if ((scan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
-                                        break;
-                                    }
-                                }
-                            }
-
-                        }
-                        break;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("An unknown error occurred");
-            }
-            System.out.println("Do you want to keep using block/invisible features?(Yes/No)");
-            if ((scan.nextLine().equalsIgnoreCase("yes")) ? false : true) {
-                break;
-            }
         } while (true);
         // at this point past blocking/visible stage, onto messaging
         do {
