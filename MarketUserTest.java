@@ -1,16 +1,20 @@
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class MarketUserTest {
+
     @Test
     void waitForValidInput() {
         String input = 5 + System.lineSeparator() + "h" + System.lineSeparator() + 3 + System.lineSeparator();
@@ -30,6 +34,7 @@ class MarketUserTest {
 
     @Test
     void mainForSeller() {
+        Placeholders.delete();
         FileManager.generateDirectoryFromUsername("TempBuyer", false);
         FileManager.generateDirectoryFromUsername("TempSeller", true);
         FileManager.generateStoreForSeller("TempSeller", "Store");
@@ -167,10 +172,12 @@ class MarketUserTest {
 
         MarketUser.deleteUsername("TempBuyer");
         MarketUser.deleteUsername("TempSeller");
+        Placeholders.create();
     }
 
     @Test
     void mainForBuyer() {
+        Placeholders.delete();
         FileManager.generateDirectoryFromUsername("TempBuyer", false);
         FileManager.generateDirectoryFromUsername("TempSeller", true);
         FileManager.generateStoreForSeller("TempSeller", "Store");
@@ -266,6 +273,7 @@ class MarketUserTest {
 
         MarketUser.deleteUsername("TempBuyer");
         MarketUser.deleteUsername("TempSeller");
+        Placeholders.create();
     }
 
     @Test
@@ -317,6 +325,7 @@ class MarketUserTest {
 
     @Test
     void changeStoreName() {
+        Placeholders.delete();
         try {
             Path testUserFolder = Files.createDirectory(Paths.get("data/sellers/TempSeller"));
             Path testStoreFolder = Files.createDirectory(Paths.get("data/sellers/TempSeller/Store"));
@@ -352,6 +361,7 @@ class MarketUserTest {
             e.printStackTrace();
             System.out.println("Unable to delete file and folder");
         }
+        Placeholders.create();
     }
 
     @Test
