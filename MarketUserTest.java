@@ -1,6 +1,4 @@
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
@@ -29,7 +27,6 @@ class MarketUserTest {
 
         String expectedOutput = "Please enter a valid number:" + System.lineSeparator() +
                 "Please enter a valid number:" + System.lineSeparator();
-
     }
 
     @Test
