@@ -14,20 +14,23 @@ import java.text.SimpleDateFormat;
  */
 public class MarketUser {
     // Output messages
-    public static final String selectOption = "Please select an option below:";
-    public static final String blockInvisibleOption = "1. Use block/invisible features\n" +
+    public static final String SELECT_OPTION = "Please select an option below:";
+    public static final String BLOCK_INVISIBLE_OPTION = "1. Use block/invisible features\n" +
             "2. Continue to messaging\n3. Exit Messaging System";
-    public static final String searchListBuyer = "1. Search for a buyer\n2. View a list of buyers\n3. Cancel";
-    public static final String searchListSeller = "1. Search for a seller\n2. View a list of stores\n" +
+    public static final String SEARCH_LIST_BUYER = "1. Search for a buyer\n2. View a list of buyers\n3. Cancel";
+    public static final String SEARCH_LIST_SELLER = "1. Search for a seller\n2. View a list of stores\n" +
             "3. Continue to statistics\n4. Exit Messaging System";
-    public static final String messageOptions = "1. View Message Contents\n2. Send a message\n3. Edit a message\n" +
+    public static final String MESSAGE_OPTIONS = "1. View Message Contents\n2. Send a message\n3. Edit a message\n" +
             "4. Delete a message\n5. Import a .txt file\n6. Export message history as a CSV file\n7.Cancel";
-    public static final String metricsPrompt = "1. View statistics for stores\n2. Exit Messaging System";
+    
+    public static final String METRICS_PROMPT = "1. View statistics for stores\n2. Exit Messaging System";
 
-    public static final String storeOrSellerAccount = "1. Message with personal account\n2. Message with store account" +
-            "\n3. Continue to statistics\n4. Exit Messaging System";
+    public static final String STORE_OR_SELLER_ACCOUNT = "1. Message with personal account" +
+            "\n2. Message with store account" +
+            "\n3. Continue to statistics" +
+            "\n4. Exit Messaging System";
 
-    public static final String switchAccount = "1. Continue with current account\n2. Switch accounts\n" +
+    public static final String SWITCH_ACCOUNT = "1. Continue with current account\n2. Switch accounts\n" +
             "3. Continue to statistics\n4. Exit Messaging System";
 
     private String username;
@@ -50,10 +53,10 @@ public class MarketUser {
         this.isSeller = isSeller;
         isUserStore = false;
     }
-    
+
     /**
      * Setter for isUserStore
-     * 
+     *
      * @param isUserStore
      * @author John Brooks
      */
@@ -98,8 +101,8 @@ public class MarketUser {
     public void mainForSeller(Scanner scan) {
         String sellerName = this.username;
         do {
-            System.out.println(selectOption);
-            System.out.println(blockInvisibleOption);
+            System.out.println(SELECT_OPTION);
+            System.out.println(BLOCK_INVISIBLE_OPTION);
             int selection = waitForValidInput(1, 3, scan);
             if (selection == 3) {
                 return;
@@ -108,7 +111,7 @@ public class MarketUser {
                 break; // this will continue to messaging
             }
             // at this point they want to block/unblock/visible/invisible a user so ask for user
-            System.out.println(selectOption);
+            System.out.println(SELECT_OPTION);
             System.out.println("1. Block a user\n2. Unblock a user" +
                     "\n3. Become invisible to a user\n" +
                     "4. Become visible again\n5. Cancel");
@@ -178,7 +181,8 @@ public class MarketUser {
                                             if (victim >= 1 && victim <= userList.length) {
                                                 break;
                                             } else {
-                                                System.out.printf("Option number must be between 1 and %d inclusively!\n"
+                                                System.out.printf(
+                                                    "Option number must be between 1 and %d inclusively!\n"
                                                         , userList.length);
                                             }
                                         } catch (InputMismatchException e) {
@@ -258,7 +262,8 @@ public class MarketUser {
                                             if (victim >= 1 && victim <= userList.length) {
                                                 break;
                                             } else {
-                                                System.out.printf("Option number must be between 1 and %d inclusively!\n"
+                                                System.out.printf(
+                                                    "Option number must be between 1 and %d inclusively!\n"
                                                         , userList.length);
                                             }
                                         } catch (InputMismatchException e) {
@@ -289,8 +294,8 @@ public class MarketUser {
             boolean doesSellerHaveStores = true;
             isUserStore = false;
             this.username = sellerName;
-            System.out.println(selectOption);
-            System.out.println(storeOrSellerAccount);
+            System.out.println(SELECT_OPTION);
+            System.out.println(STORE_OR_SELLER_ACCOUNT);
             int storeOrUser = waitForValidInput(1, 4, scan);
             if (storeOrUser == 4) {
                 return;
@@ -305,7 +310,7 @@ public class MarketUser {
                     for (int i = 0; i < sellerStores.size(); i++) {
                         System.out.println((i + 1) + ". " + sellerStores.get(i));
                     }
-                    System.out.println(selectOption);
+                    System.out.println(SELECT_OPTION);
                     int storeOption = waitForValidInput(1, sellerStores.size(), scan);
                     this.username = sellerStores.get(storeOption - 1);
                     isUserStore = true;
@@ -316,8 +321,8 @@ public class MarketUser {
                 if (!doesSellerHaveStores) {
                     break;
                 }
-                System.out.println(selectOption);
-                System.out.println(searchListBuyer);
+                System.out.println(SELECT_OPTION);
+                System.out.println(SEARCH_LIST_BUYER);
                 int searchOrCancel = waitForValidInput(1, 3, scan);
                 if (searchOrCancel == 3) {
                     break; // this will go back to store/user account
@@ -354,7 +359,7 @@ public class MarketUser {
                             System.out.println((i + 1) + ". " + allAvailableBuyers[i]);
                         }
                         System.out.println(allAvailableBuyers.length + 1 + ": Cancel");
-                        System.out.println(selectOption);
+                        System.out.println(SELECT_OPTION);
                         int storeOption = waitForValidInput(1,
                                 allAvailableBuyers.length + 1, scan);
                         if (storeOption != allAvailableBuyers.length + 1) {
@@ -385,8 +390,8 @@ public class MarketUser {
                         System.out.println("Sorry, unexpected error, please try again!");
                     }
                     do {
-                        System.out.println(selectOption);
-                        System.out.println(messageOptions);
+                        System.out.println(SELECT_OPTION);
+                        System.out.println(MESSAGE_OPTIONS);
                         int selection = waitForValidInput(1, 7, scan);
                         if (selection == 7) {
                             break;
@@ -459,8 +464,8 @@ public class MarketUser {
                             break;
                         }
                     } while (true);
-                    System.out.println(selectOption);
-                    System.out.println(switchAccount);
+                    System.out.println(SELECT_OPTION);
+                    System.out.println(SWITCH_ACCOUNT);
                     int switchUser = waitForValidInput(1, 4, scan);
                     if (switchUser == 4) {
                         return;
@@ -485,8 +490,8 @@ public class MarketUser {
     public void mainForBuyer(Scanner scan) {
         boolean isRecipientStore = false;
         do {
-            System.out.println(selectOption);
-            System.out.println(blockInvisibleOption);
+            System.out.println(SELECT_OPTION);
+            System.out.println(BLOCK_INVISIBLE_OPTION);
             int selection = waitForValidInput(1, 6, scan);
             if (selection == 3) {
                 return;
@@ -495,7 +500,7 @@ public class MarketUser {
                 break; // this will continue to messaging
             }
             //start of blocking 
-            System.out.println(selectOption);
+            System.out.println(SELECT_OPTION);
             System.out.println("1. Block a user\n2. Unblock a user" +
                     "\n3. Become invisible to a user\n" +
                     "4. Become visible again\n5. Cancel");
@@ -566,7 +571,8 @@ public class MarketUser {
                                             if (victim >= 1 && victim <= userList.length) {
                                                 break;
                                             } else {
-                                                System.out.printf("Option number must be between 1 and %d inclusively!\n"
+                                                System.out.printf(
+                                                    "Option number must be between 1 and %d inclusively!\n"
                                                         , userList.length);
                                             }
                                         } catch (InputMismatchException e) {
@@ -647,7 +653,8 @@ public class MarketUser {
                                             if (victim >= 1 && victim <= userList.length) {
                                                 break;
                                             } else {
-                                                System.out.printf("Option number must be between 1 and %d inclusively!\n"
+                                                System.out.printf(
+                                                    "Option number must be between 1 and %d inclusively!\n"
                                                         , userList.length);
                                             }
                                         } catch (InputMismatchException e) {
@@ -677,8 +684,8 @@ public class MarketUser {
         // at this point past blocking/visible stage, onto messaging
         do {
             isRecipientStore = false;
-            System.out.println(selectOption);
-            System.out.println(searchListSeller);
+            System.out.println(SELECT_OPTION);
+            System.out.println(SEARCH_LIST_SELLER);
             int searchOrCancel = waitForValidInput(1, 4, scan);
             if (searchOrCancel == 4) {
                 return;
@@ -718,7 +725,7 @@ public class MarketUser {
                         System.out.println((i + 1) + ". " + allAvailableStores[i]);
                     }
                     System.out.println(allAvailableStores.length + 1 + ": Cancel");
-                    System.out.println(selectOption);
+                    System.out.println(SELECT_OPTION);
                     int storeOption = waitForValidInput(1,
                             allAvailableStores.length + 1, scan);
                     if (storeOption != allAvailableStores.length + 1) {
@@ -753,8 +760,8 @@ public class MarketUser {
                     System.out.println("Sorry, unexpected error occurred, please try again later");
                 }
                 do {
-                    System.out.println(selectOption);
-                    System.out.println(messageOptions);
+                    System.out.println(SELECT_OPTION);
+                    System.out.println(MESSAGE_OPTIONS);
                     int selection = waitForValidInput(1, 7, scan);
                     if (selection == 7) {
                         break;
@@ -850,7 +857,7 @@ public class MarketUser {
                     String[] storeFiles = fs.list();
                     for (String storeFile : storeFiles) {
                         Files.delete(Paths.get((FileManager.getDirectoryFromUsername(username) + "/" + file +
-                                        "/" + storeFile)));
+                                "/" + storeFile)));
                     }
                 }
                 Files.delete(Paths.get((FileManager.getDirectoryFromUsername(username)
@@ -1015,9 +1022,9 @@ public class MarketUser {
                                     newFilename = newStoreName + storeFile.substring(oldStoreName.length());
                                     try {
                                         Files.move(Paths.get("data/sellers/" + seller + "/"
-                                                + filename + "/" + storeFile),
+                                                        + filename + "/" + storeFile),
                                                 Paths.get("data/sellers/" + seller + "/"
-                                                + filename + "/" + newFilename));
+                                                        + filename + "/" + newFilename));
                                     } catch (IOException e) {
                                         System.out.println("Sorry, failed to rename user!");
                                     }
@@ -1070,7 +1077,7 @@ public class MarketUser {
     /**
      * Method called when user is logged in, using System.out.println() will ask user if they want to message someone,
      * who they want to message, and what they want to message.
-     *
+     * <p>
      * No test case for function, however, the only two possible functions called from this method have test cases
      */
 

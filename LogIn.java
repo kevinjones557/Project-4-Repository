@@ -927,6 +927,5 @@ public class LogIn {
         } else {
             System.out.println("Thank you for using the messenger. Goodbye!");
         }
-        Placeholders.create();
     }
 }
