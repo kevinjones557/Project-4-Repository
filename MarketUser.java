@@ -1913,6 +1913,7 @@ public class MarketUser {
                 victims.add(line);
             }
         }
+        bfr.close();
         String[] blockedList = new String[victims.size()];
         for (int i = 0; i < victims.size(); i++) {
             blockedList[i] = victims.get(i);
@@ -1970,6 +1971,7 @@ public class MarketUser {
                 victims.add(line);
             }
         }
+        bfr.close();
         String[] invisibleList = new String[victims.size()];
         for (int i = 0; i < victims.size(); i++) {
             invisibleList[i] = victims.get(i);
