@@ -19,6 +19,8 @@ UserNotFoundException.java(Exception class)
 ```
 Compile all the above files and run the LogIn.java file to run the program. From there you can log in, create new accounts, add stores if you are sellers and access all the user interaction options(message, block/unblock, become invisible, search, view statistics, etc...). *If you exit the program without using the program's exit option, your changes will not be saved.*
 
+There are two placeholder files initially created simply so that the directories do not disappear. There is one under 'data/buyers' and one under 'data/sellers'. The only reason these placeholders are here are because you cannot push an empty directory to brightspace. In the test cases the placeholders are deleted and then recreated. In the LogIn method these placeholders are automatically deleted; however, if they exist for some reason it will break the rest of the code.  
+
 
 **Files and Directories**
 
@@ -72,3 +74,27 @@ An interface that describes what methods a MarketUser should be able to do.
 **UserNotFoundException**
 
 Thrown when FileManager is unable to find a User associated with a Username.
+
+**BlockingAndInvisibleTest**
+
+A class to test the blocking and invisible features of the MarketUser class.
+
+**FileManagerTest**
+
+A class to test the static methods of the FileManager class.
+
+**LogInTest**
+
+A class to test the methods of the LogIn class.
+
+**MarketUserTest**
+
+A class to test the messaging, main method, and helper static methods of the MarketUserTest class.
+
+**MetricManagerTest**
+
+A class to test the static methods of the MetricManager class.
+
+**Placeholder**
+
+A class that hanldes the deleting and creating of the placeholder files. 
